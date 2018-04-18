@@ -1,0 +1,68 @@
+#! /usr/bin/perl
+# usage: update-filters [file]
+# Defaults to use $PWD/bgp-peers.csv
+
+use strict;
+use File::Copy;
+
+my $tmpdir="/tmp";
+my $basedir=".";
+my $bgpq=`which bgpq3`;
+chomp $bgpq;
+
+if ( $bgpq eq "") {
+	die("Couldn't find bgpq3 executable, please install or update the value of \$bgpq in file $0\n");
+}
+
+my $input = $ARGV[0] || "$ENV{PWD}/bgp-peers.csv";
+
+sub output_filter {
+	my ($out, $asn, $filter, $template, $version) = @_;
+	my $prefixset = `$bgpq -b -$version $filter -l prefixes`;
+	$filter =~ tr/-/_/;
+	$template = lc($template);
+	my $first_asn;
+	if ($template ne "routeserver") {
+		$first_asn = "if ! is_first_asn($asn) then reject;";
+	} else {
+		$first_asn = "if is_first_asn($asn) then reject;";
+	}
+	print $out "function in_$filter()\nprefix set prefixes;\n{\n";
+	print $out "$prefixset\nreturn net ~ prefixes\n}\n\n";
+	print $out "filter $filter\n    if filter_$template() then reject;\n";
+	print $out "    $first_asn;\n    if in_$filter() then accept;\n    reject;\n}\n\n";
+}
+
+open (my $fh, "<:encoding(UTF-8)", $input) or die "$!\n";
+open (my $out4, ">", "$tmpdir/filters-v4.tmp") or die "$!\n";
+open (my $out6, ">", "$tmpdir/filters-v6.tmp") or die "$!\n";
+
+print $out4 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n\n";
+print $out6 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n\n";
+
+my %asset4_filter;
+my %asset6_filter;
+
+my $header=<$fh>;
+while ( ! eof ($fh) ) {
+	my $line = <$fh>;
+	chomp $line;
+	my ($desc, $peeringdb, $asn, $template, $ipv4, $ipv6, 
+	$filterv4, $filterv6,$localpref,$prefv4,$prefv6,$passive) = split (";",$line);
+	if ($ipv4 ne "" && $asset4_filter{"$filterv4"} != 1 && $filterv4 ne "") {
+		$asset4_filter{"$filterv4"}=1;
+		output_filter($out4, $asn, $filterv4, $template, "4");
+	}
+	if ($ipv6 ne "" && $asset6_filter{"$filterv6"} != 1 && $filterv6 ne "") {
+		$asset6_filter{"$filterv6"}=1;
+		output_filter($out6, $asn, $filterv6, $template, "6");
+	}
+}
+
+close $fh;
+close $out4;
+close $out6;
+
+move ("$tmpdir/filters-v4.tmp","$basedir/includes/filters-v4");
+move ("$tmpdir/filters-v6.tmp","$basedir/includes/filters-v6");
+

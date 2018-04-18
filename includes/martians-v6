@@ -1,0 +1,39 @@
+function net_martian() 
+prefix set martians;
+{
+	martians = [
+    0000::/8{8,128},        # loopback, unspecified, v4-mapped
+    0064:ff9b::/96{96,128}, # IPv4-IPv6 Translat. [RFC6052]
+    0100::/8{8,128},        # reserved for Discard-Only Address Block [RFC6666]
+    0200::/7{7,128},        # Reserved by IETF [RFC4048]
+    0400::/6{6,128},        # Reserved by IETF [RFC4291]
+    0800::/5{5,128},        # Reserved by IETF [RFC4291]
+    1000::/4{4,128},        # Reserved by IETF [RFC4291]
+    2001::/32{33,128},      # Teredo prefix [RFC4380]
+    2001:0002::/48{48,128}, # Benchmarking [RFC5180]
+    2001:0003::/32{32,128}, # Automatic Multicast Tunneling [RFC7450]
+    2001:10::/28{28,128},   # Deprecated ORCHID [RFC4843]
+    2001:20::/28{28,128},   # ORCHIDv2 [RFC7343]
+    2001:db8::/32{32,128},  # NON-ROUTABLE range to be used for documentation purpose [RFC3849]
+    2002::/16{17,128},      # 6to4 prefix [RFC3068]
+    3ffe::/16{16,128},      # used for the 6bone but was returned [RFC5156]
+    4000::/3{3,128},        # Reserved by IETF [RFC4291]
+    5f00::/8{8,128},        # used for the 6bone but was returned [RFC5156]
+    6000::/3{3,128},        # Reserved by IETF [RFC4291]
+    8000::/3{3,128},        # Reserved by IETF [RFC4291]
+    a000::/3{3,128},        # Reserved by IETF [RFC4291]
+    c000::/3{3,128},        # Reserved by IETF [RFC4291]
+    e000::/4{4,128},        # Reserved by IETF [RFC4291]
+    f000::/5{5,128},        # Reserved by IETF [RFC4291]
+    f800::/6{6,128},        # Reserved by IETF [RFC4291]
+    fc00::/7{7,128},        # Unique Local Unicast [RFC4193]
+    fe80::/10{10,128},      # Link Local Unicast [RFC4291]
+    fec0::/10{10,128},      # Reserved by IETF [RFC3879]
+    ff00::/8{8,128},        # Multicast [RFC4291]
+# Uncomment if you want to filter out large > /19 and small < /64 here
+    0000::/0{0,18},	    # Large prefixes
+    0000::/0{65,128}	    # Small prefixes
+	];
+	if net ~ martians then return true;
+	return false;
+}

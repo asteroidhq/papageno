@@ -1,0 +1,57 @@
+#! /usr/bin/perl
+
+# usage: update-peers [file]
+# Defaults to use $PWD/bgp-peers.csv
+
+use strict;
+use File::Copy;
+
+my $tmpdir="/tmp";
+my $basedir=".";
+my $input = $ARGV[0] || "$ENV{PWD}/bgp-peers.csv";
+
+my %asn_counter;
+
+sub output_peer {
+	my ($out, $asn, $template, $desc, $ip, $filter, $prefixlimit, $localpref, $passive ) = @_;
+	my $id = substr($template,0,1).$asn.sprintf("_%02d",$asn_counter{$asn});
+	print $out "protocol bgp $id from $template {\n".
+		   "    description \"$desc\";\n".
+		   "    neighbor $ip as $asn;\n";
+	if ($filter ne "") 	{ print $out "    import filter $filter;\n"; }
+	if ($prefixlimit ne "") { print $out "    import limit $prefixlimit action block;\n"; }
+	if ($localpref ne "") 	{ print $out "    preference $localpref;\n"; }
+	if ($passive !~ /\s*/) 	{ print $out "    passive on;\n"; }
+	print $out "}\n\n";
+}
+
+open (my $fh, "<:encoding(UTF-8)", $input) or die "$!\n";
+open (my $out4, ">", "$tmpdir/peers-v4.tmp") or die "$!\n";
+open (my $out6, ">", "$tmpdir/peers-v6.tmp") or die "$!\n";
+
+print $out4 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n\n";
+print $out6 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n\n";
+
+my $header=<$fh>;
+while ( ! eof ($fh) ) {
+	my $line = <$fh>;
+	next if ($line =~ /^\s*#/);
+	chomp $line;
+	my ($desc, $peeringdb, $asn, $template, $ipv4, $ipv6, 
+	$filterv4, $filterv6,$localpref,$prefv4,$prefv6,$passive) = split (";",$line);
+	$asn_counter{$asn}++;
+	if ($ipv4 ne "") {
+		output_peer($out4, $asn, $template, $desc, $ipv4, $filterv4, $prefv4, $localpref, $passive);
+	}
+	if ($ipv6 ne "") {
+		output_peer($out6, $asn, $template, $desc, $ipv6, $filterv6, $prefv6, $localpref, $passive);
+	}
+}
+
+close $fh;
+close $out4;
+close $out6;
+
+move ("$tmpdir/peers-v4.tmp","$basedir/includes/peers-v4");
+move ("$tmpdir/peers-v6.tmp","$basedir/includes/peers-v6");
+

@@ -1,0 +1,131 @@
+function asn_bogons()
+int set bogon_asns;
+{
+	bogon_asns = [  
+    0,                      # RFC 7607
+    23456,                  # RFC 4893 AS_TRANS
+    64496..64511,           # RFC 5398 and documentation/example ASNs
+    64512..65534,           # RFC 6996 Private ASNs
+    65535,                  # RFC 6996 Last 16 bit ASN
+    65536..65551,           # RFC 5398 and documentation/example ASNs
+    65552..131071,          # RFC IANA reserved ASNs
+    4200000000..4294967294, # RFC 6996 Private ASNs
+    4294967295              # RFC 6996 Last 32 bit ASN
+	];
+	return  bgp_path ~ bogon_asns;
+}
+
+function asn_transit()
+int set transit_asns;
+{
+	transit_asns = [
+    174,209,701,702,1239,1299,2914,3257,3320,3356,3549,3561,4134,5511,6453,6461,6762,7018
+	];
+	return bgp_path ~ transit_asns;
+}
+
+function honor_graceful_shutdown() {
+	if (65535, 0) ~ bgp_community then {
+		bgp_local_pref = 0;
+	}
+}
+
+function is_first_asn(int asn)
+{
+	if bgp_path.first != asn then return false;
+}
+
+function filter_routeserver() {
+	if bgp_next_hop = from then return true;
+	if bgp_path.len > 100 then return true;
+	if asn_transit() then return true;
+	if asn_bogons() then return true;
+	if net ~ myprefixes then return true;
+	if net_martian() then return true;
+	honor_graceful_shutdown();
+	return false;
+}
+
+function filter_peering() {
+	if bgp_next_hop != from then return true;
+	if bgp_path.len > 100 then return true;
+	if asn_transit() then return true;
+	if asn_bogons() then return true;
+	if net ~ myprefixes then return true;
+	if net_martian() then return true;
+	honor_graceful_shutdown();
+	return false;
+}
+
+function filter_transit() {
+	if bgp_next_hop != from then return true;
+	if bgp_path.len > 100 then return true;
+	if asn_bogons() then return true;
+	if net ~ myprefixes then return true;
+	if net_martian() then return true;
+	honor_graceful_shutdown();
+	return false;
+}
+
+filter bgp_in_routeserver {
+	if filter_routeserver() then reject;
+	accept;
+}
+
+filter bgp_in_peering {
+	if filter_peering() then reject;
+	accept;
+}
+
+filter bgp_in_transit {
+	if filter_transit() then reject;
+	accept;
+}
+
+filter ebgp_out {
+	if net_martian() then reject;
+	if net ~ myprefixes then accept;
+	reject;
+}
+
+filter ibgp_in {
+	accept;
+}
+
+filter ibgp_out {
+	accept;
+}
+
+template bgp INTERNAL {
+	local as myasn;
+	import filter ibgp_in;
+	export filter ibgp_out;
+	preference 200;
+}
+
+template bgp PEERING {
+	local as myasn;
+	import keep filtered;
+	import limit 10000 action block;
+	import filter bgp_in_peering;
+	export filter ebgp_out;
+	preference 100;
+}
+
+template bgp ROUTESERVER {
+	local as myasn;
+	import keep filtered;
+	import limit 50000 action block;
+	import filter bgp_in_routeserver;
+	export filter ebgp_out;
+	preference 80;
+}
+
+template bgp TRANSIT {
+	local as myasn;
+	import keep filtered;
+	import filter bgp_in_transit;
+	export filter ebgp_out;
+	preference 50;
+}
+
