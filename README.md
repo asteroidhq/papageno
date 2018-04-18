@@ -35,7 +35,7 @@ It also configures Bird to be compatible with birdseye, a bird-based looking gla
  - After every edit of bgp-peers.csv, run ./update-peers and ./update-filters
  - Check your configs with bird|bird6 -c <bird.conf|bird6.conf> -p
  - Push the new config to bird using birdc|birdc6 configure
- - Periodically (a few times a day) run ./update-filters and psuh the configs using birdc|birdc6 configure
+ - Periodically (a few times a day) run ./update-filters and push the configs using birdc|birdc6 configure
 
 Happy peering!
 
