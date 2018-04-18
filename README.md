@@ -29,5 +29,13 @@ Predefined filter sets for sessions with:
  
 It also configures Bird to be compatible with birdseye, a bird-based looking glass tool. There are two separate tools for updating peering sessions and updating IRR filters, so updating filters can be done independently (and automated!).
 
+# Usage
+ - edit bird.conf and bird6.conf to reflect your asn and prefixes
+ - edit bgp-peers.csv to configure your BGP peers
+ - After every edit of bgp-peers.csv, run ./update-peers and ./update-filters
+ - Check your configs with bird|bird6 -c <bird.conf|bird6.conf> -p
+ - Push the new config to bird using birdc|birdc6 configure
+ - Periodically (a few times a day) run ./update-filters and psuh the configs using birdc|birdc6 configure
+
 Happy peering!
 
