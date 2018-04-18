@@ -23,7 +23,7 @@ Standard export filters include:
 
 Predefined filter sets for sessions with:
  - Transit providers
- - Peers on an IXP or provate interconnect
+ - Peers on an IXP or private interconnect
  - Route servers on an IXP
  - Internal BGP sessions
  
