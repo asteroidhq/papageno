@@ -15,6 +15,7 @@ my %asn_counter;
 sub output_peer {
 	my ($out, $asn, $template, $desc, $ip, $filter, $prefixlimit, $localpref, $passive ) = @_;
 	my $id = substr($template,0,1).$asn.sprintf("_%02d",$asn_counter{$asn});
+	$filter =~ tr/-/_/;
 	print $out "protocol bgp $id from $template {\n".
 		   "    description \"$desc\";\n".
 		   "    neighbor $ip as $asn;\n";

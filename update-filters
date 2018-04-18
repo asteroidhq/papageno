@@ -28,8 +28,8 @@ sub output_filter {
 		$first_asn = "if is_first_asn($asn) then reject;";
 	}
 	print $out "function in_$filter()\nprefix set prefixes;\n{\n";
-	print $out "$prefixset\nreturn net ~ prefixes\n}\n\n";
-	print $out "filter $filter\n    if filter_$template() then reject;\n";
+	print $out "$prefixset\nreturn net ~ prefixes;\n}\n\n";
+	print $out "filter $filter\n{\n    if filter_$template() then reject;\n";
 	print $out "    $first_asn;\n    if in_$filter() then accept;\n    reject;\n}\n\n";
 }
 
