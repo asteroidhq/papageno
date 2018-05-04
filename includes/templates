@@ -54,7 +54,7 @@ function filter_routeserver() {
 	if net ~ myprefixes then return true;
 	if net_martian() then return true;
 	strip_my_communities();
-	bgp_community.add([myasn,rs_route]);
+	bgp_community.add((myasn,rs_route));
 	tag_peeringdb_ixid();
 	honor_graceful_shutdown();
 	return false;
@@ -68,7 +68,7 @@ function filter_peering() {
 	if net ~ myprefixes then return true;
 	if net_martian() then return true;
 	strip_my_communities();
-	bgp_community.add([myasn,peering_route]);
+	bgp_community.add((myasn,peering_route));
 	tag_peeringdb_ixid();
 	honor_graceful_shutdown();
 	return false;
@@ -81,7 +81,7 @@ function filter_customer() {
 	if asn_bogons() then return true;
 	if net ~ myprefixes then return true;
 	if net_martian() then return true;
-	bgp_community.add([myasn,customer_route]);
+	bgp_community.add((myasn,customer_route));
 	honor_graceful_shutdown();
 	return false;
 }
@@ -93,7 +93,7 @@ function filter_transit() {
 	if net ~ myprefixes then return true;
 	if net_martian() then return true;
 	strip_my_communities();
-	bgp_community.add([myasn,transit_route]);
+	bgp_community.add((myasn,transit_route));
 	honor_graceful_shutdown();
 	return false;
 }
