@@ -16,3 +16,4 @@ prefix set martians;
 	return net ~ martians;
 }
 
+define defaultroute = 0.0.0.0/0;
