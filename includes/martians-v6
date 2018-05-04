@@ -37,3 +37,5 @@ prefix set martians;
 	if net ~ martians then return true;
 	return false;
 }
+
+define defaultroute = ::/0;

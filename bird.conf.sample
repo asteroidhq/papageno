@@ -17,6 +17,7 @@ protocol static static_bgp {
 
 include "includes/base";
 include "includes/martians-v4";
+include "includes/peeringdb-v4";
 include "includes/templates";
 include "includes/filters-v4";
 include "includes/peers-v4";

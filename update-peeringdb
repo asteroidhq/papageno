@@ -1,0 +1,57 @@
+#!/usr/bin/perl
+#
+use LWP::Simple;                # From CPAN
+use JSON qw( decode_json );     # From CPAN
+use Data::Dumper;               # Perl core module
+use File::Copy;
+use strict;                     # Good practice
+use warnings;                   # Good practice
+
+my $tmpdir="/tmp";
+my $basedir=".";
+
+open (my $out4, ">", "$tmpdir/peeringdb-v4.tmp") or die "$!\n";
+open (my $out6, ">", "$tmpdir/peeringdb-v6.tmp") or die "$!\n";
+
+print $out4 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
+print $out6 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
+
+my $url;
+
+$url = "https://www.peeringdb.com/api/ixlan";
+
+my $ixlan = get ($url);
+die "Could not get $url!" unless defined $ixlan;
+my $decoded_ixlan = decode_json( $ixlan );
+
+my %ix_id;
+foreach my $lan (@{$decoded_ixlan->{'data'}}) {
+	$ix_id{$lan->{'id'}} = $lan->{'ix_id'};
+}
+
+$url = "https://www.peeringdb.com/api/ixpfx";
+my $ixpfx = get( $url );
+my $decoded_ixpfx = decode_json( $ixpfx );
+#print Dumper $decoded_ixpfx;
+
+print $out4 "function peeringdb_ixid() {\n";
+print $out6 "function peeringdb_ixid() {\n";
+
+foreach my $i (@{$decoded_ixpfx->{'data'}}) {
+	if ($i->{'protocol'} eq "IPv4") { 
+		print $out4 "    if from ~ $i->{'prefix'} then return $ix_id{$i->{'ixlan_id'}};\n";
+	} elsif ($i->{'protocol'} eq "IPv6") {
+		print $out6 "    if from ~ $i->{'prefix'} then return $ix_id{$i->{'ixlan_id'}};\n";
+	}
+}
+print $out4 "    return 0;\n}\n";
+print $out6 "    return 0;\n}\n";
+
+close $out4;
+close $out6;
+
+move ("$tmpdir/peeringdb-v4.tmp","$basedir/includes/peeringdb-v4");
+move ("$tmpdir/peeringdb-v6.tmp","$basedir/includes/peeringdb-v6");
+
+
+

@@ -30,9 +30,20 @@ function honor_graceful_shutdown() {
 	}
 }
 
-function is_first_asn(int asn)
-{
+function is_first_asn(int asn) {
 	if bgp_path.first != asn then return false;
+}
+
+function strip_my_communities() {
+	bgp_community.delete([(0, *)]);
+	bgp_ext_community.delete([(ro,0,*)]);
+	bgp_large_community.delete([(0,*,*)]);
+	bgp_community.delete([(myasn, *)]);
+	bgp_ext_community.delete([(ro,myasn,*)]);
+	bgp_large_community.delete([(myasn,*,*)]);
+}
+
+function process_my_communities() {
 }
 
 function filter_routeserver() {
@@ -42,11 +53,24 @@ function filter_routeserver() {
 	if asn_bogons() then return true;
 	if net ~ myprefixes then return true;
 	if net_martian() then return true;
+	strip_my_communities();
 	honor_graceful_shutdown();
 	return false;
 }
 
 function filter_peering() {
+	if bgp_next_hop != from then return true;
+	if bgp_path.len > 100 then return true;
+	if asn_transit() then return true;
+	if asn_bogons() then return true;
+	if net ~ myprefixes then return true;
+	if net_martian() then return true;
+	strip_my_communities();
+	honor_graceful_shutdown();
+	return false;
+}
+
+function filter_customer() {
 	if bgp_next_hop != from then return true;
 	if bgp_path.len > 100 then return true;
 	if asn_transit() then return true;
@@ -63,6 +87,7 @@ function filter_transit() {
 	if asn_bogons() then return true;
 	if net ~ myprefixes then return true;
 	if net_martian() then return true;
+	strip_my_communities();
 	honor_graceful_shutdown();
 	return false;
 }
@@ -77,14 +102,32 @@ filter bgp_in_peering {
 	accept;
 }
 
+filter bgp_in_customer {
+	if filter_customer() then reject;
+	accept;
+}
+
 filter bgp_in_transit {
 	if filter_transit() then reject;
 	accept;
 }
 
 filter ebgp_out {
+	process_my_communities();
+	strip_my_communities();
 	if net_martian() then reject;
 	if net ~ myprefixes then accept;
+	reject;
+}
+
+filter ebgp_customer {
+	if net_martian() then reject;
+	if ( source = RTS_BGP && net != defaultroute ) then accept; 
+	reject;
+}
+
+filter ebgp_customer_default {
+	if ( net = defaultroute ) then accept; 
 	reject;
 }
 
@@ -101,6 +144,15 @@ template bgp INTERNAL {
 	import filter ibgp_in;
 	export filter ibgp_out;
 	preference 200;
+}
+
+template bgp CUSTOMER {
+	local as myasn;
+	import keep filtered;
+	import limit 100 action block;
+	import filter bgp_in_peering;
+	export filter ebgp_customer;
+	preference 100;
 }
 
 template bgp PEERING {
