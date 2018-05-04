@@ -34,6 +34,9 @@ function is_first_asn(int asn) {
 	if bgp_path.first != asn then return false;
 }
 
+function process_my_communities() {
+}
+
 function strip_my_communities() {
 	bgp_community.delete([(0, *)]);
 	bgp_ext_community.delete([(ro,0,*)]);
@@ -41,9 +44,6 @@ function strip_my_communities() {
 	bgp_community.delete([(myasn, *)]);
 	bgp_ext_community.delete([(ro,myasn,*)]);
 	bgp_large_community.delete([(myasn,*,*)]);
-}
-
-function process_my_communities() {
 }
 
 function filter_routeserver() {
@@ -54,6 +54,8 @@ function filter_routeserver() {
 	if net ~ myprefixes then return true;
 	if net_martian() then return true;
 	strip_my_communities();
+	bgp_community.add([myasn,rs_route]);
+	tag_peeringdb_ixid();
 	honor_graceful_shutdown();
 	return false;
 }
@@ -66,6 +68,8 @@ function filter_peering() {
 	if net ~ myprefixes then return true;
 	if net_martian() then return true;
 	strip_my_communities();
+	bgp_community.add([myasn,peering_route]);
+	tag_peeringdb_ixid();
 	honor_graceful_shutdown();
 	return false;
 }
@@ -77,6 +81,7 @@ function filter_customer() {
 	if asn_bogons() then return true;
 	if net ~ myprefixes then return true;
 	if net_martian() then return true;
+	bgp_community.add([myasn,customer_route]);
 	honor_graceful_shutdown();
 	return false;
 }
@@ -88,6 +93,7 @@ function filter_transit() {
 	if net ~ myprefixes then return true;
 	if net_martian() then return true;
 	strip_my_communities();
+	bgp_community.add([myasn,transit_route]);
 	honor_graceful_shutdown();
 	return false;
 }

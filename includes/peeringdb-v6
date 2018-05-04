@@ -1,523 +1,523 @@
 # UPDATED AUTOMATICALLY DO NOT EDIT!
-# Last updated: Fri May  4 16:40:16 2018
+# Last updated: Fri May  4 21:29:02 2018
 
-function peeringdb_ixid() {
-    if from ~ 2001:504:0:2::/64 then return 1;
-    if from ~ 2001:504:0:4::/64 then return 2;
-    if from ~ 2001:504:0:5::/64 then return 3;
-    if from ~ 2001:504:0:3::/64 then return 4;
-    if from ~ 2001:504:0:1::/64 then return 5;
-    if from ~ 2001:504:d::/64 then return 7;
-    if from ~ 2001:504:10::/64 then return 9;
-    if from ~ 2001:504:e::/64 then return 10;
-    if from ~ 2001:504:12::/64 then return 11;
-    if from ~ 2001:504:f::/64 then return 12;
-    if from ~ 2001:504:16::/64 then return 13;
-    if from ~ 2001:504:1::/64 then return 14;
-    if from ~ 2001:504:1:9::/64 then return 14;
-    if from ~ 2001:478:124::/64 then return 17;
-    if from ~ 2001:7f8:4::/64 then return 18;
-    if from ~ 2001:7fa:11::/64 then return 21;
-    if from ~ 2001:478:132::/64 then return 22;
-    if from ~ 2001:504:a::/64 then return 23;
-    if from ~ 2001:504:1a::34:0/111 then return 24;
-    if from ~ 2001:7f8:1::/64 then return 26;
-    if from ~ 2001:7f8:c:8235:194:42:48:0/112 then return 29;
-    if from ~ 2001:de8:8::/64 then return 30;
-    if from ~ 2001:7f8::/64 then return 31;
-    if from ~ 2001:7f8:1c:24a::/64 then return 33;
-    if from ~ 2001:7f8:4e:2::/64 then return 34;
-    if from ~ 2001:7f8:b:100::/64 then return 35;
-    if from ~ 2001:7f8:b:101::/64 then return 35;
-    if from ~ 2001:7f8:2d::/48 then return 40;
-    if from ~ 2001:7f8:18::/48 then return 48;
-    if from ~ 2001:7f8:30::/64 then return 50;
-    if from ~ 2001:7fa:8::/64 then return 52;
-    if from ~ 2001:7f8:17::/64 then return 53;
-    if from ~ 2001:7f8:35::/64 then return 55;
-    if from ~ 2001:7f8:26::/64 then return 59;
-    if from ~ 2001:7f8:26:8000::/64 then return 59;
-    if from ~ 2001:7f8:24::/64 then return 60;
-    if from ~ 2001:7f8:2a::/64 then return 62;
-    if from ~ 2001:7f8:f::/64 then return 63;
-    if from ~ 2001:7f8:13::/64 then return 64;
-    if from ~ 2001:7f8:25:1::/64 then return 68;
-    if from ~ 2001:7f8:47:47::/64 then return 69;
-    if from ~ 2001:7f8:d:ff::/64 then return 70;
-    if from ~ 2001:7f8:14::/64 then return 71;
-    if from ~ 2001:7f8:a:1::/64 then return 72;
-    if from ~ 2001:7f8:2c:1000::/64 then return 73;
-    if from ~ 2001:7f8:3d::/64 then return 74;
-    if from ~ 2001:7f8:12:1::/64 then return 83;
-    if from ~ 2001:7f8:2f::/64 then return 84;
-    if from ~ 2001:7f8:e::/64 then return 85;
-    if from ~ 2001:7f8:19::/48 then return 87;
-    if from ~ 2403:2400:1100::/64 then return 88;
-    if from ~ 2607:f388:0:2200::/64 then return 89;
-    if from ~ 2001:7f8:8::/64 then return 91;
-    if from ~ 2001:de8:d::/64 then return 93;
-    if from ~ 2001:de8:6::/64 then return 94;
-    if from ~ 2001:7fa:7:1::/64 then return 95;
-    if from ~ 2001:7fa:4:c0cb::/64 then return 97;
-    if from ~ 2001:7f8:7:b::/64 then return 98;
-    if from ~ 2001:7f8:20:101::/64 then return 100;
-    if from ~ 2001:7f8:20:201::/64 then return 107;
-    if from ~ 2001:7f8:20:202::/64 then return 107;
-    if from ~ 2001:7f8:23:ffff::/64 then return 115;
-    if from ~ 2001:478:122::/64 then return 119;
-    if from ~ 2001:7f8:33::/48 then return 123;
-    if from ~ 2001:de8:7::/64 then return 125;
-    if from ~ 2001:de8:c::/64 then return 126;
-    if from ~ 2001:7f8:21:9::/64 then return 128;
-    if from ~ 2001:7f8:21:12::/64 then return 128;
-    if from ~ 2001:7f8:21:11::/64 then return 128;
-    if from ~ 2001:7f8:21:10::/64 then return 128;
-    if from ~ 2001:43f8:1f0::/64 then return 129;
-    if from ~ 2001:504:13::/64 then return 142;
-    if from ~ 2001:7fa:7:2::/64 then return 145;
-    if from ~ 2001:458:26:2::/64 then return 151;
-    if from ~ 2001:504:30::/48 then return 155;
-    if from ~ 2001:de8:4::/64 then return 158;
-    if from ~ 2001:478:195::/64 then return 165;
-    if from ~ 2001:de8:5::/64 then return 167;
-    if from ~ 2001:7f8:3a:e201::/64 then return 170;
-    if from ~ 2001:12f8::/64 then return 171;
-    if from ~ 2001:7f8:3e::/64 then return 172;
-    if from ~ 2001:12f8:0:6::/64 then return 173;
-    if from ~ 2001:12f8:0:4::/64 then return 174;
-    if from ~ 2001:12f8:0:5::/64 then return 175;
-    if from ~ 2001:12f8:0:3::/64 then return 176;
-    if from ~ 2001:12f8:0:2::/64 then return 177;
-    if from ~ 2001:12f8:0:13::/64 then return 178;
-    if from ~ 2001:13c7:6001::/64 then return 181;
-    if from ~ 2001:7f8:5d::/116 then return 184;
-    if from ~ 2001:7f8:15::/64 then return 187;
-    if from ~ 2001:7f8:39:1::/64 then return 190;
-    if from ~ 2001:7f8:d:100::/64 then return 192;
-    if from ~ 2001:7f8:d:300::/64 then return 194;
-    if from ~ 2001:504:19::/64 then return 195;
-    if from ~ 2001:504:19:1::/64 then return 197;
-    if from ~ 2001:de8:1::/64 then return 198;
-    if from ~ 2001:504:13:1::/64 then return 204;
-    if from ~ 2001:504:13:5::/64 then return 205;
-    if from ~ 2001:7f8:8:5::/64 then return 209;
-    if from ~ 2001:7fa:7:3::/64 then return 211;
-    if from ~ 2001:7f8:56::/64 then return 212;
-    if from ~ 2001:de8:b:2900::/64 then return 215;
-    if from ~ 2001:288:3b0:5::/64 then return 217;
-    if from ~ 2001:478:235::/64 then return 221;
-    if from ~ 2001:7f8:20:401::/64 then return 223;
-    if from ~ 2001:de8:1:1::/64 then return 224;
-    if from ~ 2001:c38:8000::/64 then return 225;
-    if from ~ 2001:504:13:4::/64 then return 226;
-    if from ~ 2001:7f8:48::/64 then return 228;
-    if from ~ 2001:7f8:4b::/48 then return 230;
-    if from ~ 2001:7f8:53::/48 then return 231;
-    if from ~ 2001:200:0:fe10::/64 then return 234;
-    if from ~ 2001:de8:1:2::/64 then return 235;
-    if from ~ 2001:43f8:60:1::/64 then return 236;
-    if from ~ 2001:504:41:110::/64 then return 239;
-    if from ~ 2001:7f8:c5::/48 then return 240;
-    if from ~ 2404:2c00:ffff:e::/64 then return 241;
-    if from ~ 2001:7f8:44::/64 then return 248;
-    if from ~ 2001:504:1b:1::/64 then return 249;
-    if from ~ 2001:de8:10::/48 then return 250;
-    if from ~ 2001:13c7:6006::/48 then return 253;
-    if from ~ 2605:6c00:303:303::/64 then return 254;
-    if from ~ 2001:7f8:43::/64 then return 255;
-    if from ~ 2001:478:186::/64 then return 256;
-    if from ~ 2001:7f8:d:400::/64 then return 257;
-    if from ~ 2001:13c7:6002::/48 then return 260;
-    if from ~ 2001:7f8:42::/48 then return 264;
-    if from ~ 2606:7c80:3375:50::/64 then return 267;
-    if from ~ 2001:7f8:64:225::/64 then return 270;
-    if from ~ 2001:7f8:57:1000::/64 then return 273;
-    if from ~ 2001:4300:96::/64 then return 274;
-    if from ~ 2001:7f8:8b::/64 then return 275;
-    if from ~ 2001:de8:9::/64 then return 288;
-    if from ~ 2001:7f8:8:10::/64 then return 291;
-    if from ~ 2001:7f8:4c::/64 then return 297;
-    if from ~ 2001:7f8:12:2::/64 then return 298;
-    if from ~ 2001:7f8:91::/64 then return 299;
-    if from ~ 2001:7f8:49::/64 then return 301;
-    if from ~ 2001:7f8:28::/64 then return 303;
-    if from ~ 2001:7f8:5f:ffff::/64 then return 311;
-    if from ~ 2001:7f8:61::/48 then return 313;
-    if from ~ 2001:12f8:0:7::/64 then return 314;
-    if from ~ 2001:7f8:4d:1::/64 then return 316;
-    if from ~ 2001:7f8:46::/64 then return 319;
-    if from ~ 2001:7f8:4:1::/64 then return 321;
-    if from ~ 2001:504:17:114::/64 then return 322;
-    if from ~ 2001:504:17:115::/64 then return 325;
-    if from ~ 2001:7f8:8e::/48 then return 326;
-    if from ~ 2001:7f8:1d:4::/64 then return 328;
-    if from ~ 2001:7f8:58::/48 then return 331;
-    if from ~ 2001:504:13:6::/64 then return 332;
-    if from ~ 2001:504:13:7::/64 then return 333;
-    if from ~ 2001:7f8:68::/48 then return 336;
-    if from ~ 2001:504:13:3::/64 then return 338;
-    if from ~ 2001:7f8:7d::/64 then return 340;
-    if from ~ 2001:43f8:1f1::/64 then return 344;
-    if from ~ 2001:7f8:6e::/64 then return 347;
-    if from ~ 2001:7fa:3:ca07::/64 then return 348;
-    if from ~ 2001:7f8:20:301::/64 then return 350;
-    if from ~ 2001:504:2d::/48 then return 355;
-    if from ~ 2a03:5f80:4::/64 then return 358;
-    if from ~ 2a03:5f80:4:1::/64 then return 358;
-    if from ~ 2a03:5f80:4:2::/64 then return 358;
-    if from ~ 2a03:5f80:7::/64 then return 358;
-    if from ~ 2001:7f8:54::/64 then return 359;
-    if from ~ 2001:43f8::/64 then return 361;
-    if from ~ 2001:504:60::/64 then return 363;
-    if from ~ 2001:7f8:16::/64 then return 364;
-    if from ~ 2001:13c7:6004::/64 then return 366;
-    if from ~ 2001:7f8:a:11::/64 then return 368;
-    if from ~ 2a02:d10:80::/64 then return 372;
-    if from ~ 2001:504:d:80::/64 then return 373;
-    if from ~ 2001:7fa:f::/48 then return 375;
-    if from ~ 2001:7f8:4a::/48 then return 377;
-    if from ~ 2001:7f8:20:701::/64 then return 378;
-    if from ~ 2001:7f8:20:601::/64 then return 379;
-    if from ~ 2001:7f8:20:501::/64 then return 380;
-    if from ~ 2001:7f8:18:12::/64 then return 387;
-    if from ~ 2001:7f8:6a::/64 then return 392;
-    if from ~ 2001:7f8:3b::/64 then return 393;
-    if from ~ 2001:7f8:20:801::/64 then return 398;
-    if from ~ 2001:778:0:1001::/64 then return 400;
-    if from ~ 2001:7f8:59:0:75::/96 then return 410;
-    if from ~ 2001:12f8:0:11::/64 then return 415;
-    if from ~ 2001:43f8:130::/64 then return 422;
-    if from ~ 2001:7f8:1e::/64 then return 424;
-    if from ~ 2001:478:6663:100::/64 then return 428;
-    if from ~ 2001:478:6663:200::/64 then return 428;
-    if from ~ 2001:de8:12:100::/64 then return 429;
-    if from ~ 2001:504:27::/64 then return 446;
-    if from ~ 2001:7f8:41::/48 then return 453;
-    if from ~ 2001:7f8:5c::/64 then return 457;
-    if from ~ 2404:c000:4004::/64 then return 469;
-    if from ~ 2001:7f8:69::/64 then return 474;
-    if from ~ 2001:504:18::/48 then return 476;
-    if from ~ 2001:7f8:5e::/64 then return 477;
-    if from ~ 2001:7f8:60::/48 then return 481;
-    if from ~ 2001:7f8:27::/48 then return 482;
-    if from ~ 2001:43f8:bb1::/64 then return 488;
-    if from ~ 2001:7f8:5b::/64 then return 491;
-    if from ~ 2001:7f8:7:c::/64 then return 492;
-    if from ~ 2001:504:20:81::/64 then return 496;
-    if from ~ 2001:19e0:ffff::/64 then return 499;
-    if from ~ 2001:504:21::/64 then return 506;
-    if from ~ 2001:7f8:82::/64 then return 512;
-    if from ~ 2001:7fa:11:1::/64 then return 513;
-    if from ~ 2001:7f8:50:1::/64 then return 538;
-    if from ~ 2001:7f8:66::/64 then return 543;
-    if from ~ 2001:12f8:0:8::/64 then return 556;
-    if from ~ 2001:12f8:0:20::/64 then return 558;
-    if from ~ 2001:de8:8:6::/64 then return 564;
-    if from ~ 2001:504:24:1::/64 then return 565;
-    if from ~ 2001:12f8:0:14::/64 then return 575;
-    if from ~ 2001:7fa:11:2::/64 then return 576;
-    if from ~ 2001:df0:296::/64 then return 577;
-    if from ~ 2001:7f8:20:901::/64 then return 580;
-    if from ~ 2001:7f8:12:4::/64 then return 582;
-    if from ~ 2001:7f8:4:2::/64 then return 583;
-    if from ~ 2001:7f8:73::/64 then return 587;
-    if from ~ 2001:43f8:6d0::/64 then return 592;
-    if from ~ 2001:504:0:6::/64 then return 593;
-    if from ~ 2001:43f8:6d1::/64 then return 597;
-    if from ~ 2001:12f8:0:12::/64 then return 603;
-    if from ~ 2001:43f8:1f2::/64 then return 610;
-    if from ~ 2001:504:29::/64 then return 624;
-    if from ~ 2001:504:28::/48 then return 627;
-    if from ~ 2001:43f8:3c0::/48 then return 628;
-    if from ~ 2001:de8:17:0:6401::/96 then return 631;
-    if from ~ 2001:7f8:6f::/64 then return 633;
-    if from ~ 2001:12f8:0:15::/64 then return 638;
-    if from ~ 2001:504:2f::/64 then return 639;
-    if from ~ 2001:504:22:30::/64 then return 640;
-    if from ~ 2001:7f8:6c::/64 then return 655;
-    if from ~ 2001:504:3b::/64 then return 662;
-    if from ~ 2001:478:130::/64 then return 672;
-    if from ~ 2001:478:96::/64 then return 673;
-    if from ~ 2001:478:145::/64 then return 674;
-    if from ~ 2001:478:164::/64 then return 675;
-    if from ~ 2001:7f8:8:20::/64 then return 676;
-    if from ~ 2001:7f8:77::/64 then return 683;
-    if from ~ 2001:7fa:11:3::/64 then return 691;
-    if from ~ 2001:43f8:ae0::/48 then return 694;
-    if from ~ 2001:67c:29f0::/64 then return 699;
-    if from ~ 2001:504:26::/64 then return 703;
-    if from ~ 2001:12f8:0:10::/64 then return 705;
-    if from ~ 2001:12f8:0:17::/64 then return 706;
-    if from ~ 2001:12f8:0:21::/64 then return 707;
-    if from ~ 2001:12f8:0:19::/64 then return 708;
-    if from ~ 2001:12f8:0:22::/64 then return 709;
-    if from ~ 2001:12f8:0:9::/64 then return 710;
-    if from ~ 2001:12f8:0:18::/64 then return 711;
-    if from ~ 2001:7f8:7f::/64 then return 713;
-    if from ~ 2001:7fa:11:4::/64 then return 716;
-    if from ~ 2001:7f8:4:3::/64 then return 745;
-    if from ~ 2001:478:98::/64 then return 760;
-    if from ~ 2001:67c:2b9c::/48 then return 762;
-    if from ~ 2001:504:2c::/116 then return 776;
-    if from ~ 2001:504:31::/64 then return 777;
-    if from ~ 2001:dea:0:30::/64 then return 779;
-    if from ~ 2001:dea:0:10::/64 then return 780;
-    if from ~ 2001:dea:0:20::/64 then return 781;
-    if from ~ 2001:de8:c:2::/64 then return 786;
-    if from ~ 2001:12f8:0:25::/64 then return 790;
-    if from ~ 2001:7f8:92::/64 then return 796;
-    if from ~ 2001:504:36::/64 then return 804;
-    if from ~ 2001:504:34:1::/64 then return 806;
-    if from ~ 2001:504:33::/64 then return 809;
-    if from ~ 2001:12f8:0:24::/64 then return 818;
-    if from ~ 2406:d400:1:133:203:163:222:0/112 then return 823;
-    if from ~ 2607:fa18:1:f00::/64 then return 829;
-    if from ~ 2001:7f8:94::/64 then return 851;
-    if from ~ 2001:12f8:0:26::/64 then return 859;
-    if from ~ 2001:504:39::/64 then return 863;
-    if from ~ 2001:7f8:87::/64 then return 864;
-    if from ~ 2001:7f8:7a::/64 then return 866;
-    if from ~ 2001:7f8:3a:e202::/64 then return 867;
-    if from ~ 2001:504:64:100::/64 then return 869;
-    if from ~ 2001:7f8:54:5::/64 then return 880;
-    if from ~ 2001:7f8:6d::/64 then return 881;
-    if from ~ 2806:239::/64 then return 2066;
-    if from ~ 2001:13c7:6011::/64 then return 904;
-    if from ~ 2001:504:37:10::/64 then return 906;
-    if from ~ 2001:df5:b800:bb00::/64 then return 909;
-    if from ~ 2001:13c7:6013::/64 then return 911;
-    if from ~ 2001:13c7:6007::/64 then return 930;
-    if from ~ 2001:504:3d:1::/64 then return 935;
-    if from ~ 2001:504:3f::/48 then return 938;
-    if from ~ 2001:504:38:1::/64 then return 944;
-    if from ~ 2001:13c7:6008::/64 then return 945;
-    if from ~ 2001:de8:5:1::/64 then return 948;
-    if from ~ 2001:504:40:108::/64 then return 954;
-    if from ~ 2607:fe60:aaaa::/64 then return 957;
-    if from ~ 2001:ded::/48 then return 965;
-    if from ~ 2001:43f8:9c0:1000::/64 then return 967;
-    if from ~ 2001:43f8:6d2::/64 then return 969;
-    if from ~ 2001:dec:0:1::/64 then return 971;
-    if from ~ 2001:7fa:11:5::/64 then return 976;
-    if from ~ 2001:7fa:11:6::/64 then return 977;
-    if from ~ 2001:dea:0:40::/64 then return 984;
-    if from ~ 2001:7f8:90::/64 then return 985;
-    if from ~ 2001:504:45:f3e8::/64 then return 986;
-    if from ~ 2001:504:44::/64 then return 1002;
-    if from ~ 2607:f790:100::/64 then return 1006;
-    if from ~ 2001:43f8:9d0::/64 then return 1007;
-    if from ~ 2001:7f8:8d::/64 then return 1009;
-    if from ~ 2001:7f8:4:4::/64 then return 1016;
-    if from ~ 2001:7f8:81::/64 then return 1019;
-    if from ~ 2001:deb:0:68::/64 then return 1025;
-    if from ~ 2001:de8:6:1::/64 then return 1026;
-    if from ~ 2001:43f8:150::/48 then return 1032;
-    if from ~ 2001:def::/48 then return 1037;
-    if from ~ 2607:f778:1:fe00::/64 then return 1038;
-    if from ~ 2001:7f8:99:ffff::/64 then return 1040;
-    if from ~ 2001:7f8:9f::/64 then return 1056;
-    if from ~ 2001:13c7:6009::/64 then return 1066;
-    if from ~ 2001:13c7:600e::/64 then return 1067;
-    if from ~ 2001:13c7:600c::/64 then return 1068;
-    if from ~ 2001:13c7:6012::/64 then return 1069;
-    if from ~ 2001:13c7:600b::/64 then return 1070;
-    if from ~ 2001:13c7:6014::/64 then return 1071;
-    if from ~ 2001:13c7:600d::/64 then return 1072;
-    if from ~ 2001:504:47::/64 then return 1086;
-    if from ~ 2001:b28:3ff::/64 then return 1088;
-    if from ~ 2001:7f8:98::/64 then return 1089;
-    if from ~ 2a06:2340::/64 then return 1094;
-    if from ~ 2001:478:166::/64 then return 1117;
-    if from ~ 2001:7f8:32::/64 then return 1131;
-    if from ~ 2001:478:165::/64 then return 1142;
-    if from ~ 2001:7f8:f:1::/64 then return 1146;
-    if from ~ 2001:7f8:36::/64 then return 1149;
-    if from ~ 2001:7f8:3f::/64 then return 1150;
-    if from ~ 2001:7f8:9c::/64 then return 1151;
-    if from ~ 2001:678:354::/64 then return 1154;
-    if from ~ 2001:7f8:95::/48 then return 1156;
-    if from ~ 2a02:23a0:1111:9999::/64 then return 1160;
-    if from ~ 2001:7f8:80::/64 then return 1168;
-    if from ~ 2001:504:46::/48 then return 1169;
-    if from ~ 2001:7f8:2e::/48 then return 1171;
-    if from ~ 2405:3b00::/64 then return 1172;
-    if from ~ 2606:a980:0:4::/64 then return 1174;
-    if from ~ 2606:a980:0:5::/64 then return 1175;
-    if from ~ 2606:a980:0:3::/64 then return 1178;
-    if from ~ 2606:a980:0:7::/64 then return 1180;
-    if from ~ 2400:6280:2::/64 then return 1187;
-    if from ~ 2001:43f8:0:100::/64 then return 1201;
-    if from ~ 2001:504:58::/64 then return 1207;
-    if from ~ 2001:de8:1d::/64 then return 1209;
-    if from ~ 2001:504:59::/64 then return 1212;
-    if from ~ 2001:7f8:9e::/64 then return 1214;
-    if from ~ 2001:dea:0:50::/64 then return 1235;
-    if from ~ 2a00:1b30::/64 then return 1242;
-    if from ~ 2001:504:61::/64 then return 1249;
-    if from ~ 2001:7f8:29:1::/64 then return 135;
-    if from ~ 2001:43f8:1f0:1::/64 then return 129;
-    if from ~ 2001:43f8:1f1:1::/64 then return 344;
-    if from ~ 2001:7f8:18:210::/64 then return 1262;
-    if from ~ 2001:7f8:a0::/64 then return 1277;
-    if from ~ 2001:12f8:0:27::/64 then return 1276;
-    if from ~ 2405:3b01::/64 then return 1284;
-    if from ~ 2001:504:16:1::/64 then return 1285;
-    if from ~ 2606:a980:0:8::/64 then return 1307;
-    if from ~ 2001:7f8:8f::/48 then return 1308;
-    if from ~ 2001:7f8:a2::/50 then return 1302;
-    if from ~ 2001:7f8:a2:4000::/50 then return 1302;
-    if from ~ 2a02:e5c::/32 then return 1320;
-    if from ~ 2001:df2:1900:1::/64 then return 1323;
-    if from ~ 2001:1a10:cd:2::/64 then return 1304;
-    if from ~ 2001:7f8:a5::/64 then return 1329;
-    if from ~ 2001:43f8:a10::/48 then return 1335;
-    if from ~ 2001:7f8:1f::/64 then return 78;
-    if from ~ 2405:3b02::/64 then return 1375;
-    if from ~ 2001:7f8:62:52::/64 then return 1387;
-    if from ~ 2001:7f8:7:a::/64 then return 1332;
-    if from ~ 2001:7f8:7::/64 then return 1332;
-    if from ~ 2001:7f8:7:1::/64 then return 98;
-    if from ~ 2001:7f8:7:2::/64 then return 492;
-    if from ~ 2001:504:3b:1::/64 then return 662;
-    if from ~ 2001:7f8:11::/64 then return 1073;
-    if from ~ 2001:7f8:9d::/64 then return 1421;
-    if from ~ 2404:e780:f872:a::/64 then return 1303;
-    if from ~ 2001:43f8:ae1::/48 then return 694;
-    if from ~ 2001:7f8:d:fc::/64 then return 70;
-    if from ~ 2001:7f8:d:fe::/64 then return 70;
-    if from ~ 2001:7f8:d:fb::/64 then return 70;
-    if from ~ 2001:7f8:d:101::/64 then return 192;
-    if from ~ 2001:7f8:d:301::/64 then return 194;
-    if from ~ 2001:13c7:6000::/64 then return 252;
-    if from ~ 2403:c780:b800:bb00::/64 then return 1449;
-    if from ~ 2a0b:9600::/29 then return 1469;
-    if from ~ 2403:c780:a800:bb00::/64 then return 1468;
-    if from ~ 2404:9580:63:516::/64 then return 1054;
-    if from ~ 2404:9580:24:534::/64 then return 1054;
-    if from ~ 2001:13c7:6015::/48 then return 1487;
-    if from ~ 2001:13c7:6010::/64 then return 1480;
-    if from ~ 2001:13c7:6019::/64 then return 1484;
-    if from ~ 2001:13c7:6017::/64 then return 1482;
-    if from ~ 2001:13c7:6020::/64 then return 1485;
-    if from ~ 2001:13c7:6018::/64 then return 1483;
-    if from ~ 2001:13c7:6016::/64 then return 1481;
-    if from ~ 2001:13c7:6021::/64 then return 1486;
-    if from ~ 2001:504:65::/64 then return 1489;
-    if from ~ 2001:504:65:1::/64 then return 1489;
-    if from ~ 2801:1d:a000:1::/64 then return 1023;
-    if from ~ 2801:1d:a001:1::/64 then return 1023;
-    if from ~ 2801:1d:a001:2::/64 then return 1023;
-    if from ~ 2001:7f8:5f:ffef::/64 then return 311;
-    if from ~ 2001:504:67::/64 then return 1490;
-    if from ~ 2001:43f8:270:d0d0::/64 then return 1508;
-    if from ~ 2001:504:68::/64 then return 1488;
-    if from ~ 2001:504:68:1::/64 then return 1488;
-    if from ~ 2001:504:67:1::/64 then return 1490;
-    if from ~ 2801:14:9000::/64 then return 1514;
-    if from ~ 2001:1320:cafe::/64 then return 1522;
-    if from ~ 2001:7f8:a2:8000::/50 then return 1302;
-    if from ~ 2001:13c7:6f80::/48 then return 1042;
-    if from ~ 2a00:1b30:8888::/64 then return 1533;
-    if from ~ 2001:43f8:0:200::/64 then return 1574;
-    if from ~ 2001:ded:8000::/48 then return 1577;
-    if from ~ 2001:7f8:af::/64 then return 1464;
-    if from ~ 2401:7500:fff6::/64 then return 832;
-    if from ~ 2001:7f8:34::/64 then return 1312;
-    if from ~ 2001:43f8:c0::/128 then return 1541;
-    if from ~ 2606:a980:0:9::/64 then return 1628;
-    if from ~ 2001:e48:44:100b::/64 then return 1623;
-    if from ~ 2803:dc40::/64 then return 1634;
-    if from ~ 2404:2c00:ffff:f::/64 then return 1658;
-    if from ~ 2001:7fa:2::/64 then return 210;
-    if from ~ 2001:7f8:63::/64 then return 327;
-    if from ~ 2001:504:45:10::/64 then return 1519;
-    if from ~ 2001:df1:b500::/64 then return 1663;
-    if from ~ 2001:7f8:a7::/48 then return 1669;
-    if from ~ 2001:7f8:b1::/64 then return 1670;
-    if from ~ 2001:504:40:12::/64 then return 1668;
-    if from ~ 2001:de8:1:4::/64 then return 1689;
-    if from ~ 2001:de8:1:5::/64 then return 1317;
-    if from ~ 2001:7f8:12:3::/64 then return 1420;
-    if from ~ 2001:7f8:12:5::/64 then return 1418;
-    if from ~ 2001:7f8:12:6::/64 then return 1419;
-    if from ~ 2001:12f8:0:1::/64 then return 1684;
-    if from ~ 2001:df2:1900:2::/64 then return 1627;
-    if from ~ 2001:7f8:20:1101::/64 then return 1748;
-    if from ~ 2001:13c7:6022::/64 then return 1764;
-    if from ~ 2001:7f8:6c:3::/64 then return 655;
-    if from ~ 2001:7f8:6c:2::/64 then return 655;
-    if from ~ 2001:7f8:6c:1::/64 then return 655;
-    if from ~ 2001:df2:1900:4::/64 then return 1785;
-    if from ~ 2001:df2:1900:3::/64 then return 1786;
-    if from ~ 2001:7f8:b4::/48 then return 526;
-    if from ~ 2001:504:35::/64 then return 1790;
-    if from ~ 2803:b4c0::/32 then return 1660;
-    if from ~ 2801:80:19c0:8000::/64 then return 1794;
-    if from ~ 2801:80:19c0::/52 then return 1794;
-    if from ~ 2001:7f8:b6::/64 then return 1812;
-    if from ~ 2001:504:69::/48 then return 1829;
-    if from ~ 2001:7fa:3:5f40::/64 then return 1837;
-    if from ~ 2001:7fa:3:b0df::/64 then return 1836;
-    if from ~ 2001:7fa:0:1::/64 then return 42;
-    if from ~ 2001:7f8:b7::/64 then return 1842;
-    if from ~ 2001:12f8:0:28::/64 then return 1847;
-    if from ~ 2001:7f8:a:2::/64 then return 72;
-    if from ~ 2001:7f8:ad::/64 then return 1868;
-    if from ~ 2001:7f8:b0::/64 then return 1869;
-    if from ~ 2a01:65a0:a5::/48 then return 1919;
-    if from ~ 2001:7f8:c1::/64 then return 1923;
-    if from ~ 2001:7f8:bc::/64 then return 1927;
-    if from ~ 2001:7f8:c0::/64 then return 1925;
-    if from ~ 2001:7f8:b9::/48 then return 1933;
-    if from ~ 2a0b:4340:9:514::/64 then return 1932;
-    if from ~ 2001:7f8:c3::/64 then return 1926;
-    if from ~ 2001:7f8:ba::/48 then return 1958;
-    if from ~ 2001:12f8:0:16::/64 then return 1983;
-    if from ~ 2001:7f8:b5::/48 then return 1984;
-    if from ~ 2001:7f8:bd::/64 then return 1998;
-    if from ~ 2001:7f8:be::/64 then return 1997;
-    if from ~ 2001:504:77::/64 then return 1999;
-    if from ~ 2001:1ab8:8486::/64 then return 2005;
-    if from ~ 2a03:67e0:0:9::/64 then return 542;
-    if from ~ 2001:7f8:c4::/64 then return 542;
-    if from ~ 2001:7f8:47:38::/64 then return 1428;
-    if from ~ 2001:7f8:bf::/64 then return 2013;
-    if from ~ 2001:7f8:d:203::/64 then return 193;
-    if from ~ 2001:7f8:d:202::/64 then return 193;
-    if from ~ 2001:7f8:83::/64 then return 2031;
-    if from ~ 2001:504:70::/64 then return 2032;
-    if from ~ 2620:3b:6000::/64 then return 2036;
-    if from ~ 2801:168::/64 then return 2039;
-    if from ~ 2001:13c7:601f::/64 then return 2040;
-    if from ~ 2001:7f8:6c:4::/64 then return 655;
-    if from ~ 2604:8440::/32 then return 2050;
-    if from ~ 2001:7f8:b8::/48 then return 2051;
-    if from ~ 1:7f8:14:5ec::/64 then return 71;
-    if from ~ 2001:de8:4000::/64 then return 2062;
-    if from ~ 2001:504:73:cafe::/64 then return 2070;
-    if from ~ 2001:7f8:bb::/48 then return 2004;
-    if from ~ 2001:43f8:bb1:150::/64 then return 1870;
-    if from ~ 2001:12f8:0:29::/64 then return 2078;
-    if from ~ 2a00:13c0:3:1::/64 then return 1977;
-    if from ~ 2a00:13c0:3:2::/64 then return 1978;
-    if from ~ 2a00:13c0:3:5::/64 then return 1979;
-    if from ~ 2a00:13c0:3:4::/64 then return 1980;
-    if from ~ 2a00:13c0:3:3::/64 then return 1981;
-    if from ~ 2a00:13c0:3:9::/64 then return 1982;
-    if from ~ 2a07:1c44:61f0::/48 then return 2084;
-    if from ~ 2001:12f8:0:30::/64 then return 2086;
-    if from ~ 2001:7f8:78::/48 then return 876;
-    if from ~ 2a02:25af:ffff::/64 then return 2094;
-    if from ~ 2801:168:1::/48 then return 2093;
-    if from ~ 2001:504:90::/48 then return 2088;
-    if from ~ 2001:13c7:601d::/64 then return 1798;
-    if from ~ 2604:8ac0::/32 then return 2116;
-    if from ~ 2001:7f8:c6::/64 then return 2130;
-    if from ~ 2001:7f8:c7::/64 then return 2131;
-    if from ~ 2001:504:76::/48 then return 1679;
-    if from ~ 2001:7f8:3c:3e8::/64 then return 2145;
-    if from ~ 2607:7c80:55:128::/64 then return 2163;
-    if from ~ 2001:df2:1900:5::/64 then return 2167;
-    if from ~ 2001:478:172::/64 then return 1561;
-    return 0;
+function tag_peeringdb_ixid() {
+    if from ~ 2001:504:0:2::/64 then { bgp_community.add([myasn,10001]); return true; } 
+    if from ~ 2001:504:0:4::/64 then { bgp_community.add([myasn,10002]); return true; } 
+    if from ~ 2001:504:0:5::/64 then { bgp_community.add([myasn,10003]); return true; } 
+    if from ~ 2001:504:0:3::/64 then { bgp_community.add([myasn,10004]); return true; } 
+    if from ~ 2001:504:0:1::/64 then { bgp_community.add([myasn,10005]); return true; } 
+    if from ~ 2001:504:d::/64 then { bgp_community.add([myasn,10007]); return true; } 
+    if from ~ 2001:504:10::/64 then { bgp_community.add([myasn,10009]); return true; } 
+    if from ~ 2001:504:e::/64 then { bgp_community.add([myasn,10010]); return true; } 
+    if from ~ 2001:504:12::/64 then { bgp_community.add([myasn,10011]); return true; } 
+    if from ~ 2001:504:f::/64 then { bgp_community.add([myasn,10012]); return true; } 
+    if from ~ 2001:504:16::/64 then { bgp_community.add([myasn,10013]); return true; } 
+    if from ~ 2001:504:1::/64 then { bgp_community.add([myasn,10014]); return true; } 
+    if from ~ 2001:504:1:9::/64 then { bgp_community.add([myasn,10014]); return true; } 
+    if from ~ 2001:478:124::/64 then { bgp_community.add([myasn,10017]); return true; } 
+    if from ~ 2001:7f8:4::/64 then { bgp_community.add([myasn,10018]); return true; } 
+    if from ~ 2001:7fa:11::/64 then { bgp_community.add([myasn,10021]); return true; } 
+    if from ~ 2001:478:132::/64 then { bgp_community.add([myasn,10022]); return true; } 
+    if from ~ 2001:504:a::/64 then { bgp_community.add([myasn,10023]); return true; } 
+    if from ~ 2001:504:1a::34:0/111 then { bgp_community.add([myasn,10024]); return true; } 
+    if from ~ 2001:7f8:1::/64 then { bgp_community.add([myasn,10026]); return true; } 
+    if from ~ 2001:7f8:c:8235:194:42:48:0/112 then { bgp_community.add([myasn,10029]); return true; } 
+    if from ~ 2001:de8:8::/64 then { bgp_community.add([myasn,10030]); return true; } 
+    if from ~ 2001:7f8::/64 then { bgp_community.add([myasn,10031]); return true; } 
+    if from ~ 2001:7f8:1c:24a::/64 then { bgp_community.add([myasn,10033]); return true; } 
+    if from ~ 2001:7f8:4e:2::/64 then { bgp_community.add([myasn,10034]); return true; } 
+    if from ~ 2001:7f8:b:100::/64 then { bgp_community.add([myasn,10035]); return true; } 
+    if from ~ 2001:7f8:b:101::/64 then { bgp_community.add([myasn,10035]); return true; } 
+    if from ~ 2001:7f8:2d::/48 then { bgp_community.add([myasn,10040]); return true; } 
+    if from ~ 2001:7f8:18::/48 then { bgp_community.add([myasn,10048]); return true; } 
+    if from ~ 2001:7f8:30::/64 then { bgp_community.add([myasn,10050]); return true; } 
+    if from ~ 2001:7fa:8::/64 then { bgp_community.add([myasn,10052]); return true; } 
+    if from ~ 2001:7f8:17::/64 then { bgp_community.add([myasn,10053]); return true; } 
+    if from ~ 2001:7f8:35::/64 then { bgp_community.add([myasn,10055]); return true; } 
+    if from ~ 2001:7f8:26::/64 then { bgp_community.add([myasn,10059]); return true; } 
+    if from ~ 2001:7f8:26:8000::/64 then { bgp_community.add([myasn,10059]); return true; } 
+    if from ~ 2001:7f8:24::/64 then { bgp_community.add([myasn,10060]); return true; } 
+    if from ~ 2001:7f8:2a::/64 then { bgp_community.add([myasn,10062]); return true; } 
+    if from ~ 2001:7f8:f::/64 then { bgp_community.add([myasn,10063]); return true; } 
+    if from ~ 2001:7f8:13::/64 then { bgp_community.add([myasn,10064]); return true; } 
+    if from ~ 2001:7f8:25:1::/64 then { bgp_community.add([myasn,10068]); return true; } 
+    if from ~ 2001:7f8:47:47::/64 then { bgp_community.add([myasn,10069]); return true; } 
+    if from ~ 2001:7f8:d:ff::/64 then { bgp_community.add([myasn,10070]); return true; } 
+    if from ~ 2001:7f8:14::/64 then { bgp_community.add([myasn,10071]); return true; } 
+    if from ~ 2001:7f8:a:1::/64 then { bgp_community.add([myasn,10072]); return true; } 
+    if from ~ 2001:7f8:2c:1000::/64 then { bgp_community.add([myasn,10073]); return true; } 
+    if from ~ 2001:7f8:3d::/64 then { bgp_community.add([myasn,10074]); return true; } 
+    if from ~ 2001:7f8:12:1::/64 then { bgp_community.add([myasn,10083]); return true; } 
+    if from ~ 2001:7f8:2f::/64 then { bgp_community.add([myasn,10084]); return true; } 
+    if from ~ 2001:7f8:e::/64 then { bgp_community.add([myasn,10085]); return true; } 
+    if from ~ 2001:7f8:19::/48 then { bgp_community.add([myasn,10087]); return true; } 
+    if from ~ 2403:2400:1100::/64 then { bgp_community.add([myasn,10088]); return true; } 
+    if from ~ 2607:f388:0:2200::/64 then { bgp_community.add([myasn,10089]); return true; } 
+    if from ~ 2001:7f8:8::/64 then { bgp_community.add([myasn,10091]); return true; } 
+    if from ~ 2001:de8:d::/64 then { bgp_community.add([myasn,10093]); return true; } 
+    if from ~ 2001:de8:6::/64 then { bgp_community.add([myasn,10094]); return true; } 
+    if from ~ 2001:7fa:7:1::/64 then { bgp_community.add([myasn,10095]); return true; } 
+    if from ~ 2001:7fa:4:c0cb::/64 then { bgp_community.add([myasn,10097]); return true; } 
+    if from ~ 2001:7f8:7:b::/64 then { bgp_community.add([myasn,10098]); return true; } 
+    if from ~ 2001:7f8:20:101::/64 then { bgp_community.add([myasn,10100]); return true; } 
+    if from ~ 2001:7f8:20:201::/64 then { bgp_community.add([myasn,10107]); return true; } 
+    if from ~ 2001:7f8:20:202::/64 then { bgp_community.add([myasn,10107]); return true; } 
+    if from ~ 2001:7f8:23:ffff::/64 then { bgp_community.add([myasn,10115]); return true; } 
+    if from ~ 2001:478:122::/64 then { bgp_community.add([myasn,10119]); return true; } 
+    if from ~ 2001:7f8:33::/48 then { bgp_community.add([myasn,10123]); return true; } 
+    if from ~ 2001:de8:7::/64 then { bgp_community.add([myasn,10125]); return true; } 
+    if from ~ 2001:de8:c::/64 then { bgp_community.add([myasn,10126]); return true; } 
+    if from ~ 2001:7f8:21:9::/64 then { bgp_community.add([myasn,10128]); return true; } 
+    if from ~ 2001:7f8:21:12::/64 then { bgp_community.add([myasn,10128]); return true; } 
+    if from ~ 2001:7f8:21:11::/64 then { bgp_community.add([myasn,10128]); return true; } 
+    if from ~ 2001:7f8:21:10::/64 then { bgp_community.add([myasn,10128]); return true; } 
+    if from ~ 2001:43f8:1f0::/64 then { bgp_community.add([myasn,10129]); return true; } 
+    if from ~ 2001:504:13::/64 then { bgp_community.add([myasn,10142]); return true; } 
+    if from ~ 2001:7fa:7:2::/64 then { bgp_community.add([myasn,10145]); return true; } 
+    if from ~ 2001:458:26:2::/64 then { bgp_community.add([myasn,10151]); return true; } 
+    if from ~ 2001:504:30::/48 then { bgp_community.add([myasn,10155]); return true; } 
+    if from ~ 2001:de8:4::/64 then { bgp_community.add([myasn,10158]); return true; } 
+    if from ~ 2001:478:195::/64 then { bgp_community.add([myasn,10165]); return true; } 
+    if from ~ 2001:de8:5::/64 then { bgp_community.add([myasn,10167]); return true; } 
+    if from ~ 2001:7f8:3a:e201::/64 then { bgp_community.add([myasn,10170]); return true; } 
+    if from ~ 2001:12f8::/64 then { bgp_community.add([myasn,10171]); return true; } 
+    if from ~ 2001:7f8:3e::/64 then { bgp_community.add([myasn,10172]); return true; } 
+    if from ~ 2001:12f8:0:6::/64 then { bgp_community.add([myasn,10173]); return true; } 
+    if from ~ 2001:12f8:0:4::/64 then { bgp_community.add([myasn,10174]); return true; } 
+    if from ~ 2001:12f8:0:5::/64 then { bgp_community.add([myasn,10175]); return true; } 
+    if from ~ 2001:12f8:0:3::/64 then { bgp_community.add([myasn,10176]); return true; } 
+    if from ~ 2001:12f8:0:2::/64 then { bgp_community.add([myasn,10177]); return true; } 
+    if from ~ 2001:12f8:0:13::/64 then { bgp_community.add([myasn,10178]); return true; } 
+    if from ~ 2001:13c7:6001::/64 then { bgp_community.add([myasn,10181]); return true; } 
+    if from ~ 2001:7f8:5d::/116 then { bgp_community.add([myasn,10184]); return true; } 
+    if from ~ 2001:7f8:15::/64 then { bgp_community.add([myasn,10187]); return true; } 
+    if from ~ 2001:7f8:39:1::/64 then { bgp_community.add([myasn,10190]); return true; } 
+    if from ~ 2001:7f8:d:100::/64 then { bgp_community.add([myasn,10192]); return true; } 
+    if from ~ 2001:7f8:d:300::/64 then { bgp_community.add([myasn,10194]); return true; } 
+    if from ~ 2001:504:19::/64 then { bgp_community.add([myasn,10195]); return true; } 
+    if from ~ 2001:504:19:1::/64 then { bgp_community.add([myasn,10197]); return true; } 
+    if from ~ 2001:de8:1::/64 then { bgp_community.add([myasn,10198]); return true; } 
+    if from ~ 2001:504:13:1::/64 then { bgp_community.add([myasn,10204]); return true; } 
+    if from ~ 2001:504:13:5::/64 then { bgp_community.add([myasn,10205]); return true; } 
+    if from ~ 2001:7f8:8:5::/64 then { bgp_community.add([myasn,10209]); return true; } 
+    if from ~ 2001:7fa:7:3::/64 then { bgp_community.add([myasn,10211]); return true; } 
+    if from ~ 2001:7f8:56::/64 then { bgp_community.add([myasn,10212]); return true; } 
+    if from ~ 2001:de8:b:2900::/64 then { bgp_community.add([myasn,10215]); return true; } 
+    if from ~ 2001:288:3b0:5::/64 then { bgp_community.add([myasn,10217]); return true; } 
+    if from ~ 2001:478:235::/64 then { bgp_community.add([myasn,10221]); return true; } 
+    if from ~ 2001:7f8:20:401::/64 then { bgp_community.add([myasn,10223]); return true; } 
+    if from ~ 2001:de8:1:1::/64 then { bgp_community.add([myasn,10224]); return true; } 
+    if from ~ 2001:c38:8000::/64 then { bgp_community.add([myasn,10225]); return true; } 
+    if from ~ 2001:504:13:4::/64 then { bgp_community.add([myasn,10226]); return true; } 
+    if from ~ 2001:7f8:48::/64 then { bgp_community.add([myasn,10228]); return true; } 
+    if from ~ 2001:7f8:4b::/48 then { bgp_community.add([myasn,10230]); return true; } 
+    if from ~ 2001:7f8:53::/48 then { bgp_community.add([myasn,10231]); return true; } 
+    if from ~ 2001:200:0:fe10::/64 then { bgp_community.add([myasn,10234]); return true; } 
+    if from ~ 2001:de8:1:2::/64 then { bgp_community.add([myasn,10235]); return true; } 
+    if from ~ 2001:43f8:60:1::/64 then { bgp_community.add([myasn,10236]); return true; } 
+    if from ~ 2001:504:41:110::/64 then { bgp_community.add([myasn,10239]); return true; } 
+    if from ~ 2001:7f8:c5::/48 then { bgp_community.add([myasn,10240]); return true; } 
+    if from ~ 2404:2c00:ffff:e::/64 then { bgp_community.add([myasn,10241]); return true; } 
+    if from ~ 2001:7f8:44::/64 then { bgp_community.add([myasn,10248]); return true; } 
+    if from ~ 2001:504:1b:1::/64 then { bgp_community.add([myasn,10249]); return true; } 
+    if from ~ 2001:de8:10::/48 then { bgp_community.add([myasn,10250]); return true; } 
+    if from ~ 2001:13c7:6006::/48 then { bgp_community.add([myasn,10253]); return true; } 
+    if from ~ 2605:6c00:303:303::/64 then { bgp_community.add([myasn,10254]); return true; } 
+    if from ~ 2001:7f8:43::/64 then { bgp_community.add([myasn,10255]); return true; } 
+    if from ~ 2001:478:186::/64 then { bgp_community.add([myasn,10256]); return true; } 
+    if from ~ 2001:7f8:d:400::/64 then { bgp_community.add([myasn,10257]); return true; } 
+    if from ~ 2001:13c7:6002::/48 then { bgp_community.add([myasn,10260]); return true; } 
+    if from ~ 2001:7f8:42::/48 then { bgp_community.add([myasn,10264]); return true; } 
+    if from ~ 2606:7c80:3375:50::/64 then { bgp_community.add([myasn,10267]); return true; } 
+    if from ~ 2001:7f8:64:225::/64 then { bgp_community.add([myasn,10270]); return true; } 
+    if from ~ 2001:7f8:57:1000::/64 then { bgp_community.add([myasn,10273]); return true; } 
+    if from ~ 2001:4300:96::/64 then { bgp_community.add([myasn,10274]); return true; } 
+    if from ~ 2001:7f8:8b::/64 then { bgp_community.add([myasn,10275]); return true; } 
+    if from ~ 2001:de8:9::/64 then { bgp_community.add([myasn,10288]); return true; } 
+    if from ~ 2001:7f8:8:10::/64 then { bgp_community.add([myasn,10291]); return true; } 
+    if from ~ 2001:7f8:4c::/64 then { bgp_community.add([myasn,10297]); return true; } 
+    if from ~ 2001:7f8:12:2::/64 then { bgp_community.add([myasn,10298]); return true; } 
+    if from ~ 2001:7f8:91::/64 then { bgp_community.add([myasn,10299]); return true; } 
+    if from ~ 2001:7f8:49::/64 then { bgp_community.add([myasn,10301]); return true; } 
+    if from ~ 2001:7f8:28::/64 then { bgp_community.add([myasn,10303]); return true; } 
+    if from ~ 2001:7f8:5f:ffff::/64 then { bgp_community.add([myasn,10311]); return true; } 
+    if from ~ 2001:7f8:61::/48 then { bgp_community.add([myasn,10313]); return true; } 
+    if from ~ 2001:12f8:0:7::/64 then { bgp_community.add([myasn,10314]); return true; } 
+    if from ~ 2001:7f8:4d:1::/64 then { bgp_community.add([myasn,10316]); return true; } 
+    if from ~ 2001:7f8:46::/64 then { bgp_community.add([myasn,10319]); return true; } 
+    if from ~ 2001:7f8:4:1::/64 then { bgp_community.add([myasn,10321]); return true; } 
+    if from ~ 2001:504:17:114::/64 then { bgp_community.add([myasn,10322]); return true; } 
+    if from ~ 2001:504:17:115::/64 then { bgp_community.add([myasn,10325]); return true; } 
+    if from ~ 2001:7f8:8e::/48 then { bgp_community.add([myasn,10326]); return true; } 
+    if from ~ 2001:7f8:1d:4::/64 then { bgp_community.add([myasn,10328]); return true; } 
+    if from ~ 2001:7f8:58::/48 then { bgp_community.add([myasn,10331]); return true; } 
+    if from ~ 2001:504:13:6::/64 then { bgp_community.add([myasn,10332]); return true; } 
+    if from ~ 2001:504:13:7::/64 then { bgp_community.add([myasn,10333]); return true; } 
+    if from ~ 2001:7f8:68::/48 then { bgp_community.add([myasn,10336]); return true; } 
+    if from ~ 2001:504:13:3::/64 then { bgp_community.add([myasn,10338]); return true; } 
+    if from ~ 2001:7f8:7d::/64 then { bgp_community.add([myasn,10340]); return true; } 
+    if from ~ 2001:43f8:1f1::/64 then { bgp_community.add([myasn,10344]); return true; } 
+    if from ~ 2001:7f8:6e::/64 then { bgp_community.add([myasn,10347]); return true; } 
+    if from ~ 2001:7fa:3:ca07::/64 then { bgp_community.add([myasn,10348]); return true; } 
+    if from ~ 2001:7f8:20:301::/64 then { bgp_community.add([myasn,10350]); return true; } 
+    if from ~ 2001:504:2d::/48 then { bgp_community.add([myasn,10355]); return true; } 
+    if from ~ 2a03:5f80:4::/64 then { bgp_community.add([myasn,10358]); return true; } 
+    if from ~ 2a03:5f80:4:1::/64 then { bgp_community.add([myasn,10358]); return true; } 
+    if from ~ 2a03:5f80:4:2::/64 then { bgp_community.add([myasn,10358]); return true; } 
+    if from ~ 2a03:5f80:7::/64 then { bgp_community.add([myasn,10358]); return true; } 
+    if from ~ 2001:7f8:54::/64 then { bgp_community.add([myasn,10359]); return true; } 
+    if from ~ 2001:43f8::/64 then { bgp_community.add([myasn,10361]); return true; } 
+    if from ~ 2001:504:60::/64 then { bgp_community.add([myasn,10363]); return true; } 
+    if from ~ 2001:7f8:16::/64 then { bgp_community.add([myasn,10364]); return true; } 
+    if from ~ 2001:13c7:6004::/64 then { bgp_community.add([myasn,10366]); return true; } 
+    if from ~ 2001:7f8:a:11::/64 then { bgp_community.add([myasn,10368]); return true; } 
+    if from ~ 2a02:d10:80::/64 then { bgp_community.add([myasn,10372]); return true; } 
+    if from ~ 2001:504:d:80::/64 then { bgp_community.add([myasn,10373]); return true; } 
+    if from ~ 2001:7fa:f::/48 then { bgp_community.add([myasn,10375]); return true; } 
+    if from ~ 2001:7f8:4a::/48 then { bgp_community.add([myasn,10377]); return true; } 
+    if from ~ 2001:7f8:20:701::/64 then { bgp_community.add([myasn,10378]); return true; } 
+    if from ~ 2001:7f8:20:601::/64 then { bgp_community.add([myasn,10379]); return true; } 
+    if from ~ 2001:7f8:20:501::/64 then { bgp_community.add([myasn,10380]); return true; } 
+    if from ~ 2001:7f8:18:12::/64 then { bgp_community.add([myasn,10387]); return true; } 
+    if from ~ 2001:7f8:6a::/64 then { bgp_community.add([myasn,10392]); return true; } 
+    if from ~ 2001:7f8:3b::/64 then { bgp_community.add([myasn,10393]); return true; } 
+    if from ~ 2001:7f8:20:801::/64 then { bgp_community.add([myasn,10398]); return true; } 
+    if from ~ 2001:778:0:1001::/64 then { bgp_community.add([myasn,10400]); return true; } 
+    if from ~ 2001:7f8:59:0:75::/96 then { bgp_community.add([myasn,10410]); return true; } 
+    if from ~ 2001:12f8:0:11::/64 then { bgp_community.add([myasn,10415]); return true; } 
+    if from ~ 2001:43f8:130::/64 then { bgp_community.add([myasn,10422]); return true; } 
+    if from ~ 2001:7f8:1e::/64 then { bgp_community.add([myasn,10424]); return true; } 
+    if from ~ 2001:478:6663:100::/64 then { bgp_community.add([myasn,10428]); return true; } 
+    if from ~ 2001:478:6663:200::/64 then { bgp_community.add([myasn,10428]); return true; } 
+    if from ~ 2001:de8:12:100::/64 then { bgp_community.add([myasn,10429]); return true; } 
+    if from ~ 2001:504:27::/64 then { bgp_community.add([myasn,10446]); return true; } 
+    if from ~ 2001:7f8:41::/48 then { bgp_community.add([myasn,10453]); return true; } 
+    if from ~ 2001:7f8:5c::/64 then { bgp_community.add([myasn,10457]); return true; } 
+    if from ~ 2404:c000:4004::/64 then { bgp_community.add([myasn,10469]); return true; } 
+    if from ~ 2001:7f8:69::/64 then { bgp_community.add([myasn,10474]); return true; } 
+    if from ~ 2001:504:18::/48 then { bgp_community.add([myasn,10476]); return true; } 
+    if from ~ 2001:7f8:5e::/64 then { bgp_community.add([myasn,10477]); return true; } 
+    if from ~ 2001:7f8:60::/48 then { bgp_community.add([myasn,10481]); return true; } 
+    if from ~ 2001:7f8:27::/48 then { bgp_community.add([myasn,10482]); return true; } 
+    if from ~ 2001:43f8:bb1::/64 then { bgp_community.add([myasn,10488]); return true; } 
+    if from ~ 2001:7f8:5b::/64 then { bgp_community.add([myasn,10491]); return true; } 
+    if from ~ 2001:7f8:7:c::/64 then { bgp_community.add([myasn,10492]); return true; } 
+    if from ~ 2001:504:20:81::/64 then { bgp_community.add([myasn,10496]); return true; } 
+    if from ~ 2001:19e0:ffff::/64 then { bgp_community.add([myasn,10499]); return true; } 
+    if from ~ 2001:504:21::/64 then { bgp_community.add([myasn,10506]); return true; } 
+    if from ~ 2001:7f8:82::/64 then { bgp_community.add([myasn,10512]); return true; } 
+    if from ~ 2001:7fa:11:1::/64 then { bgp_community.add([myasn,10513]); return true; } 
+    if from ~ 2001:7f8:50:1::/64 then { bgp_community.add([myasn,10538]); return true; } 
+    if from ~ 2001:7f8:66::/64 then { bgp_community.add([myasn,10543]); return true; } 
+    if from ~ 2001:12f8:0:8::/64 then { bgp_community.add([myasn,10556]); return true; } 
+    if from ~ 2001:12f8:0:20::/64 then { bgp_community.add([myasn,10558]); return true; } 
+    if from ~ 2001:de8:8:6::/64 then { bgp_community.add([myasn,10564]); return true; } 
+    if from ~ 2001:504:24:1::/64 then { bgp_community.add([myasn,10565]); return true; } 
+    if from ~ 2001:12f8:0:14::/64 then { bgp_community.add([myasn,10575]); return true; } 
+    if from ~ 2001:7fa:11:2::/64 then { bgp_community.add([myasn,10576]); return true; } 
+    if from ~ 2001:df0:296::/64 then { bgp_community.add([myasn,10577]); return true; } 
+    if from ~ 2001:7f8:20:901::/64 then { bgp_community.add([myasn,10580]); return true; } 
+    if from ~ 2001:7f8:12:4::/64 then { bgp_community.add([myasn,10582]); return true; } 
+    if from ~ 2001:7f8:4:2::/64 then { bgp_community.add([myasn,10583]); return true; } 
+    if from ~ 2001:7f8:73::/64 then { bgp_community.add([myasn,10587]); return true; } 
+    if from ~ 2001:43f8:6d0::/64 then { bgp_community.add([myasn,10592]); return true; } 
+    if from ~ 2001:504:0:6::/64 then { bgp_community.add([myasn,10593]); return true; } 
+    if from ~ 2001:43f8:6d1::/64 then { bgp_community.add([myasn,10597]); return true; } 
+    if from ~ 2001:12f8:0:12::/64 then { bgp_community.add([myasn,10603]); return true; } 
+    if from ~ 2001:43f8:1f2::/64 then { bgp_community.add([myasn,10610]); return true; } 
+    if from ~ 2001:504:29::/64 then { bgp_community.add([myasn,10624]); return true; } 
+    if from ~ 2001:504:28::/48 then { bgp_community.add([myasn,10627]); return true; } 
+    if from ~ 2001:43f8:3c0::/48 then { bgp_community.add([myasn,10628]); return true; } 
+    if from ~ 2001:de8:17:0:6401::/96 then { bgp_community.add([myasn,10631]); return true; } 
+    if from ~ 2001:7f8:6f::/64 then { bgp_community.add([myasn,10633]); return true; } 
+    if from ~ 2001:12f8:0:15::/64 then { bgp_community.add([myasn,10638]); return true; } 
+    if from ~ 2001:504:2f::/64 then { bgp_community.add([myasn,10639]); return true; } 
+    if from ~ 2001:504:22:30::/64 then { bgp_community.add([myasn,10640]); return true; } 
+    if from ~ 2001:7f8:6c::/64 then { bgp_community.add([myasn,10655]); return true; } 
+    if from ~ 2001:504:3b::/64 then { bgp_community.add([myasn,10662]); return true; } 
+    if from ~ 2001:478:130::/64 then { bgp_community.add([myasn,10672]); return true; } 
+    if from ~ 2001:478:96::/64 then { bgp_community.add([myasn,10673]); return true; } 
+    if from ~ 2001:478:145::/64 then { bgp_community.add([myasn,10674]); return true; } 
+    if from ~ 2001:478:164::/64 then { bgp_community.add([myasn,10675]); return true; } 
+    if from ~ 2001:7f8:8:20::/64 then { bgp_community.add([myasn,10676]); return true; } 
+    if from ~ 2001:7f8:77::/64 then { bgp_community.add([myasn,10683]); return true; } 
+    if from ~ 2001:7fa:11:3::/64 then { bgp_community.add([myasn,10691]); return true; } 
+    if from ~ 2001:43f8:ae0::/48 then { bgp_community.add([myasn,10694]); return true; } 
+    if from ~ 2001:67c:29f0::/64 then { bgp_community.add([myasn,10699]); return true; } 
+    if from ~ 2001:504:26::/64 then { bgp_community.add([myasn,10703]); return true; } 
+    if from ~ 2001:12f8:0:10::/64 then { bgp_community.add([myasn,10705]); return true; } 
+    if from ~ 2001:12f8:0:17::/64 then { bgp_community.add([myasn,10706]); return true; } 
+    if from ~ 2001:12f8:0:21::/64 then { bgp_community.add([myasn,10707]); return true; } 
+    if from ~ 2001:12f8:0:19::/64 then { bgp_community.add([myasn,10708]); return true; } 
+    if from ~ 2001:12f8:0:22::/64 then { bgp_community.add([myasn,10709]); return true; } 
+    if from ~ 2001:12f8:0:9::/64 then { bgp_community.add([myasn,10710]); return true; } 
+    if from ~ 2001:12f8:0:18::/64 then { bgp_community.add([myasn,10711]); return true; } 
+    if from ~ 2001:7f8:7f::/64 then { bgp_community.add([myasn,10713]); return true; } 
+    if from ~ 2001:7fa:11:4::/64 then { bgp_community.add([myasn,10716]); return true; } 
+    if from ~ 2001:7f8:4:3::/64 then { bgp_community.add([myasn,10745]); return true; } 
+    if from ~ 2001:478:98::/64 then { bgp_community.add([myasn,10760]); return true; } 
+    if from ~ 2001:67c:2b9c::/48 then { bgp_community.add([myasn,10762]); return true; } 
+    if from ~ 2001:504:2c::/116 then { bgp_community.add([myasn,10776]); return true; } 
+    if from ~ 2001:504:31::/64 then { bgp_community.add([myasn,10777]); return true; } 
+    if from ~ 2001:dea:0:30::/64 then { bgp_community.add([myasn,10779]); return true; } 
+    if from ~ 2001:dea:0:10::/64 then { bgp_community.add([myasn,10780]); return true; } 
+    if from ~ 2001:dea:0:20::/64 then { bgp_community.add([myasn,10781]); return true; } 
+    if from ~ 2001:de8:c:2::/64 then { bgp_community.add([myasn,10786]); return true; } 
+    if from ~ 2001:12f8:0:25::/64 then { bgp_community.add([myasn,10790]); return true; } 
+    if from ~ 2001:7f8:92::/64 then { bgp_community.add([myasn,10796]); return true; } 
+    if from ~ 2001:504:36::/64 then { bgp_community.add([myasn,10804]); return true; } 
+    if from ~ 2001:504:34:1::/64 then { bgp_community.add([myasn,10806]); return true; } 
+    if from ~ 2001:504:33::/64 then { bgp_community.add([myasn,10809]); return true; } 
+    if from ~ 2001:12f8:0:24::/64 then { bgp_community.add([myasn,10818]); return true; } 
+    if from ~ 2406:d400:1:133:203:163:222:0/112 then { bgp_community.add([myasn,10823]); return true; } 
+    if from ~ 2607:fa18:1:f00::/64 then { bgp_community.add([myasn,10829]); return true; } 
+    if from ~ 2001:7f8:94::/64 then { bgp_community.add([myasn,10851]); return true; } 
+    if from ~ 2001:12f8:0:26::/64 then { bgp_community.add([myasn,10859]); return true; } 
+    if from ~ 2001:504:39::/64 then { bgp_community.add([myasn,10863]); return true; } 
+    if from ~ 2001:7f8:87::/64 then { bgp_community.add([myasn,10864]); return true; } 
+    if from ~ 2001:7f8:7a::/64 then { bgp_community.add([myasn,10866]); return true; } 
+    if from ~ 2001:7f8:3a:e202::/64 then { bgp_community.add([myasn,10867]); return true; } 
+    if from ~ 2001:504:64:100::/64 then { bgp_community.add([myasn,10869]); return true; } 
+    if from ~ 2001:7f8:54:5::/64 then { bgp_community.add([myasn,10880]); return true; } 
+    if from ~ 2001:7f8:6d::/64 then { bgp_community.add([myasn,10881]); return true; } 
+    if from ~ 2806:239::/64 then { bgp_community.add([myasn,12066]); return true; } 
+    if from ~ 2001:13c7:6011::/64 then { bgp_community.add([myasn,10904]); return true; } 
+    if from ~ 2001:504:37:10::/64 then { bgp_community.add([myasn,10906]); return true; } 
+    if from ~ 2001:df5:b800:bb00::/64 then { bgp_community.add([myasn,10909]); return true; } 
+    if from ~ 2001:13c7:6013::/64 then { bgp_community.add([myasn,10911]); return true; } 
+    if from ~ 2001:13c7:6007::/64 then { bgp_community.add([myasn,10930]); return true; } 
+    if from ~ 2001:504:3d:1::/64 then { bgp_community.add([myasn,10935]); return true; } 
+    if from ~ 2001:504:3f::/48 then { bgp_community.add([myasn,10938]); return true; } 
+    if from ~ 2001:504:38:1::/64 then { bgp_community.add([myasn,10944]); return true; } 
+    if from ~ 2001:13c7:6008::/64 then { bgp_community.add([myasn,10945]); return true; } 
+    if from ~ 2001:de8:5:1::/64 then { bgp_community.add([myasn,10948]); return true; } 
+    if from ~ 2001:504:40:108::/64 then { bgp_community.add([myasn,10954]); return true; } 
+    if from ~ 2607:fe60:aaaa::/64 then { bgp_community.add([myasn,10957]); return true; } 
+    if from ~ 2001:ded::/48 then { bgp_community.add([myasn,10965]); return true; } 
+    if from ~ 2001:43f8:9c0:1000::/64 then { bgp_community.add([myasn,10967]); return true; } 
+    if from ~ 2001:43f8:6d2::/64 then { bgp_community.add([myasn,10969]); return true; } 
+    if from ~ 2001:dec:0:1::/64 then { bgp_community.add([myasn,10971]); return true; } 
+    if from ~ 2001:7fa:11:5::/64 then { bgp_community.add([myasn,10976]); return true; } 
+    if from ~ 2001:7fa:11:6::/64 then { bgp_community.add([myasn,10977]); return true; } 
+    if from ~ 2001:dea:0:40::/64 then { bgp_community.add([myasn,10984]); return true; } 
+    if from ~ 2001:7f8:90::/64 then { bgp_community.add([myasn,10985]); return true; } 
+    if from ~ 2001:504:45:f3e8::/64 then { bgp_community.add([myasn,10986]); return true; } 
+    if from ~ 2001:504:44::/64 then { bgp_community.add([myasn,11002]); return true; } 
+    if from ~ 2607:f790:100::/64 then { bgp_community.add([myasn,11006]); return true; } 
+    if from ~ 2001:43f8:9d0::/64 then { bgp_community.add([myasn,11007]); return true; } 
+    if from ~ 2001:7f8:8d::/64 then { bgp_community.add([myasn,11009]); return true; } 
+    if from ~ 2001:7f8:4:4::/64 then { bgp_community.add([myasn,11016]); return true; } 
+    if from ~ 2001:7f8:81::/64 then { bgp_community.add([myasn,11019]); return true; } 
+    if from ~ 2001:deb:0:68::/64 then { bgp_community.add([myasn,11025]); return true; } 
+    if from ~ 2001:de8:6:1::/64 then { bgp_community.add([myasn,11026]); return true; } 
+    if from ~ 2001:43f8:150::/48 then { bgp_community.add([myasn,11032]); return true; } 
+    if from ~ 2001:def::/48 then { bgp_community.add([myasn,11037]); return true; } 
+    if from ~ 2607:f778:1:fe00::/64 then { bgp_community.add([myasn,11038]); return true; } 
+    if from ~ 2001:7f8:99:ffff::/64 then { bgp_community.add([myasn,11040]); return true; } 
+    if from ~ 2001:7f8:9f::/64 then { bgp_community.add([myasn,11056]); return true; } 
+    if from ~ 2001:13c7:6009::/64 then { bgp_community.add([myasn,11066]); return true; } 
+    if from ~ 2001:13c7:600e::/64 then { bgp_community.add([myasn,11067]); return true; } 
+    if from ~ 2001:13c7:600c::/64 then { bgp_community.add([myasn,11068]); return true; } 
+    if from ~ 2001:13c7:6012::/64 then { bgp_community.add([myasn,11069]); return true; } 
+    if from ~ 2001:13c7:600b::/64 then { bgp_community.add([myasn,11070]); return true; } 
+    if from ~ 2001:13c7:6014::/64 then { bgp_community.add([myasn,11071]); return true; } 
+    if from ~ 2001:13c7:600d::/64 then { bgp_community.add([myasn,11072]); return true; } 
+    if from ~ 2001:504:47::/64 then { bgp_community.add([myasn,11086]); return true; } 
+    if from ~ 2001:b28:3ff::/64 then { bgp_community.add([myasn,11088]); return true; } 
+    if from ~ 2001:7f8:98::/64 then { bgp_community.add([myasn,11089]); return true; } 
+    if from ~ 2a06:2340::/64 then { bgp_community.add([myasn,11094]); return true; } 
+    if from ~ 2001:478:166::/64 then { bgp_community.add([myasn,11117]); return true; } 
+    if from ~ 2001:7f8:32::/64 then { bgp_community.add([myasn,11131]); return true; } 
+    if from ~ 2001:478:165::/64 then { bgp_community.add([myasn,11142]); return true; } 
+    if from ~ 2001:7f8:f:1::/64 then { bgp_community.add([myasn,11146]); return true; } 
+    if from ~ 2001:7f8:36::/64 then { bgp_community.add([myasn,11149]); return true; } 
+    if from ~ 2001:7f8:3f::/64 then { bgp_community.add([myasn,11150]); return true; } 
+    if from ~ 2001:7f8:9c::/64 then { bgp_community.add([myasn,11151]); return true; } 
+    if from ~ 2001:678:354::/64 then { bgp_community.add([myasn,11154]); return true; } 
+    if from ~ 2001:7f8:95::/48 then { bgp_community.add([myasn,11156]); return true; } 
+    if from ~ 2a02:23a0:1111:9999::/64 then { bgp_community.add([myasn,11160]); return true; } 
+    if from ~ 2001:7f8:80::/64 then { bgp_community.add([myasn,11168]); return true; } 
+    if from ~ 2001:504:46::/48 then { bgp_community.add([myasn,11169]); return true; } 
+    if from ~ 2001:7f8:2e::/48 then { bgp_community.add([myasn,11171]); return true; } 
+    if from ~ 2405:3b00::/64 then { bgp_community.add([myasn,11172]); return true; } 
+    if from ~ 2606:a980:0:4::/64 then { bgp_community.add([myasn,11174]); return true; } 
+    if from ~ 2606:a980:0:5::/64 then { bgp_community.add([myasn,11175]); return true; } 
+    if from ~ 2606:a980:0:3::/64 then { bgp_community.add([myasn,11178]); return true; } 
+    if from ~ 2606:a980:0:7::/64 then { bgp_community.add([myasn,11180]); return true; } 
+    if from ~ 2400:6280:2::/64 then { bgp_community.add([myasn,11187]); return true; } 
+    if from ~ 2001:43f8:0:100::/64 then { bgp_community.add([myasn,11201]); return true; } 
+    if from ~ 2001:504:58::/64 then { bgp_community.add([myasn,11207]); return true; } 
+    if from ~ 2001:de8:1d::/64 then { bgp_community.add([myasn,11209]); return true; } 
+    if from ~ 2001:504:59::/64 then { bgp_community.add([myasn,11212]); return true; } 
+    if from ~ 2001:7f8:9e::/64 then { bgp_community.add([myasn,11214]); return true; } 
+    if from ~ 2001:dea:0:50::/64 then { bgp_community.add([myasn,11235]); return true; } 
+    if from ~ 2a00:1b30::/64 then { bgp_community.add([myasn,11242]); return true; } 
+    if from ~ 2001:504:61::/64 then { bgp_community.add([myasn,11249]); return true; } 
+    if from ~ 2001:7f8:29:1::/64 then { bgp_community.add([myasn,10135]); return true; } 
+    if from ~ 2001:43f8:1f0:1::/64 then { bgp_community.add([myasn,10129]); return true; } 
+    if from ~ 2001:43f8:1f1:1::/64 then { bgp_community.add([myasn,10344]); return true; } 
+    if from ~ 2001:7f8:18:210::/64 then { bgp_community.add([myasn,11262]); return true; } 
+    if from ~ 2001:7f8:a0::/64 then { bgp_community.add([myasn,11277]); return true; } 
+    if from ~ 2001:12f8:0:27::/64 then { bgp_community.add([myasn,11276]); return true; } 
+    if from ~ 2405:3b01::/64 then { bgp_community.add([myasn,11284]); return true; } 
+    if from ~ 2001:504:16:1::/64 then { bgp_community.add([myasn,11285]); return true; } 
+    if from ~ 2606:a980:0:8::/64 then { bgp_community.add([myasn,11307]); return true; } 
+    if from ~ 2001:7f8:8f::/48 then { bgp_community.add([myasn,11308]); return true; } 
+    if from ~ 2001:7f8:a2::/50 then { bgp_community.add([myasn,11302]); return true; } 
+    if from ~ 2001:7f8:a2:4000::/50 then { bgp_community.add([myasn,11302]); return true; } 
+    if from ~ 2a02:e5c::/32 then { bgp_community.add([myasn,11320]); return true; } 
+    if from ~ 2001:df2:1900:1::/64 then { bgp_community.add([myasn,11323]); return true; } 
+    if from ~ 2001:1a10:cd:2::/64 then { bgp_community.add([myasn,11304]); return true; } 
+    if from ~ 2001:7f8:a5::/64 then { bgp_community.add([myasn,11329]); return true; } 
+    if from ~ 2001:43f8:a10::/48 then { bgp_community.add([myasn,11335]); return true; } 
+    if from ~ 2001:7f8:1f::/64 then { bgp_community.add([myasn,10078]); return true; } 
+    if from ~ 2405:3b02::/64 then { bgp_community.add([myasn,11375]); return true; } 
+    if from ~ 2001:7f8:62:52::/64 then { bgp_community.add([myasn,11387]); return true; } 
+    if from ~ 2001:7f8:7:a::/64 then { bgp_community.add([myasn,11332]); return true; } 
+    if from ~ 2001:7f8:7::/64 then { bgp_community.add([myasn,11332]); return true; } 
+    if from ~ 2001:7f8:7:1::/64 then { bgp_community.add([myasn,10098]); return true; } 
+    if from ~ 2001:7f8:7:2::/64 then { bgp_community.add([myasn,10492]); return true; } 
+    if from ~ 2001:504:3b:1::/64 then { bgp_community.add([myasn,10662]); return true; } 
+    if from ~ 2001:7f8:11::/64 then { bgp_community.add([myasn,11073]); return true; } 
+    if from ~ 2001:7f8:9d::/64 then { bgp_community.add([myasn,11421]); return true; } 
+    if from ~ 2404:e780:f872:a::/64 then { bgp_community.add([myasn,11303]); return true; } 
+    if from ~ 2001:43f8:ae1::/48 then { bgp_community.add([myasn,10694]); return true; } 
+    if from ~ 2001:7f8:d:fc::/64 then { bgp_community.add([myasn,10070]); return true; } 
+    if from ~ 2001:7f8:d:fe::/64 then { bgp_community.add([myasn,10070]); return true; } 
+    if from ~ 2001:7f8:d:fb::/64 then { bgp_community.add([myasn,10070]); return true; } 
+    if from ~ 2001:7f8:d:101::/64 then { bgp_community.add([myasn,10192]); return true; } 
+    if from ~ 2001:7f8:d:301::/64 then { bgp_community.add([myasn,10194]); return true; } 
+    if from ~ 2001:13c7:6000::/64 then { bgp_community.add([myasn,10252]); return true; } 
+    if from ~ 2403:c780:b800:bb00::/64 then { bgp_community.add([myasn,11449]); return true; } 
+    if from ~ 2a0b:9600::/29 then { bgp_community.add([myasn,11469]); return true; } 
+    if from ~ 2403:c780:a800:bb00::/64 then { bgp_community.add([myasn,11468]); return true; } 
+    if from ~ 2404:9580:63:516::/64 then { bgp_community.add([myasn,11054]); return true; } 
+    if from ~ 2404:9580:24:534::/64 then { bgp_community.add([myasn,11054]); return true; } 
+    if from ~ 2001:13c7:6015::/48 then { bgp_community.add([myasn,11487]); return true; } 
+    if from ~ 2001:13c7:6010::/64 then { bgp_community.add([myasn,11480]); return true; } 
+    if from ~ 2001:13c7:6019::/64 then { bgp_community.add([myasn,11484]); return true; } 
+    if from ~ 2001:13c7:6017::/64 then { bgp_community.add([myasn,11482]); return true; } 
+    if from ~ 2001:13c7:6020::/64 then { bgp_community.add([myasn,11485]); return true; } 
+    if from ~ 2001:13c7:6018::/64 then { bgp_community.add([myasn,11483]); return true; } 
+    if from ~ 2001:13c7:6016::/64 then { bgp_community.add([myasn,11481]); return true; } 
+    if from ~ 2001:13c7:6021::/64 then { bgp_community.add([myasn,11486]); return true; } 
+    if from ~ 2001:504:65::/64 then { bgp_community.add([myasn,11489]); return true; } 
+    if from ~ 2001:504:65:1::/64 then { bgp_community.add([myasn,11489]); return true; } 
+    if from ~ 2801:1d:a000:1::/64 then { bgp_community.add([myasn,11023]); return true; } 
+    if from ~ 2801:1d:a001:1::/64 then { bgp_community.add([myasn,11023]); return true; } 
+    if from ~ 2801:1d:a001:2::/64 then { bgp_community.add([myasn,11023]); return true; } 
+    if from ~ 2001:7f8:5f:ffef::/64 then { bgp_community.add([myasn,10311]); return true; } 
+    if from ~ 2001:504:67::/64 then { bgp_community.add([myasn,11490]); return true; } 
+    if from ~ 2001:43f8:270:d0d0::/64 then { bgp_community.add([myasn,11508]); return true; } 
+    if from ~ 2001:504:68::/64 then { bgp_community.add([myasn,11488]); return true; } 
+    if from ~ 2001:504:68:1::/64 then { bgp_community.add([myasn,11488]); return true; } 
+    if from ~ 2001:504:67:1::/64 then { bgp_community.add([myasn,11490]); return true; } 
+    if from ~ 2801:14:9000::/64 then { bgp_community.add([myasn,11514]); return true; } 
+    if from ~ 2001:1320:cafe::/64 then { bgp_community.add([myasn,11522]); return true; } 
+    if from ~ 2001:7f8:a2:8000::/50 then { bgp_community.add([myasn,11302]); return true; } 
+    if from ~ 2001:13c7:6f80::/48 then { bgp_community.add([myasn,11042]); return true; } 
+    if from ~ 2a00:1b30:8888::/64 then { bgp_community.add([myasn,11533]); return true; } 
+    if from ~ 2001:43f8:0:200::/64 then { bgp_community.add([myasn,11574]); return true; } 
+    if from ~ 2001:ded:8000::/48 then { bgp_community.add([myasn,11577]); return true; } 
+    if from ~ 2001:7f8:af::/64 then { bgp_community.add([myasn,11464]); return true; } 
+    if from ~ 2401:7500:fff6::/64 then { bgp_community.add([myasn,10832]); return true; } 
+    if from ~ 2001:7f8:34::/64 then { bgp_community.add([myasn,11312]); return true; } 
+    if from ~ 2001:43f8:c0::/128 then { bgp_community.add([myasn,11541]); return true; } 
+    if from ~ 2606:a980:0:9::/64 then { bgp_community.add([myasn,11628]); return true; } 
+    if from ~ 2001:e48:44:100b::/64 then { bgp_community.add([myasn,11623]); return true; } 
+    if from ~ 2803:dc40::/64 then { bgp_community.add([myasn,11634]); return true; } 
+    if from ~ 2404:2c00:ffff:f::/64 then { bgp_community.add([myasn,11658]); return true; } 
+    if from ~ 2001:7fa:2::/64 then { bgp_community.add([myasn,10210]); return true; } 
+    if from ~ 2001:7f8:63::/64 then { bgp_community.add([myasn,10327]); return true; } 
+    if from ~ 2001:504:45:10::/64 then { bgp_community.add([myasn,11519]); return true; } 
+    if from ~ 2001:df1:b500::/64 then { bgp_community.add([myasn,11663]); return true; } 
+    if from ~ 2001:7f8:a7::/48 then { bgp_community.add([myasn,11669]); return true; } 
+    if from ~ 2001:7f8:b1::/64 then { bgp_community.add([myasn,11670]); return true; } 
+    if from ~ 2001:504:40:12::/64 then { bgp_community.add([myasn,11668]); return true; } 
+    if from ~ 2001:de8:1:4::/64 then { bgp_community.add([myasn,11689]); return true; } 
+    if from ~ 2001:de8:1:5::/64 then { bgp_community.add([myasn,11317]); return true; } 
+    if from ~ 2001:7f8:12:3::/64 then { bgp_community.add([myasn,11420]); return true; } 
+    if from ~ 2001:7f8:12:5::/64 then { bgp_community.add([myasn,11418]); return true; } 
+    if from ~ 2001:7f8:12:6::/64 then { bgp_community.add([myasn,11419]); return true; } 
+    if from ~ 2001:12f8:0:1::/64 then { bgp_community.add([myasn,11684]); return true; } 
+    if from ~ 2001:df2:1900:2::/64 then { bgp_community.add([myasn,11627]); return true; } 
+    if from ~ 2001:7f8:20:1101::/64 then { bgp_community.add([myasn,11748]); return true; } 
+    if from ~ 2001:13c7:6022::/64 then { bgp_community.add([myasn,11764]); return true; } 
+    if from ~ 2001:7f8:6c:3::/64 then { bgp_community.add([myasn,10655]); return true; } 
+    if from ~ 2001:7f8:6c:2::/64 then { bgp_community.add([myasn,10655]); return true; } 
+    if from ~ 2001:7f8:6c:1::/64 then { bgp_community.add([myasn,10655]); return true; } 
+    if from ~ 2001:df2:1900:4::/64 then { bgp_community.add([myasn,11785]); return true; } 
+    if from ~ 2001:df2:1900:3::/64 then { bgp_community.add([myasn,11786]); return true; } 
+    if from ~ 2001:7f8:b4::/48 then { bgp_community.add([myasn,10526]); return true; } 
+    if from ~ 2001:504:35::/64 then { bgp_community.add([myasn,11790]); return true; } 
+    if from ~ 2803:b4c0::/32 then { bgp_community.add([myasn,11660]); return true; } 
+    if from ~ 2801:80:19c0:8000::/64 then { bgp_community.add([myasn,11794]); return true; } 
+    if from ~ 2801:80:19c0::/52 then { bgp_community.add([myasn,11794]); return true; } 
+    if from ~ 2001:7f8:b6::/64 then { bgp_community.add([myasn,11812]); return true; } 
+    if from ~ 2001:504:69::/48 then { bgp_community.add([myasn,11829]); return true; } 
+    if from ~ 2001:7fa:3:5f40::/64 then { bgp_community.add([myasn,11837]); return true; } 
+    if from ~ 2001:7fa:3:b0df::/64 then { bgp_community.add([myasn,11836]); return true; } 
+    if from ~ 2001:7fa:0:1::/64 then { bgp_community.add([myasn,10042]); return true; } 
+    if from ~ 2001:7f8:b7::/64 then { bgp_community.add([myasn,11842]); return true; } 
+    if from ~ 2001:12f8:0:28::/64 then { bgp_community.add([myasn,11847]); return true; } 
+    if from ~ 2001:7f8:a:2::/64 then { bgp_community.add([myasn,10072]); return true; } 
+    if from ~ 2001:7f8:ad::/64 then { bgp_community.add([myasn,11868]); return true; } 
+    if from ~ 2001:7f8:b0::/64 then { bgp_community.add([myasn,11869]); return true; } 
+    if from ~ 2a01:65a0:a5::/48 then { bgp_community.add([myasn,11919]); return true; } 
+    if from ~ 2001:7f8:c1::/64 then { bgp_community.add([myasn,11923]); return true; } 
+    if from ~ 2001:7f8:bc::/64 then { bgp_community.add([myasn,11927]); return true; } 
+    if from ~ 2001:7f8:c0::/64 then { bgp_community.add([myasn,11925]); return true; } 
+    if from ~ 2001:7f8:b9::/48 then { bgp_community.add([myasn,11933]); return true; } 
+    if from ~ 2a0b:4340:9:514::/64 then { bgp_community.add([myasn,11932]); return true; } 
+    if from ~ 2001:7f8:c3::/64 then { bgp_community.add([myasn,11926]); return true; } 
+    if from ~ 2001:7f8:ba::/48 then { bgp_community.add([myasn,11958]); return true; } 
+    if from ~ 2001:12f8:0:16::/64 then { bgp_community.add([myasn,11983]); return true; } 
+    if from ~ 2001:7f8:b5::/48 then { bgp_community.add([myasn,11984]); return true; } 
+    if from ~ 2001:7f8:bd::/64 then { bgp_community.add([myasn,11998]); return true; } 
+    if from ~ 2001:7f8:be::/64 then { bgp_community.add([myasn,11997]); return true; } 
+    if from ~ 2001:504:77::/64 then { bgp_community.add([myasn,11999]); return true; } 
+    if from ~ 2001:1ab8:8486::/64 then { bgp_community.add([myasn,12005]); return true; } 
+    if from ~ 2a03:67e0:0:9::/64 then { bgp_community.add([myasn,10542]); return true; } 
+    if from ~ 2001:7f8:c4::/64 then { bgp_community.add([myasn,10542]); return true; } 
+    if from ~ 2001:7f8:47:38::/64 then { bgp_community.add([myasn,11428]); return true; } 
+    if from ~ 2001:7f8:bf::/64 then { bgp_community.add([myasn,12013]); return true; } 
+    if from ~ 2001:7f8:d:203::/64 then { bgp_community.add([myasn,10193]); return true; } 
+    if from ~ 2001:7f8:d:202::/64 then { bgp_community.add([myasn,10193]); return true; } 
+    if from ~ 2001:7f8:83::/64 then { bgp_community.add([myasn,12031]); return true; } 
+    if from ~ 2001:504:70::/64 then { bgp_community.add([myasn,12032]); return true; } 
+    if from ~ 2620:3b:6000::/64 then { bgp_community.add([myasn,12036]); return true; } 
+    if from ~ 2801:168::/64 then { bgp_community.add([myasn,12039]); return true; } 
+    if from ~ 2001:13c7:601f::/64 then { bgp_community.add([myasn,12040]); return true; } 
+    if from ~ 2001:7f8:6c:4::/64 then { bgp_community.add([myasn,10655]); return true; } 
+    if from ~ 2604:8440::/32 then { bgp_community.add([myasn,12050]); return true; } 
+    if from ~ 2001:7f8:b8::/48 then { bgp_community.add([myasn,12051]); return true; } 
+    if from ~ 1:7f8:14:5ec::/64 then { bgp_community.add([myasn,10071]); return true; } 
+    if from ~ 2001:de8:4000::/64 then { bgp_community.add([myasn,12062]); return true; } 
+    if from ~ 2001:504:73:cafe::/64 then { bgp_community.add([myasn,12070]); return true; } 
+    if from ~ 2001:7f8:bb::/48 then { bgp_community.add([myasn,12004]); return true; } 
+    if from ~ 2001:43f8:bb1:150::/64 then { bgp_community.add([myasn,11870]); return true; } 
+    if from ~ 2001:12f8:0:29::/64 then { bgp_community.add([myasn,12078]); return true; } 
+    if from ~ 2a00:13c0:3:1::/64 then { bgp_community.add([myasn,11977]); return true; } 
+    if from ~ 2a00:13c0:3:2::/64 then { bgp_community.add([myasn,11978]); return true; } 
+    if from ~ 2a00:13c0:3:5::/64 then { bgp_community.add([myasn,11979]); return true; } 
+    if from ~ 2a00:13c0:3:4::/64 then { bgp_community.add([myasn,11980]); return true; } 
+    if from ~ 2a00:13c0:3:3::/64 then { bgp_community.add([myasn,11981]); return true; } 
+    if from ~ 2a00:13c0:3:9::/64 then { bgp_community.add([myasn,11982]); return true; } 
+    if from ~ 2a07:1c44:61f0::/48 then { bgp_community.add([myasn,12084]); return true; } 
+    if from ~ 2001:12f8:0:30::/64 then { bgp_community.add([myasn,12086]); return true; } 
+    if from ~ 2001:7f8:78::/48 then { bgp_community.add([myasn,10876]); return true; } 
+    if from ~ 2a02:25af:ffff::/64 then { bgp_community.add([myasn,12094]); return true; } 
+    if from ~ 2801:168:1::/48 then { bgp_community.add([myasn,12093]); return true; } 
+    if from ~ 2001:504:90::/48 then { bgp_community.add([myasn,12088]); return true; } 
+    if from ~ 2001:13c7:601d::/64 then { bgp_community.add([myasn,11798]); return true; } 
+    if from ~ 2604:8ac0::/32 then { bgp_community.add([myasn,12116]); return true; } 
+    if from ~ 2001:7f8:c6::/64 then { bgp_community.add([myasn,12130]); return true; } 
+    if from ~ 2001:7f8:c7::/64 then { bgp_community.add([myasn,12131]); return true; } 
+    if from ~ 2001:504:76::/48 then { bgp_community.add([myasn,11679]); return true; } 
+    if from ~ 2001:7f8:3c:3e8::/64 then { bgp_community.add([myasn,12145]); return true; } 
+    if from ~ 2607:7c80:55:128::/64 then { bgp_community.add([myasn,12163]); return true; } 
+    if from ~ 2001:df2:1900:5::/64 then { bgp_community.add([myasn,12167]); return true; } 
+    if from ~ 2001:478:172::/64 then { bgp_community.add([myasn,11561]); return true; } 
+    return false;
 }
