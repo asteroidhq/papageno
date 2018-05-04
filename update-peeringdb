@@ -42,10 +42,9 @@ print $out6 "function tag_peeringdb_ixid() {\n";
 foreach my $i (@{$decoded_ixpfx->{'data'}}) {
     my $id = ($ix_id{$i->{'ixlan_id'}}+$ix_id_offset);
     if ($i->{'protocol'} eq "IPv4") { 
-	#print $out4 "    if from ~ $i->{'prefix'} then return $ix_id{$i->{'ixlan_id'}};\n";
-	print $out4 "    if from ~ $i->{'prefix'} then { bgp_community.add([myasn,$id]); return true; } \n";
+	print $out4 "    if from ~ $i->{'prefix'} then { bgp_community.add((myasn,$id)); return true; } \n";
     } elsif ($i->{'protocol'} eq "IPv6") {
-	print $out6 "    if from ~ $i->{'prefix'} then { bgp_community.add([myasn,$id]); return true; } \n";
+	print $out6 "    if from ~ $i->{'prefix'} then { bgp_community.add((myasn,$id)); return true; } \n";
     }
 }
 print $out4 "    return false;\n}\n";
