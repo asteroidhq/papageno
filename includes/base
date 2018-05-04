@@ -28,5 +28,5 @@ define peering_route = 102;
 define customer_route = 103;
 define transit_route = 104;
 
-# hardcoded into update-peeringdb
+# read by update-peeringdb
 define ix_id_offset = 10000;
