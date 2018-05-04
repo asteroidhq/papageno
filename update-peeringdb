@@ -10,6 +10,8 @@ use warnings;                   # Good practice
 my $tmpdir="/tmp";
 my $basedir=".";
 
+my $ix_id_offset=int(`grep "^define ix_id_offset" $basedir/includes/base | cut -f2 -d "="`);
+
 open (my $out4, ">", "$tmpdir/peeringdb-v4.tmp") or die "$!\n";
 open (my $out6, ">", "$tmpdir/peeringdb-v6.tmp") or die "$!\n";
 
@@ -34,18 +36,20 @@ my $ixpfx = get( $url );
 my $decoded_ixpfx = decode_json( $ixpfx );
 #print Dumper $decoded_ixpfx;
 
-print $out4 "function peeringdb_ixid() {\n";
-print $out6 "function peeringdb_ixid() {\n";
+print $out4 "function tag_peeringdb_ixid() {\n";
+print $out6 "function tag_peeringdb_ixid() {\n";
 
 foreach my $i (@{$decoded_ixpfx->{'data'}}) {
-	if ($i->{'protocol'} eq "IPv4") { 
-		print $out4 "    if from ~ $i->{'prefix'} then return $ix_id{$i->{'ixlan_id'}};\n";
-	} elsif ($i->{'protocol'} eq "IPv6") {
-		print $out6 "    if from ~ $i->{'prefix'} then return $ix_id{$i->{'ixlan_id'}};\n";
-	}
+    my $id = ($ix_id{$i->{'ixlan_id'}}+$ix_id_offset);
+    if ($i->{'protocol'} eq "IPv4") { 
+	#print $out4 "    if from ~ $i->{'prefix'} then return $ix_id{$i->{'ixlan_id'}};\n";
+	print $out4 "    if from ~ $i->{'prefix'} then { bgp_community.add([myasn,$id]); return true; } \n";
+    } elsif ($i->{'protocol'} eq "IPv6") {
+	print $out6 "    if from ~ $i->{'prefix'} then { bgp_community.add([myasn,$id]); return true; } \n";
+    }
 }
-print $out4 "    return 0;\n}\n";
-print $out6 "    return 0;\n}\n";
+print $out4 "    return false;\n}\n";
+print $out6 "    return false;\n}\n";
 
 close $out4;
 close $out6;
