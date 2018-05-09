@@ -1,0 +1,41 @@
+# Set system wide statics
+
+# action communities
+define bgp_blackhole = 666;
+define prepend_one = 1001;
+define prepend_two = 1002;
+define prepend_three = 1003;
+define no_transit = 1100;
+define no_africa = 1200;
+define no_asiapac = 1201;
+define no_australia = 1202;
+define no_europe = 1203;
+define no_middle_east = 1204;
+define no_north_america = 1205;
+define no_south_america = 1206;
+
+define pref_customer = 4000;
+define pref_customer_backup = 4001;
+define pref_peer = 4002;
+define pref_peer_backup = 4003;
+define pref_customer_fallback = 4004;
+
+# informational communities
+define internal_route = 100;
+define rs_route = 101;
+define peering_route = 102;
+define customer_route = 103;
+define transit_route = 104;
+
+define region_africa = 200;
+define region_asiapac = 201;
+define region_australia = 202;
+define region_europe = 203;
+define region_middle_east = 204;
+define region_north_america = 205;
+define region_south_america = 206;
+
+# read by update-peeringdb
+define ix_id_offset = 10000;
+define country_iso_offset = 20000;
+define location = location_id + 30000;

@@ -17,16 +17,3 @@ protocol kernel {
 protocol device {
 	scan time 10;		# Scan interfaces every 10 seconds
 }
-
-# action communities
-
-
-# informational communities
-define internal_route = 100;
-define rs_route = 101;
-define peering_route = 102;
-define customer_route = 103;
-define transit_route = 104;
-
-# read by update-peeringdb
-define ix_id_offset = 10000;

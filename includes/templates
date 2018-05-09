@@ -34,7 +34,26 @@ function is_first_asn(int asn) {
 	if bgp_path.first != asn then return false;
 }
 
-function process_my_communities() {
+function process_communities_in() {
+	case bgp_community {
+		(myasn,prepend_one): 		bgp_path.prepend(myasn);
+		(myasn,prepend_two): 		bgp_path.prepend(myasn);
+						bgp_path.prepend(myasn);
+		(myasn,prepend_three): 		bgp_path.prepend(myasn);
+						bgp_path.prepend(myasn);
+						bgp_path.prepend(myasn);
+		(myasn,pref_customer):		preference = 120;
+		(myasn,pref_customer_backup):	preference = 110;
+		(myasn,pref_peer):		preference = 100;
+		(myasn,pref_peer_backup):	preference = 98;
+		(myasn,pref_customer_fallback):	preference = 96;
+	}
+}
+
+function process_communities_out() {
+	case bgp_community {
+		(myasn,no_transit):	if proto ~ "T*" then return true;
+	}
 }
 
 function strip_my_communities() {
@@ -109,8 +128,9 @@ filter bgp_in_peering {
 }
 
 filter bgp_in_customer {
-	if filter_customer() then reject;
-	accept;
+	reject;
+#	if filter_customer() then reject;
+#	accept;
 }
 
 filter bgp_in_transit {
@@ -118,11 +138,15 @@ filter bgp_in_transit {
 	accept;
 }
 
-filter ebgp_out {
+filter ebgp_out 
+int customer;
+{
+	if bgp_community ~ (myasn,customer_route) then customer=1;
 	process_my_communities();
 	strip_my_communities();
 	if net_martian() then reject;
 	if net ~ myprefixes then accept;
+	if customer = 1 then accept;
 	reject;
 }
 
@@ -156,9 +180,9 @@ template bgp CUSTOMER {
 	local as myasn;
 	import keep filtered;
 	import limit 100 action block;
-	import filter bgp_in_peering;
+	import filter bgp_in_customer;
 	export filter ebgp_customer;
-	preference 100;
+	preference 120;
 }
 
 template bgp PEERING {
