@@ -15,9 +15,17 @@ protocol static static_bgp {
 	route 2001:db8::/32 reject;
 }
 
+	import all;
+	route 203.0.113.0/24 reject;
+}
+
+# Optional - set PeeringDB location ID for BGP community tagging
+define location_id = 18;
+
+include "includes/defines";
 include "includes/base";
 include "includes/martians-v6";
 include "includes/peeringdb-v6";
 include "includes/templates";
-include "includes/filters-v6";
+include "includes/filters-v6/*.filter";
 include "includes/peers-v6";
