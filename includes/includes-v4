@@ -1,7 +1,7 @@
-include "includes/defines";
-include "includes/base";
-include "includes/martians-v4";
-include "includes/peeringdb-v4";
-include "includes/templates";
-include "includes/filters-v4/*.filter";
-include "includes/peers-v4";
+include "defines";
+include "base";
+include "martians-v4";
+include "peeringdb-v4";
+include "templates";
+include "filters-v4/*.filter";
+include "peers-v4";
