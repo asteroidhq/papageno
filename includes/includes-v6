@@ -1,0 +1,7 @@
+include "includes/defines";
+include "includes/base";
+include "includes/martians-v6";
+include "includes/peeringdb-v6";
+include "includes/templates";
+include "includes/filters-v6/*.filter";
+include "includes/peers-v6";

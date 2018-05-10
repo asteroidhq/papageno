@@ -19,10 +19,4 @@ protocol static static_bgp {
 
 define location_id = 18;
 
-include "includes/defines";
-include "includes/base";
-include "includes/martians-v4";
-include "includes/peeringdb-v4";
-include "includes/templates";
-include "includes/filters-v4/*.filter";
-include "includes/peers-v4";
+include "includes/includes-v4";

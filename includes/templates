@@ -142,7 +142,6 @@ filter ebgp_out
 int customer;
 {
 	if bgp_community ~ (myasn,customer_route) then customer=1;
-	process_my_communities();
 	strip_my_communities();
 	if net_martian() then reject;
 	if net ~ myprefixes then accept;
