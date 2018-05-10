@@ -13,12 +13,26 @@ if ( $bgpq eq "") {
 	die("Couldn't find bgpq3 executable, please install or update the value of \$bgpq in file $0\n");
 }
 
-my $input = $ARGV[0] || "$ENV{PWD}/bgp-peers.csv";
+my $input;
+my $force;
+
+if ($ARGV[0] eq "-f") {
+	$input= $ARGV[1] || "$ENV{PWD}/bgp-peers.csv";
+	$force=1;
+} else {
+	$input= $ARGV[0] || "$ENV{PWD}/bgp-peers.csv";
+}
 
 sub output_filter {
 	my ($asn, $filter, $template, $version) = @_;
-	my $prefixset = `$bgpq -b -$version $filter -l prefixes`;
+	my $query=$filter;
 	$filter =~ tr/-/_/;
+	my $basefile = "$basedir/includes/filters-v$version/$filter";
+	if ( ( -s "$basefile.filter") && ($force!=1)) {
+			my @stat=stat("$basefile.filter");
+			if (time()-$stat[9] < 3600) { return }  
+	}
+	my $prefixset = `$bgpq -b -$version $query -l prefixes`;
 	$template = lc($template);
 	my $first_asn;
 	if ($template ne "routeserver") {
@@ -26,7 +40,6 @@ sub output_filter {
 	} else {
 		$first_asn = "if is_first_asn($asn) then reject";
 	}
-	my $basefile = "$basedir/includes/filters-v$version/$filter";
 	open (my $out, ">", "$basefile.tmp") or die "$!\n";
 	print $out "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n\n";
 	print $out "function in_$filter()\nprefix set prefixes;\n{\n";
