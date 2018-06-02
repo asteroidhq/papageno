@@ -5,18 +5,9 @@ define myprefixes = [ 2001:db8::/32+ ];
 
 router id 192.0.2.253;
 
-protocol static {
-	export all;
-	route 2001:db8::/29 via 2001:db8::1;
-}
-
 protocol static static_bgp {
 	import all;
 	route 2001:db8::/32 reject;
-}
-
-	import all;
-	route 203.0.113.0/24 reject;
 }
 
 # Optional - set PeeringDB location ID for BGP community tagging

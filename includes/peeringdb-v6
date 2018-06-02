@@ -1,5 +1,5 @@
 # UPDATED AUTOMATICALLY DO NOT EDIT!
-# Last updated: Thu May 10 13:59:49 2018
+# Last updated: Sat Jun  2 13:08:08 2018
 
 function tag_peeringdb_ixid() {
     if from ~ 2001:504:0:2::/64 then { 
@@ -142,7 +142,7 @@ function tag_peeringdb_ixid() {
       bgp_community.add((myasn,20250));
       bgp_community.add((myasn,203));
       return true; } 
-    if from ~ 2001:7f8:18::/48 then { 
+    if from ~ 2001:7f8:18::/64 then { 
       bgp_community.add((myasn,10048));
       bgp_community.add((myasn,20372));
       bgp_community.add((myasn,203));
@@ -1552,11 +1552,6 @@ function tag_peeringdb_ixid() {
       bgp_community.add((myasn,20646));
       bgp_community.add((myasn,200));
       return true; } 
-    if from ~ 2001:def::/48 then { 
-      bgp_community.add((myasn,11037));
-      bgp_community.add((myasn,20344));
-      bgp_community.add((myasn,201));
-      return true; } 
     if from ~ 2607:f778:1:fe00::/64 then { 
       bgp_community.add((myasn,11038));
       bgp_community.add((myasn,20840));
@@ -2586,6 +2581,16 @@ function tag_peeringdb_ixid() {
       bgp_community.add((myasn,11561));
       bgp_community.add((myasn,20608));
       bgp_community.add((myasn,201));
+      return true; } 
+    if from ~ 2001:504:0:9::/64 then { 
+      bgp_community.add((myasn,12183));
+      bgp_community.add((myasn,20840));
+      bgp_community.add((myasn,205));
+      return true; } 
+    if from ~ 2001:43f8:0:300::/64 then { 
+      bgp_community.add((myasn,12208));
+      bgp_community.add((myasn,20834));
+      bgp_community.add((myasn,200));
       return true; } 
     return false;
 }

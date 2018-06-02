@@ -12,7 +12,7 @@ int set bogon_asns;
     4200000000..4294967294, # RFC 6996 Private ASNs
     4294967295              # RFC 6996 Last 32 bit ASN
 	];
-	return  bgp_path ~ bogon_asns;
+	return bgp_path ~ bogon_asns;
 }
 
 function asn_transit()

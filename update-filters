@@ -13,15 +13,9 @@ if ( $bgpq eq "") {
 	die("Couldn't find bgpq3 executable, please install or update the value of \$bgpq in file $0\n");
 }
 
-my $input;
-my $force;
+my $force = 0;
 
-if ($ARGV[0] eq "-f") {
-	$input= $ARGV[1] || "$ENV{PWD}/bgp-peers.csv";
-	$force=1;
-} else {
-	$input= $ARGV[0] || "$ENV{PWD}/bgp-peers.csv";
-}
+if ($ARGV[0] eq "-f") { $force=1; } 
 
 sub output_filter {
 	my ($asn, $filter, $template, $version) = @_;
@@ -32,7 +26,7 @@ sub output_filter {
 			my @stat=stat("$basefile.filter");
 			if (time()-$stat[9] < 3600) { return }  
 	}
-	my $prefixset = `$bgpq -b -$version $query -l prefixes`;
+	my $prefixset = `$bgpq -A -b -$version $query -l prefixes`;
 	$template = lc($template);
 	my $first_asn;
 	if ($template ne "routeserver") {
@@ -41,34 +35,37 @@ sub output_filter {
 		$first_asn = "if is_first_asn($asn) then reject";
 	}
 	open (my $out, ">", "$basefile.tmp") or die "$!\n";
-	print $out "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n\n";
-	print $out "function in_$filter()\nprefix set prefixes;\n{\n";
+	print $out "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
+	print $out "function in_".$filter."_".$version."()\nprefix set prefixes;\n{\n";
 	print $out "$prefixset\nreturn net ~ prefixes;\n}\n\n";
-	print $out "filter $filter\n{\n    if filter_$template() then reject;\n";
-	print $out "    $first_asn;\n    if in_$filter() then accept;\n    reject;\n}\n\n";
+	print $out "filter ".$filter."_".$version."\n{\n    if filter_$template() then reject;\n";
+	print $out "    $first_asn;\n    if in_".$filter."_".$version."() then accept;\n    reject;\n}\n\n";
 	close $out;
 	move ("$basefile.tmp","$basefile.filter");
 }
 
-open (my $fh, "<:encoding(UTF-8)", $input) or die "$!\n";
-
 my %asset4_filter;
-my %asset6_filter;
 
-my $header=<$fh>;
-while ( ! eof ($fh) ) {
-	my $line = <$fh>;
+my @input;
+
+@input=split(/\n/,`grep '#FILTERSET' $basedir/includes/peers-v4 | sort | uniq`);
+foreach my $line (@input) {
 	chomp $line;
-	my ($desc, $peeringdb, $asn, $template, $ipv4, $ipv6, 
-	$filterv4, $filterv6,$localpref,$prefv4,$prefv6,$passive) = split (";",$line);
-	if ($ipv4 ne "" && $asset4_filter{"$filterv4"} != 1 && $filterv4 ne "") {
-		$asset4_filter{"$filterv4"}=1;
-		output_filter($asn, $filterv4, $template, "4");
-	}
-	if ($ipv6 ne "" && $asset6_filter{"$filterv6"} != 1 && $filterv6 ne "") {
-		$asset6_filter{"$filterv6"}=1;
-		output_filter($asn, $filterv6, $template, "6");
+	my (undef, $asn, $filter, $template) = split (";",$line);
+	if ($asset4_filter{"$filter"} != 1 ) {
+		$asset4_filter{"$filter"}=1;
+		output_filter($asn, $filter, $template, "4");
 	}
 }
 
-close $fh;
+my %asset6_filter;
+
+@input=split(/\n/,`grep '#FILTERSET' $basedir/includes/peers-v6 | sort | uniq`);
+foreach my $line (@input) {
+	chomp $line;
+	my (undef, $asn, $filter, $template) = split (";",$line);
+	if ($asset6_filter{"$filter"} != 1 ) {
+		$asset6_filter{"$filter"}=1;
+		output_filter($asn, $filter, $template, "6");
+	}
+}
