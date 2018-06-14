@@ -16,11 +16,16 @@ Standard import filters include:
  - Checks on your own prefixes
  - Checks on BGP path length
  - Strips inbound rogue BGP communities
- - Tags every peering route with the PeeringDB IX ID it was learned at
+ - Tags every peering route with 
+    - the PeeringDB IX ID it was learned at
+    - The ISO Country ID it was learned in
+    - The region it was learned in
+ - Tags every filtered route with a Large BGP community to indicate why it was filtered
  - Honors graceful shutdown
 
 Standard export filters include:
  - IPv4 and IPv6 'martian' prefixes - networks that aren't supposed to be on the Internet
+ - Strips private ASNs for external peers
  - Strips local BGP communities
  - Checks on your own prefixes
 
@@ -38,9 +43,9 @@ It also configures Bird to be compatible with birdseye, a bird-based looking gla
  - edit bgp-peers.csv to configure your BGP peers
  - After every edit of bgp-peers.csv, run ./update-peers and ./update-filters
  - Check your configs with bird|bird6 -c <bird.conf|bird6.conf> -p
- - Push the new config to bird using birdc|birdc6 configure
- - Periodically (a few times a day) run ./update-filters and push the configs using birdc|birdc6 configure
- - Run update-peeringdb every time you connect to a new IX and push the configs using birdc|birdc6 configure
+ - Push the new config to bird using birdc|birdc6 configure soft
+ - Periodically (a few times a day) run ./update-filters and push the configs using birdc|birdc6 configure soft
+ - Run update-peeringdb every time you connect to a new IX and push the configs using birdc|birdc6 configure soft
 
 Happy peering!
 
