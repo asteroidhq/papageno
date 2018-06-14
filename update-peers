@@ -46,8 +46,9 @@ sub output_peer {
 	print $out "protocol bgp $id from $template {\n".
 		   "    description \"$desc\";\n".
 		   "    neighbor $ip as $asn;\n".
-		   "    #FILTERSET;$asn;$asset;$template\n".
-		   "    import filter asn_".$asn."_$version;\n"; 
+		   "    #FILTERSET;$asn;$asset;$template;$id\n".
+		   #		   "    import filter asn_".$asn."_$version;\n"; 
+		   "    import filter filter_$id;\n"; 
 	if ($password ne "")    { print $out "    password \"$password\";\n"; }
 	if ($prefixlimit ne "") { print $out "    import limit $prefixlimit action block;\n"; }
 	if ($localpref ne "") 	{ print $out "    preference $localpref;\n"; }
