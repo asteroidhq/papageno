@@ -1,6 +1,5 @@
 #! /usr/bin/perl
-# usage: update-filters [file]
-# Defaults to use $PWD/bgp-peers.csv
+# usage: update-filters [-f]
 
 use strict;
 use File::Copy;
