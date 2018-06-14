@@ -235,6 +235,7 @@ int customer;
 {
 	if net_martian() then reject;
 #	if bgp_community ~ (myasn,customer_route) then customer=1;
+	bgp_path.delete( [64512..65535, 4200000000..4294967294] );
 	strip_my_communities();
 	if net ~ myprefixes then accept;
 #	if customer = 1 then accept;
