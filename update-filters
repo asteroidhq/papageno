@@ -13,35 +13,86 @@ if ( $bgpq eq "") {
 	die("Couldn't find bgpq3 executable, please install or update the value of \$bgpq in file $0\n");
 }
 
-my $force = 0;
+my $force=0;
+my $verbose=0;
+my $quiet=0;
+foreach my $val (@ARGV) {
+        if ($val eq "-f" )      { $force=1; next }
+        elsif($val eq "-v")     { $verbose+=1; next }
+        elsif($val eq "-q")     { $quiet=1; next }
+}
 
-if ($ARGV[0] eq "-f") { $force=1; } 
+sub cli_out {
+        if ($quiet==1) { return;}
+        my ($str) = @_[0];
+	my $relevance = @_[1] || 0;
+        if ($relevance <= $verbose) { print $str }
+}
 
 sub output_filter {
 	my ($asn, $filter, $template, $version) = @_;
-	my $query=$filter;
-	$filter =~ tr/-/_/;
-	my $basefile = "$basedir/includes/filters-v$version/$filter";
-	if ( ( -s "$basefile.filter") && ($force!=1)) {
-			my @stat=stat("$basefile.filter");
-			if (time()-$stat[9] < 3600) { return }  
-	}
-	my $prefixset = `$bgpq -A -b -$version $query -l prefixes`;
+	my $output_dir = "$basedir/includes/filters-v$version";
 	$template = lc($template);
-	my $first_asn;
+	my $last_updated = scalar localtime;
+	my $filter_name = "asn_$asn"."_$version";
+	my ($first_asn,$function_name,$filter_line);
 	if ($template ne "routeserver") {
-		$first_asn = "if ! is_first_asn($asn) then reject";
+		$first_asn = "if is_first_asn($asn) then reject;";
 	} else {
-		$first_asn = "if is_first_asn($asn) then reject";
+		$first_asn = "if is_first_asn_rs($asn) then reject;";
 	}
-	open (my $out, ">", "$basefile.tmp") or die "$!\n";
-	print $out "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
-	print $out "function in_".$filter."_".$version."()\nprefix set prefixes;\n{\n";
-	print $out "$prefixset\nreturn net ~ prefixes;\n}\n\n";
-	print $out "filter ".$filter."_".$version."\n{\n    if filter_$template() then reject;\n";
-	print $out "    $first_asn;\n    if in_".$filter."_".$version."() then accept;\n    reject;\n}\n\n";
+	if ($filter ne "") {
+		my $query=$filter;
+		$filter =~ tr/-/_/;
+		$function_name = "in_".$filter."_".$version."()";
+		$filter_line="if $function_name then {\n      accept;\n    } else {\n      bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));\n      reject;\n    }";
+		my @stat;
+		my $age = 86400;
+		if ( -s "$output_dir/$filter.prefixes") { 
+			open (my $file, "$output_dir/$filter.prefixes") or die "$!\n";
+			$age=time-((stat($file))[9]);
+			close $file;
+		}
+		if ( ($age > 3600 ) || ($force==1) ) {
+			my $prefixes=`$bgpq -A -b -$version $query -l prefixes`;
+			open (my $file, ">","$output_dir/$filter.prefixes.tmp") or die "$!\n";
+			print $file <<EOF;
+# UPDATED AUTOMATICALLY DO NOT EDIT!
+# Last updated: $last_updated
+
+function $function_name
+prefix set prefixes;
+{
+    $prefixes
+    if ( net ~ prefixes ) then {
+        return true;
+    } else {
+#        print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is not in as-set!";
+        bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+        return false;
+    }
+}
+EOF
+			close ($file);
+			move ("$output_dir/$filter.prefixes.tmp","$output_dir/$filter.prefixes");
+		}
+	} else {
+		$filter_line="accept;";
+	}
+	open (my $out, ">", "$output_dir/asn-$asn.filter.tmp") or die "$!\n";
+	print $out <<EOF;
+# UPDATED AUTOMATICALLY DO NOT EDIT!
+# Last updated: $last_updated
+
+filter $filter_name 
+{
+    if filter_$template() then reject;
+    $first_asn
+    $filter_line
+}
+EOF
 	close $out;
-	move ("$basefile.tmp","$basefile.filter");
+	move ("$output_dir/asn-$asn.filter.tmp","$output_dir/asn-$asn.filter");
 }
 
 my %asset4_filter;
@@ -52,8 +103,9 @@ my @input;
 foreach my $line (@input) {
 	chomp $line;
 	my (undef, $asn, $filter, $template) = split (";",$line);
-	if ($asset4_filter{"$filter"} != 1 ) {
-		$asset4_filter{"$filter"}=1;
+	if ($asset4_filter{"$filter-$asn"} != 1 ) {
+		cli_out "Updating filter for ASN $asn, AS-set $filter\n";
+		$asset4_filter{"$filter-$asn"}=1;
 		output_filter($asn, $filter, $template, "4");
 	}
 }
@@ -64,8 +116,8 @@ my %asset6_filter;
 foreach my $line (@input) {
 	chomp $line;
 	my (undef, $asn, $filter, $template) = split (";",$line);
-	if ($asset6_filter{"$filter"} != 1 ) {
-		$asset6_filter{"$filter"}=1;
+	if ($asset6_filter{"$filter-$asn"} != 1 ) {
+		$asset6_filter{"$filter-$asn"}=1;
 		output_filter($asn, $filter, $template, "6");
 	}
 }

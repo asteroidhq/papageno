@@ -21,6 +21,14 @@ define pref_peer_backup = 4003;
 define pref_customer_fallback = 4004;
 
 # informational communities
+
+define prefix_type = 60000;
+define prefix_region = 60001;
+define prefix_country = 60002;
+define prefix_location = 60003;
+define prefix_ix = 60004;
+define prefix_filtered = 61000;
+
 define internal_route = 100;
 define rs_route = 101;
 define peering_route = 102;
@@ -34,6 +42,17 @@ define region_europe = 203;
 define region_middle_east = 204;
 define region_north_america = 205;
 define region_south_america = 206;
+
+define filtered_martian = 400;
+define filtered_bogon_asn = 401;
+define filtered_transit_asn = 402;
+define filtered_first_asn = 403;
+define filtered_next_hop = 404;
+define filtered_path_length = 405;
+define filtered_my_prefixes = 406;
+define filtered_as_set = 407;
+define filtered_too_long = 408;
+define filtered_too_short = 409;
 
 # read by update-peeringdb
 define ix_id_offset = 10000;

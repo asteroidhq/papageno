@@ -74,20 +74,27 @@ print $out6 "function tag_peeringdb_ixid() {\n";
 
 foreach my $i (@{$decoded_ixpfx->{'data'}}) {
     my $id = $ix_id{$i->{'ixlan_id'}};
-    my $pid = ($id+$defs{"ix_id_offset"});
-    my $country = ($iso_code{$ix_country{"$id"}}+$defs{"country_iso_offset"});
+    my $cid = $iso_code{$ix_country{"$id"}};
     my $cont = $region{$ix_continent{"$id"}};
+    my $pid = ($id+$defs{"ix_id_offset"});
+    my $country = ($cid+$defs{"country_iso_offset"});
     if ($i->{'protocol'} eq "IPv4") { 
 	print $out4 "    if from ~ $i->{'prefix'} then { \n";
 	print $out4 "      bgp_community.add((myasn,$pid));\n";
 	print $out4 "      bgp_community.add((myasn,$country));\n";
 	print $out4 "      bgp_community.add((myasn,$cont));\n";
+	print $out4 "      bgp_large_community.add((myasn,prefix_ix,$id));\n";
+	print $out4 "      bgp_large_community.add((myasn,prefix_country,$cid));\n";
+	print $out4 "      bgp_large_community.add((myasn,prefix_region,$cont));\n";
       	print $out4 "      return true; } \n";
     } elsif ($i->{'protocol'} eq "IPv6") {
 	print $out6 "    if from ~ $i->{'prefix'} then { \n";
 	print $out6 "      bgp_community.add((myasn,$pid));\n";
 	print $out6 "      bgp_community.add((myasn,$country));\n";
 	print $out6 "      bgp_community.add((myasn,$cont));\n";
+	print $out6 "      bgp_large_community.add((myasn,prefix_ix,$id));\n";
+	print $out6 "      bgp_large_community.add((myasn,prefix_country,$cid));\n";
+	print $out6 "      bgp_large_community.add((myasn,prefix_region,$cont));\n";
       	print $out6 "      return true; } \n";
     }
 }

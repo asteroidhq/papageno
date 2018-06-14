@@ -1,7 +1,13 @@
+# IPv4 specific defines
+define defaultroute = 0.0.0.0/0;
+define max_prefix_length = 32;
+define blackhole_ip = 192.0.2.1;
+
 include "defines";
 include "base";
 include "martians-v4";
 include "peeringdb-v4";
 include "templates";
+include "filters-v4/*.prefixes";
 include "filters-v4/*.filter";
 include "peers-v4";

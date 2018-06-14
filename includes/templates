@@ -1,3 +1,5 @@
+
+# Individual sanity checks
 function asn_bogons()
 int set bogon_asns;
 {
@@ -12,7 +14,13 @@ int set bogon_asns;
     4200000000..4294967294, # RFC 6996 Private ASNs
     4294967295              # RFC 6996 Last 32 bit ASN
 	];
-	return bgp_path ~ bogon_asns;
+	if bgp_path ~ bogon_asns then {
+                # print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Found bogon ASN in path", bgp_path;
+                bgp_large_community.add((myasn,prefix_filtered,filtered_bogon_asn));
+                return true;
+        } else {
+                return false;
+        }
 }
 
 function asn_transit()
@@ -21,17 +29,86 @@ int set transit_asns;
 	transit_asns = [
     174,209,701,702,1239,1299,2914,3257,3320,3356,3549,3561,4134,5511,6453,6461,6762,7018
 	];
-	return bgp_path ~ transit_asns;
-}
-
-function honor_graceful_shutdown() {
-	if (65535, 0) ~ bgp_community then {
-		bgp_local_pref = 0;
-	}
+	if bgp_path ~ transit_asns then {
+                # print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Found well-known transit ASN in ", bgp_path;
+                bgp_large_community.add((myasn,prefix_filtered,filtered_transit_asn));
+                return true;
+        } else {
+                return false;
+        }
 }
 
 function is_first_asn(int asn) {
-	if bgp_path.first != asn then return false;
+	if bgp_path.first != asn then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": First AS in path does not match with peer AS - ", bgp_path.first, " != ", asn;
+                bgp_large_community.add((myasn,prefix_filtered,filtered_first_asn));
+                return true;
+        } else {
+                return false;
+        }
+}
+
+function is_first_asn_rs(int asn) {
+	if bgp_path.first = asn then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": First AS in path matches with routeserver AS - ", bgp_path.first, " != ", asn;
+                bgp_large_community.add((myasn,prefix_filtered,filtered_first_asn));
+                return true;
+        } else {
+                return false;
+        }
+}
+
+function next_hop_check() {
+	if bgp_next_hop != from then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Invalid next hop!";
+                bgp_large_community.add((myasn,prefix_filtered,filtered_next_hop));
+                return true;
+        } else {
+                return false;
+        }
+}
+
+function next_hop_check_rs() {
+	if bgp_next_hop = from then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Routeserver as next hop!";
+                bgp_large_community.add((myasn,prefix_filtered,filtered_next_hop));
+                return true;
+        } else {
+                return false;
+        }
+}
+
+function bgp_path_length() {
+	if bgp_path.len > 100 then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": AS path too long: ",bgp_path.len;
+                bgp_large_community.add((myasn,prefix_filtered,filtered_path_length));
+                return true;
+        } else {
+                return false;
+        }
+}
+
+function net_myprefixes() {
+	if net ~ myprefixes then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": One of our own prefixes!";
+                bgp_large_community.add((myasn,prefix_filtered,filtered_my_prefixes));
+                return true;
+        } else {
+                return false;
+        }
+}
+
+# BGP communities processing
+
+function process_blackhole_in() {
+	if ( ( (65535,666) ~ bgp_community ) && ( net.len = max_prefix_length ) ) then {
+		bgp_local_pref = 200;
+		gw = blackhole_ip;
+		bgp_next_hop = blackhole_ip;
+		return true;
+	} else {
+		return false;
+	}
 }
 
 function process_communities_in() {
@@ -63,57 +140,72 @@ function strip_my_communities() {
 	bgp_large_community.delete([(myasn,*,*)]);
 }
 
+function honor_graceful_shutdown() {
+	if (65535, 0) ~ bgp_community then {
+		bgp_local_pref = 0;
+	}
+}
+
+# Sanity checking functions per peer template, also used by peers with AS-SETs defined
+
 function filter_routeserver() {
-	if bgp_next_hop = from then return true;
-	if bgp_path.len > 100 then return true;
+	bgp_community.add((myasn,rs_route));
+	bgp_large_community.add((myasn,prefix_type,rs_route));
+	tag_peeringdb_ixid();
+#	if process_blackhole_in() then return false;
+	if next_hop_check_rs() then return true;
+	if bgp_path_length() then return true;
 	if asn_transit() then return true;
 	if asn_bogons() then return true;
-	if net ~ myprefixes then return true;
+	if net_myprefixes() then return true;
 	if net_martian() then return true;
 	strip_my_communities();
-	bgp_community.add((myasn,rs_route));
-	tag_peeringdb_ixid();
 	honor_graceful_shutdown();
 	return false;
 }
 
 function filter_peering() {
-	if bgp_next_hop != from then return true;
-	if bgp_path.len > 100 then return true;
+	bgp_community.add((myasn,peering_route));
+	bgp_large_community.add((myasn,prefix_type,peering_route));
+	tag_peeringdb_ixid();
+	if next_hop_check() then return true;
+	if bgp_path_length() then return true;
 	if asn_transit() then return true;
 	if asn_bogons() then return true;
-	if net ~ myprefixes then return true;
+	if net_myprefixes() then return true;
 	if net_martian() then return true;
 	strip_my_communities();
-	bgp_community.add((myasn,peering_route));
-	tag_peeringdb_ixid();
 	honor_graceful_shutdown();
 	return false;
 }
 
 function filter_customer() {
-	if bgp_next_hop != from then return true;
-	if bgp_path.len > 100 then return true;
+	bgp_community.add((myasn,customer_route));
+	bgp_large_community.add((myasn,prefix_type,customer_route));
+	if next_hop_check() then return true;
+	if bgp_path_length() then return true;
 	if asn_transit() then return true;
 	if asn_bogons() then return true;
-	if net ~ myprefixes then return true;
+	if net_myprefixes() then return true;
 	if net_martian() then return true;
-	bgp_community.add((myasn,customer_route));
 	honor_graceful_shutdown();
 	return false;
 }
 
 function filter_transit() {
-	if bgp_next_hop != from then return true;
-	if bgp_path.len > 100 then return true;
+	bgp_community.add((myasn,transit_route));
+	bgp_large_community.add((myasn,prefix_type,transit_route));
+	if next_hop_check() then return true;
+	if bgp_path_length() then return true;
 	if asn_bogons() then return true;
-	if net ~ myprefixes then return true;
+	if net_myprefixes() then return true;
 	if net_martian() then return true;
 	strip_my_communities();
-	bgp_community.add((myasn,transit_route));
 	honor_graceful_shutdown();
 	return false;
 }
+
+# Inbound filters if no AS-SETs defined
 
 filter bgp_in_routeserver {
 	if filter_routeserver() then reject;
@@ -136,14 +228,16 @@ filter bgp_in_transit {
 	accept;
 }
 
+# Outbound filters
+
 filter ebgp_out 
 int customer;
 {
 	if net_martian() then reject;
-	if bgp_community ~ (myasn,customer_route) then customer=1;
+#	if bgp_community ~ (myasn,customer_route) then customer=1;
 	strip_my_communities();
 	if net ~ myprefixes then accept;
-	if customer = 1 then accept;
+#	if customer = 1 then accept;
 	reject;
 }
 
@@ -158,6 +252,8 @@ filter ebgp_customer_default {
 	reject;
 }
 
+# Internal filters
+
 filter ibgp_in {
 	accept;
 }
@@ -165,6 +261,8 @@ filter ibgp_in {
 filter ibgp_out {
 	accept;
 }
+
+# BGP templates
 
 template bgp INTERNAL {
 	local as myasn;

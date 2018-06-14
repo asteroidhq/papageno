@@ -29,13 +29,21 @@ prefix set martians;
     fc00::/7{7,128},        # Unique Local Unicast [RFC4193]
     fe80::/10{10,128},      # Link Local Unicast [RFC4291]
     fec0::/10{10,128},      # Reserved by IETF [RFC3879]
-    ff00::/8{8,128},        # Multicast [RFC4291]
-# Uncomment if you want to filter out large > /19 and small < /64 here
-    0000::/0{0,18},	    # Large prefixes
-    0000::/0{65,128}	    # Small prefixes
+    ff00::/8{8,128}         # Multicast [RFC4291]
 	];
-	if net ~ martians then return true;
+	if ( net ~ martians ) then {
+		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is a martian";
+		bgp_large_community.add((myasn,prefix_filtered,filtered_martian));
+		return true;
+	}
+	if ( net ~ [ 0000::/0{0,18} ] ) then {
+		bgp_large_community.add((myasn,prefix_filtered,filtered_too_short));
+		return true;
+	}
+	if ( net ~ [ 0000::/0{65,128} ] ) then {
+		bgp_large_community.add((myasn,prefix_filtered,filtered_too_long));
+		return true;
+	}
 	return false;
 }
 
-define defaultroute = ::/0;

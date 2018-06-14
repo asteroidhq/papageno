@@ -1,7 +1,13 @@
+#IPv6 specific defines
+define defaultroute = ::/0;
+define max_prefix_length = 128;
+define blackhole_ip = 2001:db8::1;
+
 include "defines";
 include "base";
 include "martians-v6";
 include "peeringdb-v6";
 include "templates";
+include "filters-v6/*.prefixes";
 include "filters-v6/*.filter";
 include "peers-v6";
