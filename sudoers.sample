@@ -1,0 +1,11 @@
+# Use these when inside of a single netns
+birduser   ALL=NOPASSWD: /sbin/iptables -F INPUT_BGP_USER
+birduser   ALL=NOPASSWD: /sbin/iptables -A INPUT_BGP_USER *
+birduser   ALL=NOPASSWD: /sbin/ip6tables -F INPUT_BGP_USER
+birduser   ALL=NOPASSWD: /sbin/ip6tables -A INPUT_BGP_USER *
+# or use these when bird runs inside a separate netns called 'birdns'
+birduser   ALL=NOPASSWD: /sbin/ip netns exec birdns sudo -u birduser *
+birduser   ALL=NOPASSWD: /sbin/ip netns exec birdns /sbin/iptables -F INPUT_BGP_USER
+birduser   ALL=NOPASSWD: /sbin/ip netns exec birdns /sbin/iptables -A INPUT_BGP_USER *
+birduser   ALL=NOPASSWD: /sbin/ip netns exec birdns /sbin/ip6tables -F INPUT_BGP_USER
+birduser   ALL=NOPASSWD: /sbin/ip netns exec birdns /sbin/ip6tables -A INPUT_BGP_USER *

@@ -36,16 +36,28 @@ Predefined filter sets for sessions with:
  - Customer connections
  - Internal BGP sessions
  
-It also configures Bird to be compatible with birdseye, a bird-based looking glass tool. There are separate tools for updating peering sessions, updating IRR filters and syncing with peeringdb so updating filters can be done independently (and automated!).
+It also configures Bird to be compatible with birdseye, a bird-based looking glass tool. 
+There are separate commands for updating peering sessions, updating IRR filters and syncing with peeringdb so updates can be done independently (and automated!).
+
+# Requirements
+ - Bird 1.6
+ - Perl 5 or later
+    The following non-standard modules:
+    - LWP::Simple (libwww-perl)
+    - JSON (libjson-perl)
+ - bgpq3
 
 # Usage
+ - edit envvars to the correct settings 
  - edit bird.conf and bird6.conf to reflect your asn and prefixes
  - edit bgp-peers.csv to configure your BGP peers
- - After every edit of bgp-peers.csv, run ./update-peers and ./update-filters
- - Check your configs with bird|bird6 -c <bird.conf|bird6.conf> -p
- - Push the new config to bird using birdc|birdc6 configure soft
- - Periodically (a few times a day) run ./update-filters and push the configs using birdc|birdc6 configure soft
- - Run update-peeringdb every time you connect to a new IX and push the configs using birdc|birdc6 configure soft
+ - After every edit, do ./run_papageno peers'
+ - Periodically (a few times a day) do './run_papageno filters' to update AS-SET filters
+ - Run './run_papageno peeringdb' every time you connect to a new IX
+ - Optional but highly recommended:
+    - edit papageno-cron.d.sample for your configuration and copy to /etc/cron.d to automate periodic updates
+    - edit sudoers.sample and add to /etc/sudoers
+    - add iptables.conf.sample and ip6tables.conf.sample to your iptables configuration and enable update-iptables in envvars 
 
 Happy peering!
 

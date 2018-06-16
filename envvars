@@ -1,0 +1,10 @@
+BIRD_RUN_USER=bird
+BIRD_RUN_GROUP=bird
+#BIRD_ARGS=
+#BIRD4_ARGS=
+#BIRD6_ARGS=
+#BIRD_NETNS=birdns
+#BIRD_CONFDIR=/etc/bird
+#BIRD_SOCKET=/var/run/bird.ctl
+#BIRD6_SOCKET=/var/run/bird6.ctl
+#UPDATE_IPTABLES=1

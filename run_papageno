@@ -1,0 +1,108 @@
+#! /bin/sh
+
+. `dirname "$0"`/envvars
+
+if [ "$BIRD_CONFDIR" ]; then
+	DIR=$BIRD_CONFDIR
+else
+	#assume it's the same directory as this script
+	DIR=/etc/bird 
+fi
+
+BIRDC=`which birdc`
+
+if [ "$BIRD_SOCKET" ]; then
+	BIRDC4="$BIRDC -s $BIRD_SOCKET"
+else
+	BIRDC4="$BIRDC -s /var/run/bird/bird.ctl"
+fi
+
+if [ "$BIRD6_SOCKET" ]; then
+	BIRDC6="$BIRDC -s $BIRD6_SOCKET"
+else
+	BIRDC6="$BIRDC -s /var/run/bird/birdi6.ctl"
+fi
+
+if [ "X$1X" = "XX" ]; then
+	echo "Usage: $0 <peers|filters|all|force|hourly|daily|cronfilters>"
+	exit 1
+fi
+
+cd $DIR
+
+if [ -f .papageno.lock ]; then
+	echo "Lockfile found, bailing out"
+	exit 1
+fi
+
+touch .papageno.lock
+
+if [ "$1" = "hourly" ]; then 
+	if [ ! "`find bgp-peers.csv -mmin +60`" ]; then
+		./bin/update-peers -q
+		./bin/update-filters -q
+		[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+		$BIRDC4 configure soft > /dev/null
+		$BIRDC6 configure soft > /dev/null
+	fi
+	rm .papageno.lock
+	exit 0
+fi
+
+if [ "$1" = "daily" ]; then 
+	./bin/update-peers -q
+	./bin/update-filters -q
+	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	$BIRDC4 configure soft > /dev/null
+	$BIRDC6 configure soft > /dev/null
+fi
+
+if [ "$1" = "cronfilters" ]; then
+	./bin/update-filters -q
+	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	$BIRDC4 configure soft > /dev/null
+	$BIRDC6 configure soft > /dev/null
+fi
+
+if [ "$1" = "peers" ]; then
+	./bin/update-peers
+	./bin/update-filters
+	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	$BIRDC4 configure soft
+	$BIRDC6 configure soft
+fi
+
+if [ "$1" = "filters" ]; then
+	./bin/update-filters 
+	$BIRDC4 configure soft
+	$BIRDC6 configure soft
+fi
+
+if [ "$1" = "peeringdb" ]; then
+	./bin/update-peeringdb -f
+	$BIRDC4 configure soft
+	$BIRDC6 configure soft
+fi
+
+if [ "$1" = "all" ]; then
+	./bin/update-peers
+	./bin/update-filters 
+	./bin/update-peeringdb
+	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	$BIRDC4 configure soft
+	$BIRDC6 configure soft
+fi
+
+if [ "$1" = "force" ]; then
+	./bin/update-peers -f
+	./bin/update-filters -f
+	./bin/update-peeringdb -f 
+	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	$BIRDC4 configure soft
+	$BIRDC6 configure soft
+fi
+	
+rm .papageno.lock
+
+cd - > /dev/null
+

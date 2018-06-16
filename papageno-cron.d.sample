@@ -1,0 +1,13 @@
+#
+# cron.d/papageno -- schedules periodic updates of BGP peers and filters for Bird
+#
+
+# Run at three minutes past every hour to update the peering config
+# if the master CSV file has been updated in the last 60 minutes.
+03 1-11,13-23 * * * birduser [ -x /etc/bird/run_papageno ] && /etc/bird/run_papageno hourly
+# Except twice a day to ensure we don't miss updates our peers made in peeringdb
+03 0,12 * * * birduser [ -x /etc/bird/run_papageno ] && /etc/bird/run_papageno daily
+# Run at 33 minutes past every 6 hours to update filter sets
+33 */6 * * * birduser [ -x /etc/bird/run_papageno ] && /etc/bird/run_papageno cronfilters
+# Run at 27 minutes past midnight to update peeringdb data sets
+27 0 * * * birduser [ -x /etc/bird/run_papageno ] && /etc/bird/run_papageno peeringdb

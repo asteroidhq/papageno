@@ -1,0 +1,12 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:INPUT_BGP - [0:0]
+:INPUT_BGP_USER - [0:0]
+-A INPUT -p tcp -m tcp --dport 179 -j INPUT_BGP
+-A INPUT_BGP -m state --state ESTABLISHED -j ACCEPT
+-A INPUT_BGP -j INPUT_BGP_USER
+-A INPUT_BGP -j REJECT --reject-with icmp6-port-unreachable
+-A INPUT_BGP_USER -j ACCEPT
+COMMIT
