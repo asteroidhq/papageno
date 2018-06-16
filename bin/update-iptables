@@ -3,8 +3,8 @@
 . `dirname "$0"`/../envvars
 
 if [ "$BIRD_NETNS" ]; then
-	IPTABLES='sudo ip netns exec $BIRD_NETNS /sbin/iptables'
-	IP6TABLES='sudo ip netns exec $BIRD_NETNS /sbin/ip6tables'
+	IPTABLES="sudo ip netns exec $BIRD_NETNS /sbin/iptables"
+	IP6TABLES="sudo ip netns exec $BIRD_NETNS /sbin/ip6tables"
 else 
 	IPTABLES='sudo /sbin/iptables'
 	IP6TABLES='sudo /sbin/ip6tables'
