@@ -58,3 +58,36 @@ define filtered_too_short = 409;
 define ix_id_offset = 10000;
 define country_iso_offset = 20000;
 define location = location_id + 30000;
+
+define transit_asns = [
+    174,		# Cogent
+    209,		# Centurylink
+    701,		# Verizon
+    702,		# Verizon Business EMEA
+    1239,		# Sprint
+    1299,		# Telia
+    2914,		# NTT
+    3257,		# GTT
+    3320,		# Deutsche Telekom
+    3356,		# Level3
+    3549,		# Level3
+    3561,		# Savvis
+    4134,		# China Telecom
+    5511,		# Orange
+    6453,		# Tata Communications
+    6461,		# Zayo
+    6762,		# Telecom Italia Sparkle
+    7018		# AT&T US
+];
+
+define bogon_asns = [
+    0,                      # RFC 7607
+    23456,                  # RFC 4893 AS_TRANS
+    64496..64511,           # RFC 5398 and documentation/example ASNs
+    64512..65534,           # RFC 6996 Private ASNs
+    65535,                  # RFC 6996 Last 16 bit ASN
+    65536..65551,           # RFC 5398 and documentation/example ASNs
+    65552..131071,          # RFC IANA reserved ASNs
+    4200000000..4294967294, # RFC 6996 Private ASNs
+    4294967295              # RFC 6996 Last 32 bit ASN
+];

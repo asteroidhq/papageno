@@ -1,21 +1,27 @@
 
 # Individual sanity checks
-#
-#
-define bogon_asns = [  
-    0,                      # RFC 7607
-    23456,                  # RFC 4893 AS_TRANS
-    64496..64511,           # RFC 5398 and documentation/example ASNs
-    64512..65534,           # RFC 6996 Private ASNs
-    65535,                  # RFC 6996 Last 16 bit ASN
-    65536..65551,           # RFC 5398 and documentation/example ASNs
-    65552..131071,          # RFC IANA reserved ASNs
-    4200000000..4294967294, # RFC 6996 Private ASNs
-    4294967295              # RFC 6996 Last 32 bit ASN
-];
+
+function net_martian()
+{
+	if ( net ~ martians ) then {
+		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is a martian";
+		bgp_large_community.add((myasn,prefix_filtered,filtered_martian));
+		return true;
+	}
+	# Any prefixes larger than max_accepted_prefix
+	if net.len < max_accepted_prefix then {
+		bgp_large_community.add((myasn,prefix_filtered,filtered_too_short));
+		return true;
+	}
+	# Any prefixes smaller than min_accepted_prefix
+	if net.len > min_accepted_prefix then {
+		bgp_large_community.add((myasn,prefix_filtered,filtered_too_long));
+		return true;
+	}
+	return false;
+}
 
 function asn_bogons()
-#int set bogon_asns;
 {
 	if bgp_path ~ bogon_asns then {
                 # print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Found bogon ASN in path", bgp_path;
@@ -27,11 +33,7 @@ function asn_bogons()
 }
 
 function asn_transit()
-int set transit_asns;
 {
-	transit_asns = [
-    174,209,701,702,1239,1299,2914,3257,3320,3356,3549,3561,4134,5511,6453,6461,6762,7018
-	];
 	if bgp_path ~ transit_asns then {
                 # print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Found well-known transit ASN in ", bgp_path;
                 bgp_large_community.add((myasn,prefix_filtered,filtered_transit_asn));
