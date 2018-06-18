@@ -1,9 +1,8 @@
 
 # Individual sanity checks
-function asn_bogons()
-int set bogon_asns;
-{
-	bogon_asns = [  
+#
+#
+define bogon_asns = [  
     0,                      # RFC 7607
     23456,                  # RFC 4893 AS_TRANS
     64496..64511,           # RFC 5398 and documentation/example ASNs
@@ -13,7 +12,11 @@ int set bogon_asns;
     65552..131071,          # RFC IANA reserved ASNs
     4200000000..4294967294, # RFC 6996 Private ASNs
     4294967295              # RFC 6996 Last 32 bit ASN
-	];
+];
+
+function asn_bogons()
+#int set bogon_asns;
+{
 	if bgp_path ~ bogon_asns then {
                 # print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Found bogon ASN in path", bgp_path;
                 bgp_large_community.add((myasn,prefix_filtered,filtered_bogon_asn));
@@ -234,9 +237,9 @@ filter ebgp_out
 int customer;
 {
 	if net_martian() then reject;
-	bgp_path.delete( [64512..65535, 4200000000..4294967294] );
+	bgp_path.delete(bogon_asns);
 	strip_my_communities();
-	if (! myas_set = "") then {
+	if defined(myas_set) then {
 		if in_my_prefixes() then accept;
 	} else {
 		if net ~ myprefixes then accept;
