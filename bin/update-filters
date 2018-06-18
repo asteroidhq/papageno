@@ -82,14 +82,19 @@ sub output_filter {
 	if ($filter ne "") {
 		my $query=$filter;
 		$filter =~ tr/-/_/;
-		$function_name = "in_".$filter."_".$version."()";
-		$filter_line="if $function_name then {\n      accept;\n    } else {\n      bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));\n      reject;\n    }";
+		if ($template eq "__internal__") {
+                        $function_name = "in_".$id."()";
+                } else {
+                        $function_name = "in_".$filter."_".$version."()";
+                        $filter_line="if $function_name then {\n      accept;\n    } else {\n      bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));\n      reject;\n    }";
+                }
 		output_prefixes($query,$version,$function_name,$output_dir);
 	} else {
 		$filter_line="accept;";
 	}
-	open (my $out, ">", "$output_dir/$id.filter.tmp") or die "$!\n";
-	print $out <<EOF;
+	if (! $template eq "__internal__") { 
+		open (my $out, ">", "$output_dir/$id.filter.tmp") or die "$!\n";
+		print $out <<EOF;
 # UPDATED AUTOMATICALLY DO NOT EDIT!
 # Last updated: $last_updated
 
@@ -100,8 +105,9 @@ filter $filter_name
     $filter_line
 }
 EOF
-	close $out;
-	move ("$output_dir/$id.filter.tmp","$output_dir/$id.filter");
+		close $out;
+		move ("$output_dir/$id.filter.tmp","$output_dir/$id.filter");
+	}
 }
 
 my @input;

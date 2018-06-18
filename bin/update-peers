@@ -24,6 +24,24 @@ foreach my $val (@ARGV) {
 	else			{ $input=$val; }
 }
 
+sub load_defines {
+	my $file = $_[0];
+	my %rethash;
+	open (my $fh, "<:encoding(UTF-8)", $file) or die "$!\n";
+	while ( ! eof ($fh) ) {
+		my $line = <$fh>;
+		next if ($line =~ /^\s*#/);
+		chomp $line;
+		if ($line =~ /^define (\w+)\s*=\s*(.+);/ ) {
+			my ($name,$val)  = ($1,$2);
+			$val =~ s/"(.*)?"/\1/;
+			$rethash{"$name"}=$val;
+		}
+	}
+	close ($fh);
+	return %rethash;
+}
+
 sub cli_out {
 	if ($quiet==1) { return;}
 	my ($str,$relevance) = @_;
@@ -59,12 +77,23 @@ sub output_peer {
 my %updated_net;
 my $updated_net;
 
+my %bird4_defs = load_defines ("$basedir/bird.conf");
+my %bird6_defs = load_defines ("$basedir/bird6.conf");
+
 open (my $fh, "<:encoding(UTF-8)", $input) or die "$!\n";
 open (my $out4, ">", "$basedir/includes/peers-v4.tmp") or die "$!\n";
 open (my $out6, ">", "$basedir/includes/peers-v6.tmp") or die "$!\n";
 
 print $out4 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n\n";
 print $out6 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n\n";
+
+#Do my own asn/as-set first
+if ($bird4_defs{"myasn"} && $bird4_defs{"myas_set"}) {
+       printf $out4 "#FILTERSET;%s;%s;__INTERNAL__;my_prefixes\n\n",$bird4_defs{"myasn"}, $bird4_defs{"myas_set"};
+}
+if ($bird6_defs{"myasn"} && $bird6_defs{"myas_set"}) {
+       printf $out6 "#FILTERSET;%s;%s;__INTERNAL__;my_prefixes\n\n",$bird6_defs{"myasn"}, $bird6_defs{"myas_set"};
+}
 
 my $header=<$fh>;
 while ( ! eof ($fh) ) {

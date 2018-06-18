@@ -7,7 +7,7 @@ include "defines";
 include "base";
 include "martians-v6";
 include "peeringdb-v6";
-include "templates";
 include "filters-v6/*.prefixes";
+include "templates";
 include "filters-v6/*.filter";
 include "peers-v6";
