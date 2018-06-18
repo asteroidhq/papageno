@@ -236,7 +236,6 @@ filter bgp_in_transit {
 # Outbound filters
 
 filter ebgp_out 
-int customer;
 {
 	if net_martian() then reject;
 	bgp_path.delete(bogon_asns);
@@ -282,28 +281,28 @@ template bgp INTERNAL {
 template bgp CUSTOMER {
 	local as myasn;
 	import keep filtered;
-	import limit 100 action block;
+	import limit default_pfxlimit_customer action block;
 	import filter bgp_in_customer;
 	export filter ebgp_customer;
-	preference 120;
+	preference default_preference_customer;
 }
 
 template bgp PEERING {
 	local as myasn;
 	import keep filtered;
-	import limit 10000 action block;
+	import limit default_pfxlimit_peering action block;
 	import filter bgp_in_peering;
 	export filter ebgp_out;
-	preference 100;
+	preference default_preference_peering;
 }
 
 template bgp ROUTESERVER {
 	local as myasn;
 	import keep filtered;
-	import limit 50000 action block;
+	import limit default_pfxlimit_routeserver action block;
 	import filter bgp_in_routeserver;
 	export filter ebgp_out;
-	preference 80;
+	preference default_preference_routeserver;
 }
 
 template bgp TRANSIT {
@@ -311,6 +310,6 @@ template bgp TRANSIT {
 	import keep filtered;
 	import filter bgp_in_transit;
 	export filter ebgp_out;
-	preference 50;
+	preference default_preference_transit;
 }
 
