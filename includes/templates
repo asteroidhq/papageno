@@ -154,6 +154,7 @@ function strip_my_communities() {
 	bgp_large_community.delete([(0,*,*)]);
 	bgp_community.delete([(myasn, *)]);
 	bgp_large_community.delete([(myasn,*,*)]);
+	return true;
 }
 
 function honor_graceful_shutdown() {
@@ -165,6 +166,7 @@ function honor_graceful_shutdown() {
 # Sanity checking functions per peer template, also used by peers with AS-SETs defined
 
 function filter_routeserver() {
+	strip_my_communities();
 	bgp_community.add((myasn,rs_route));
 	bgp_large_community.add((myasn,prefix_type,rs_route));
 	tag_peeringdb_ixid();
@@ -176,12 +178,12 @@ function filter_routeserver() {
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
 	if net_ixp() then return true;
-	strip_my_communities();
 	honor_graceful_shutdown();
 	return false;
 }
 
 function filter_peering() {
+	strip_my_communities();
 	bgp_community.add((myasn,peering_route));
 	bgp_large_community.add((myasn,prefix_type,peering_route));
 	tag_peeringdb_ixid();
@@ -192,7 +194,6 @@ function filter_peering() {
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
 	if net_ixp() then return true;
-	strip_my_communities();
 	honor_graceful_shutdown();
 	return false;
 }
@@ -212,6 +213,7 @@ function filter_customer() {
 }
 
 function filter_transit() {
+	strip_my_communities();
 	bgp_community.add((myasn,transit_route));
 	bgp_large_community.add((myasn,prefix_type,transit_route));
 	if next_hop_check() then return true;
@@ -220,7 +222,6 @@ function filter_transit() {
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
 	if net_ixp() then return true;
-	strip_my_communities();
 	honor_graceful_shutdown();
 	return false;
 }
