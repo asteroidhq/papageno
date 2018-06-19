@@ -1,5 +1,10 @@
 # Set system wide statics
 
+define default_preference_customer=120;
+define default_preference_peering=100;
+define default_preference_routeserver=80;
+define default_preference_transit=50;
+
 # action communities
 define bgp_blackhole = 666;
 define prepend_one = 1001;
@@ -53,6 +58,7 @@ define filtered_my_prefixes = 406;
 define filtered_as_set = 407;
 define filtered_too_long = 408;
 define filtered_too_short = 409;
+define filtered_ixp_prefix = 410;
 
 # read by update-peeringdb
 define ix_id_offset = 10000;

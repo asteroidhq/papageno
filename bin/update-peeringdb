@@ -6,11 +6,9 @@ use LWP::Simple;                # From CPAN
 use JSON qw( decode_json );     # From CPAN
 use File::Copy;
 use strict;                     # Good practice
-use warnings;                   # Good practice
 
 my $cmdl = $ARGV[0] || "";
 
-my $tmpdir="/tmp";
 my $basedir=".";
 
 sub readfile {
@@ -28,12 +26,19 @@ while (<$def>) {
 }
 close $def;
 
-open (my $out4, ">", "$tmpdir/peeringdb-v4.tmp") or die "$!\n";
-open (my $out6, ">", "$tmpdir/peeringdb-v6.tmp") or die "$!\n";
+open (my $out4, ">", "$basedir/includes/peeringdb-v4.tmp") or die "$!\n";
+open (my $out6, ">", "$basedir/includes/peeringdb-v6.tmp") or die "$!\n";
+
+open (my $filter4, ">", "$basedir/includes/filters-v4/ixp.prefixes.tmp") or die "$!\n";
+open (my $filter6, ">", "$basedir/includes/filters-v6/ixp.prefixes.tmp") or die "$!\n";
 
 print $out4 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
 print $out6 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
+print $filter4 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
+print $filter6 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
 
+print $filter4 "define ixp_prefixes = [\n";
+print $filter6 "define ixp_prefixes = [\n";
 
 if ("$cmdl" eq "-f") {
 	getstore ("https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/slim-2/slim-2.json", "$basedir/data/slim-2.json");
@@ -72,40 +77,73 @@ $region{"South America"} = $defs{"region_south_america"};
 print $out4 "function tag_peeringdb_ixid() {\n";
 print $out6 "function tag_peeringdb_ixid() {\n";
 
+my $v4counter=0;
+my $v6counter=0;
 foreach my $i (@{$decoded_ixpfx->{'data'}}) {
     my $id = $ix_id{$i->{'ixlan_id'}};
     my $cid = $iso_code{$ix_country{"$id"}};
     my $cont = $region{$ix_continent{"$id"}};
     my $pid = ($id+$defs{"ix_id_offset"});
     my $country = ($cid+$defs{"country_iso_offset"});
+    my $prefix = $i->{'prefix'};
     if ($i->{'protocol'} eq "IPv4") { 
-	print $out4 "    if from ~ $i->{'prefix'} then { \n";
-	print $out4 "      bgp_community.add((myasn,$pid));\n";
-	print $out4 "      bgp_community.add((myasn,$country));\n";
-	print $out4 "      bgp_community.add((myasn,$cont));\n";
-	print $out4 "      bgp_large_community.add((myasn,prefix_ix,$id));\n";
-	print $out4 "      bgp_large_community.add((myasn,prefix_country,$cid));\n";
-	print $out4 "      bgp_large_community.add((myasn,prefix_region,$cont));\n";
-      	print $out4 "      return true; } \n";
+	if ( $v4counter == 0 ) { print $filter4 "    $i->{'prefix'}" }
+	else { print $filter4 ",\n    $i->{'prefix'}" }
+	$v4counter++;
+	print $out4 <<EOF;
+    if from ~ $prefix then { 
+      bgp_community.add((myasn,$pid));
+      bgp_community.add((myasn,$country));
+      bgp_community.add((myasn,$cont));
+      bgp_large_community.add((myasn,prefix_ix,$id));
+      bgp_large_community.add((myasn,prefix_country,$cid));
+      bgp_large_community.add((myasn,prefix_region,$cont));
+      return true; 
+    }
+EOF
     } elsif ($i->{'protocol'} eq "IPv6") {
-	print $out6 "    if from ~ $i->{'prefix'} then { \n";
-	print $out6 "      bgp_community.add((myasn,$pid));\n";
-	print $out6 "      bgp_community.add((myasn,$country));\n";
-	print $out6 "      bgp_community.add((myasn,$cont));\n";
-	print $out6 "      bgp_large_community.add((myasn,prefix_ix,$id));\n";
-	print $out6 "      bgp_large_community.add((myasn,prefix_country,$cid));\n";
-	print $out6 "      bgp_large_community.add((myasn,prefix_region,$cont));\n";
-      	print $out6 "      return true; } \n";
+	if ( $v6counter == 0 ) { print $filter6 "    $i->{'prefix'}" }
+	else { print $filter6 ",\n    $i->{'prefix'}" }
+	$v6counter++;
+	print $out6 <<EOF;
+    if from ~ $prefix then { 
+      bgp_community.add((myasn,$pid));
+      bgp_community.add((myasn,$country));
+      bgp_community.add((myasn,$cont));
+      bgp_large_community.add((myasn,prefix_ix,$id));
+      bgp_large_community.add((myasn,prefix_country,$cid));
+      bgp_large_community.add((myasn,prefix_region,$cont));
+      return true; 
+    }
+EOF
     }
 }
-print $out4 "    return false;\n}\n";
-print $out6 "    return false;\n}\n";
+
+print $filter4 "\n];\n";
+print $filter6 "\n];\n";
+
+print $out4 <<EOF;
+    bgp_community.add ((myasn,10000));
+    bgp_large_community.add ((myasn,prefix_ix,0));
+    return true;
+}
+EOF
+print $out6 <<EOF;
+    bgp_community.add ((myasn,10000));
+    bgp_large_community.add ((myasn,prefix_ix,0));
+    return true;
+}
+EOF
 
 close $out4;
 close $out6;
+close $filter4;
+close $filter6;
 
-move ("$tmpdir/peeringdb-v4.tmp","$basedir/includes/peeringdb-v4");
-move ("$tmpdir/peeringdb-v6.tmp","$basedir/includes/peeringdb-v6");
+move ("$basedir/includes/peeringdb-v4.tmp","$basedir/includes/peeringdb-v4");
+move ("$basedir/includes/peeringdb-v6.tmp","$basedir/includes/peeringdb-v6");
 
 
+move ("$basedir/includes/filters-v4/ixp.prefixes.tmp", "$basedir/includes/filters-v4/ixp.prefixes");
+move ("$basedir/includes/filters-v6/ixp.prefixes.tmp", "$basedir/includes/filters-v6/ixp.prefixes");
 

@@ -67,65 +67,42 @@ EOF
 	}
 }
 
-sub output_filter {
-	my ($asn, $filter, $template, $version,$id) = @_;
-	my $output_dir = "$basedir/includes/filters-v$version";
-	$template = lc($template);
-	my $last_updated = scalar localtime;
-	my $filter_name = "filter_$id";
-	my ($first_asn,$function_name,$filter_line);
-	if ($template ne "routeserver") {
-		$first_asn = "if is_first_asn($asn) then reject;";
-	} else {
-		$first_asn = "if is_first_asn_rs($asn) then reject;";
-	}
-	if ($filter ne "") {
-		my $query=$filter;
-		$filter =~ tr/-/_/;
-		if ($template eq "__internal__") {
-                        $function_name = "in_".$id."()";
-                } else {
-                        $function_name = "in_".$filter."_".$version."()";
-                        $filter_line="if $function_name then {\n      accept;\n    } else {\n      bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));\n      reject;\n    }";
-                }
-		output_prefixes($query,$version,$function_name,$output_dir);
-	} else {
-		$filter_line="accept;";
-	}
-	if (! $template eq "__internal__") { 
-		open (my $out, ">", "$output_dir/$id.filter.tmp") or die "$!\n";
-		print $out <<EOF;
-# UPDATED AUTOMATICALLY DO NOT EDIT!
-# Last updated: $last_updated
-
-filter $filter_name 
-{
-    if filter_$template() then reject;
-    $first_asn
-    $filter_line
-}
-EOF
-		close $out;
-		move ("$output_dir/$id.filter.tmp","$output_dir/$id.filter");
-	}
-}
-
 my @input;
 
 @input=split(/\n/,`grep '#FILTERSET' $basedir/includes/peers-v4 | sort | uniq`);
 foreach my $line (@input) {
 	chomp $line;
 	my (undef, $asn, $filter, $template,$id) = split (";",$line);
-	cli_out "Updating IPv4 filter for peer $id, AS-set $filter\n";
-	output_filter($asn, $filter, $template, "4",$id);
+	my $function_name;
+	my $output_dir = "$basedir/includes/filters-v4";
+	if ($filter ne "") { 
+		if ($template eq "__INTERNAL__") {
+                        $function_name = "in_".$id."()";
+                } else {
+                        $function_name = "in_".$filter."_4()";
+			$function_name =~ tr/-/_/;
+                }
+		cli_out "Updating IPv4 filter for peer $id, AS-set $filter\n";
+		output_prefixes($filter,"4",$function_name,$output_dir);
+	}
 }
 
 @input=split(/\n/,`grep '#FILTERSET' $basedir/includes/peers-v6 | sort | uniq`);
 foreach my $line (@input) {
 	chomp $line;
 	my (undef, $asn, $filter, $template,$id) = split (";",$line);
-	cli_out "Updating IPv6 filter for peer $id, AS-set $filter\n";
-	output_filter($asn, $filter, $template, "6",$id);
+	my $function_name;
+	my $output_dir = "$basedir/includes/filters-v6";
+	if ($filter ne "") { 
+		if ($template eq "__INTERNAL__") {
+                        $function_name = "in_".$id."()";
+                } else {
+                        $function_name = "in_".$filter."_6()";
+			$function_name =~ tr/-/_/;
+                }
+		cli_out "Updating IPv6 filter for peer $id, AS-set $filter\n";
+		output_prefixes($filter,"6",$function_name,$output_dir);
+	}
 }
 
 while( threads->list ) {

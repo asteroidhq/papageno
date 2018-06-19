@@ -55,27 +55,41 @@ sub readfile {
 
 sub output_peer {
 	my ($out, $asn, $template, $desc, $ip, $filter, $prefixlimit, $localpref, $password, $passive ) = @_;
-	if ($filter eq "NONE") { $filter = ""; }
+	if ($filter eq "NONE") { $filter = ""; }  
 	my $version;
 	if ($ip =~ /:/) { $version = "6" } else {$version= "4" } 
 	my $id = substr($template,0,1).$version."_".$asn.sprintf("_%02d",$asn_counter{$asn});
 	my $asset = $filter;
 	$filter =~ tr/-/_/;
-	print $out "protocol bgp $id from $template {\n".
-		   "    description \"$desc\";\n".
-		   "    neighbor $ip as $asn;\n".
-		   "    #FILTERSET;$asn;$asset;$template;$id\n".
-		   #		   "    import filter asn_".$asn."_$version;\n"; 
-		   "    import filter filter_$id;\n"; 
+	my $template_function="filter_".lc($template)."()"; 
+	my $filterline;
+        if ($filter eq "") {
+		$filterline="accept;";
+	} else {	
+		$filterline  ="if in_".$filter."_".$version."() then { accept;\n        } else {\n";
+		$filterline .="            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));\n";
+		$filterline .="            reject;\n        }";
+	}
+	my $rs;
+	if ($template eq "ROUTESERVER") { $rs ="_rs" } 
+	print $out <<EOF;
+protocol bgp $id from $template {
+    #FILTERSET;$asn;$asset;$template;$id
+    description "$desc";
+    neighbor $ip as $asn;
+    import filter {
+        if $template_function then reject;
+        if is_first_asn$rs($asn) then reject;
+        $filterline 
+    };
+EOF
 	if ($password ne "")    { print $out "    password \"$password\";\n"; }
 	if ($prefixlimit ne "") { print $out "    import limit $prefixlimit action block;\n"; }
 	if ($localpref ne "") 	{ print $out "    preference $localpref;\n"; }
 	if ($passive !~ /\s*/) 	{ print $out "    passive on;\n"; }
 	print $out "}\n\n";
 }
-
 my %updated_net;
-my $updated_net;
 
 my %bird4_defs = load_defines ("$basedir/bird.conf");
 my %bird6_defs = load_defines ("$basedir/bird6.conf");
@@ -121,7 +135,7 @@ while ( ! eof ($fh) ) {
 	}
 	cli_out "  $desc, ASN $asn\n";
 	my $netfile = "$basedir/data/net/$peeringdb";
-	if ($peeringdb ne "" && $updated_net->{$peeringdb} <1) {
+	if ($peeringdb ne "" && $updated_net{"$peeringdb"} <1) {
         if ($force==1) {
 			cli_out ("  Downloading new copy of $netfile\n",1);
 			getstore ("https://www.peeringdb.com/api/net/$peeringdb",$netfile);
@@ -133,7 +147,7 @@ while ( ! eof ($fh) ) {
 			getstore ("https://www.peeringdb.com/api/net/$peeringdb",$netfile);
 		}
 	}
-	$updated_net->{$peeringdb}=1;
+	$updated_net{"$peeringdb"}=1;
 	}
 	if ($ipv4.$ipv6 eq "" && ( -s "$netfile")) {
 		my $decoded_net = decode_json( readfile("$basedir/data/net/$peeringdb") );

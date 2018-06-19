@@ -1,1 +1,808 @@
 # UPDATED AUTOMATICALLY DO NOT EDIT!
+# Last updated: Tue Jun 19 10:00:23 2018
+# Source: /home/remco/as25595/bird/bgp-peers.csv
+
+#FILTERSET;25595;AS-SLASHME;__INTERNAL__;my_prefixes
+
+protocol bgp T6_6939_01 from TRANSIT {
+    #FILTERSET;6939;;TRANSIT;T6_6939_01
+    description "Hurricane Electric - Tunnel";
+    neighbor 2001:470:12:12c::1 as 6939;
+    import filter {
+        if filter_transit() then reject;
+        if is_first_asn(6939) then reject;
+        accept; 
+    };
+    preference 40;
+}
+
+protocol bgp T6_43531_01 from TRANSIT {
+    #FILTERSET;43531;;TRANSIT;T6_43531_01
+    description "IXReach";
+    neighbor 2a02:27f0:2:308::1 as 43531;
+    import filter {
+        if filter_transit() then reject;
+        if is_first_asn(43531) then reject;
+        accept; 
+    };
+    preference 50;
+}
+
+protocol bgp P6_59964_01 from PEERING {
+    #FILTERSET;59964;AS-NULL;PEERING;P6_59964_01
+    description "Asteroid Collector at Asteroid Amsterdam";
+    neighbor 2001:7f8:b6::1 as 59964;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(59964) then reject;
+        if in_AS_NULL_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 0 action block;
+}
+
+protocol bgp R6_41693_01 from ROUTESERVER {
+    #FILTERSET;41693;AS-ASTEROID_RS_AMSTERDAM;ROUTESERVER;R6_41693_01
+    description "Asteroid Routeserver at Asteroid Amsterdam";
+    neighbor 2001:7f8:b6::2 as 41693;
+    import filter {
+        if filter_routeserver() then reject;
+        if is_first_asn_rs(41693) then reject;
+        if in_AS_ASTEROID_RS_AMSTERDAM_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 30000 action block;
+}
+
+protocol bgp T6_6939_03 from TRANSIT {
+    #FILTERSET;6939;;TRANSIT;T6_6939_03
+    description "Hurricane Electric";
+    neighbor 2001:7f8:b6::1b1b:1 as 6939;
+    import filter {
+        if filter_transit() then reject;
+        if is_first_asn(6939) then reject;
+        accept; 
+    };
+    preference 60;
+}
+
+protocol bgp P6_15169_01 from PEERING {
+    #FILTERSET;15169;AS-GOOGLE;PEERING;P6_15169_01
+    description "Google at Asteroid Amsterdam";
+    neighbor 2001:7f8:b6::3b41:1 as 15169;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(15169) then reject;
+        if in_AS_GOOGLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    password "jutran7dEbUwr6c9";
+    import limit 1000 action block;
+}
+
+protocol bgp R6_41441_01 from ROUTESERVER {
+    #FILTERSET;41441;;ROUTESERVER;R6_41441_01
+    description "Speed-IX Routeserver at Speed-IX";
+    neighbor 2001:7f8:b7::a504:1441:1 as 41441;
+    import filter {
+        if filter_routeserver() then reject;
+        if is_first_asn_rs(41441) then reject;
+        accept; 
+    };
+    import limit 50000 action block;
+    preference 70;
+}
+
+protocol bgp R6_41441_02 from ROUTESERVER {
+    #FILTERSET;41441;;ROUTESERVER;R6_41441_02
+    description "Speed-IX Routeserver 2 at Speed-IX";
+    neighbor 2001:7f8:b7::a504:1441:2 as 41441;
+    import filter {
+        if filter_routeserver() then reject;
+        if is_first_asn_rs(41441) then reject;
+        accept; 
+    };
+    import limit 50000 action block;
+    preference 70;
+}
+
+protocol bgp P6_6939_04 from PEERING {
+    #FILTERSET;6939;;PEERING;P6_6939_04
+    description "Hurricane Electric at Speed-IX";
+    neighbor 2001:7f8:b7::a500:6939:1 as 6939;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(6939) then reject;
+        accept; 
+    };
+    import limit 32000 action block;
+    preference 55;
+}
+
+protocol bgp P6_205593_01 from PEERING {
+    #FILTERSET;205593;AS-TaKeN;PEERING;P6_205593_01
+    description "TaKeN at Speed-IX";
+    neighbor 2001:7f8:b7::a520:5593:1 as 205593;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(205593) then reject;
+        if in_AS_TaKeN_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 100 action block;
+}
+
+protocol bgp P6_1200_01 from PEERING {
+    #FILTERSET;1200;AS-NULL;PEERING;P6_1200_01
+    description "AMS-IX Collector at AMS-IX";
+    neighbor 2001:7f8:1::a500:1200:1 as 1200;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(1200) then reject;
+        if in_AS_NULL_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 2 action block;
+}
+
+protocol bgp P6_1200_02 from PEERING {
+    #FILTERSET;1200;AS-NULL;PEERING;P6_1200_02
+    description "AMS-IX Collector 2 at AMS-IX";
+    neighbor 2001:7f8:1::a500:1200:2 as 1200;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(1200) then reject;
+        if in_AS_NULL_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 2 action block;
+}
+
+protocol bgp R6_6777_01 from ROUTESERVER {
+    #FILTERSET;6777;AS-AMS-IX-RS-SETS;ROUTESERVER;R6_6777_01
+    description "AMS-IX Routeserver at AMS-IX";
+    neighbor 2001:7f8:1::a500:6777:1 as 6777;
+    import filter {
+        if filter_routeserver() then reject;
+        if is_first_asn_rs(6777) then reject;
+        if in_AS_AMS_IX_RS_SETS_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 25000 action block;
+    preference 65;
+}
+
+protocol bgp R6_6777_02 from ROUTESERVER {
+    #FILTERSET;6777;AS-AMS-IX-RS-SETS;ROUTESERVER;R6_6777_02
+    description "AMS-IX Routeserver 2 at AMS-IX";
+    neighbor 2001:7f8:1::a500:6777:2 as 6777;
+    import filter {
+        if filter_routeserver() then reject;
+        if is_first_asn_rs(6777) then reject;
+        if in_AS_AMS_IX_RS_SETS_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 25000 action block;
+    preference 65;
+}
+
+protocol bgp P6_16637_01 from PEERING {
+    #FILTERSET;16637;AS-MTNNS;PEERING;P6_16637_01
+    description "MTN South Africa at AMS-IX";
+    neighbor 2001:7f8:1::a501:6637:2 as 16637;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(16637) then reject;
+        if in_AS_MTNNS_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    password "NRO3bfgG93tP";
+    import limit 20 action block;
+}
+
+protocol bgp P6_262788_01 from PEERING {
+    #FILTERSET;262788;AS262788;PEERING;P6_262788_01
+    description "Select Latina at AMS-IX";
+    neighbor 2001:7f8:1:0:a500:26:2788:1 as 262788;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(262788) then reject;
+        if in_AS262788_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 20 action block;
+}
+
+protocol bgp P6_30844_01 from PEERING {
+    #FILTERSET;30844;AS-LIQUID;PEERING;P6_30844_01
+    description "Liquid Telecom at AMS-IX";
+    neighbor 2001:7f8:1::a503:844:1 as 30844;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(30844) then reject;
+        if in_AS_LIQUID_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 500 action block;
+}
+
+protocol bgp P6_16298_01 from PEERING {
+    #FILTERSET;16298;AS-INTERBOX;PEERING;P6_16298_01
+    description "Interbox at AMS-IX";
+    neighbor 2001:7f8:1::a501:6298:1 as 16298;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(16298) then reject;
+        if in_AS_INTERBOX_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1 action block;
+}
+
+protocol bgp P6_2484_01 from PEERING {
+    #FILTERSET;2484;AS-AFNIC;PEERING;P6_2484_01
+    description "Afnic at AMS-IX";
+    neighbor 2001:7f8:1::a500:2484:1 as 2484;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(2484) then reject;
+        if in_AS_AFNIC_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1 action block;
+}
+
+protocol bgp P6_42_01 from PEERING {
+    #FILTERSET;42;AS-PCH;PEERING;P6_42_01
+    description "PCH at AMS-IX";
+    neighbor 2001:7f8:1::a500:42:1 as 42;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(42) then reject;
+        if in_AS_PCH_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 600 action block;
+}
+
+protocol bgp P6_3856_01 from PEERING {
+    #FILTERSET;3856;AS-PCH;PEERING;P6_3856_01
+    description "PCH at AMS-IX";
+    neighbor 2001:7f8:1::a500:3856:1 as 3856;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(3856) then reject;
+        if in_AS_PCH_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 600 action block;
+}
+
+protocol bgp P6_714_01 from PEERING {
+    #FILTERSET;714;AS-APPLE;PEERING;P6_714_01
+    description "Apple at AMS-IX";
+    neighbor 2001:7f8:1::a500:714:1 as 714;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(714) then reject;
+        if in_AS_APPLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1000 action block;
+}
+
+protocol bgp P6_714_02 from PEERING {
+    #FILTERSET;714;AS-APPLE;PEERING;P6_714_02
+    description "Apple 2 at AMS-IX";
+    neighbor 2001:7f8:1::a500:714:2 as 714;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(714) then reject;
+        if in_AS_APPLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1000 action block;
+}
+
+protocol bgp P6_45352_01 from PEERING {
+    #FILTERSET;45352;as-set-ipserverone;PEERING;P6_45352_01
+    description "IP ServerOne at AMS-IX";
+    neighbor 2001:7f8:1::a504:5352:1 as 45352;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(45352) then reject;
+        if in_as_set_ipserverone_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 200 action block;
+}
+
+protocol bgp P6_15169_02 from PEERING {
+    #FILTERSET;15169;AS-GOOGLE;PEERING;P6_15169_02
+    description "Google at AMS-IX";
+    neighbor 2001:7f8:1::a501:5169:1 as 15169;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(15169) then reject;
+        if in_AS_GOOGLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    password "jutran7dEbUwr6c9";
+    import limit 1000 action block;
+}
+
+protocol bgp P6_15169_03 from PEERING {
+    #FILTERSET;15169;AS-GOOGLE;PEERING;P6_15169_03
+    description "Google 2 at AMS-IX";
+    neighbor 2001:7f8:1::a501:5169:2 as 15169;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(15169) then reject;
+        if in_AS_GOOGLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    password "jutran7dEbUwr6c9";
+    import limit 1000 action block;
+}
+
+protocol bgp P6_5459_01 from PEERING {
+    #FILTERSET;5459;;PEERING;P6_5459_01
+    description "LON1 Collector";
+    neighbor 2001:7f8:4::1553:1 as 5459;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(5459) then reject;
+        accept; 
+    };
+}
+
+protocol bgp R6_8714_01 from ROUTESERVER {
+    #FILTERSET;8714;;ROUTESERVER;R6_8714_01
+    description "LON1 Routeserver at LINX";
+    neighbor 2001:7f8:4::220a:1 as 8714;
+    import filter {
+        if filter_routeserver() then reject;
+        if is_first_asn_rs(8714) then reject;
+        accept; 
+    };
+    import limit 35000 action block;
+    preference 65;
+}
+
+protocol bgp R6_8714_02 from ROUTESERVER {
+    #FILTERSET;8714;;ROUTESERVER;R6_8714_02
+    description "LON1 Routeserver 2 at LINX";
+    neighbor 2001:7f8:4::220a:2 as 8714;
+    import filter {
+        if filter_routeserver() then reject;
+        if is_first_asn_rs(8714) then reject;
+        accept; 
+    };
+    import limit 35000 action block;
+    preference 65;
+}
+
+protocol bgp P6_42_02 from PEERING {
+    #FILTERSET;42;AS-PCH;PEERING;P6_42_02
+    description "PCH at LINX";
+    neighbor 2001:7f8:4::2a:1 as 42;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(42) then reject;
+        if in_AS_PCH_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 600 action block;
+}
+
+protocol bgp P6_3856_02 from PEERING {
+    #FILTERSET;3856;AS-PCH;PEERING;P6_3856_02
+    description "PCH at LINX";
+    neighbor 2001:7f8:4::f10:1 as 3856;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(3856) then reject;
+        if in_AS_PCH_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 600 action block;
+}
+
+protocol bgp P6_714_03 from PEERING {
+    #FILTERSET;714;AS-APPLE;PEERING;P6_714_03
+    description "Apple at LINX";
+    neighbor 2001:7f8:4::2ca:1 as 714;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(714) then reject;
+        if in_AS_APPLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1000 action block;
+    preference 70;
+}
+
+protocol bgp P6_714_04 from PEERING {
+    #FILTERSET;714;AS-APPLE;PEERING;P6_714_04
+    description "Apple 2 at LINX";
+    neighbor 2001:7f8:4::2ca:2 as 714;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(714) then reject;
+        if in_AS_APPLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1000 action block;
+    preference 70;
+}
+
+protocol bgp P6_714_05 from PEERING {
+    #FILTERSET;714;AS-APPLE;PEERING;P6_714_05
+    description "Apple 3 at LINX";
+    neighbor 2001:7f8:4::2ca:3 as 714;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(714) then reject;
+        if in_AS_APPLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1000 action block;
+    preference 70;
+}
+
+protocol bgp P6_714_06 from PEERING {
+    #FILTERSET;714;AS-APPLE;PEERING;P6_714_06
+    description "Apple 4 at LINX";
+    neighbor 2001:7f8:4::2ca:4 as 714;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(714) then reject;
+        if in_AS_APPLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1000 action block;
+    preference 70;
+}
+
+protocol bgp P6_45352_02 from PEERING {
+    #FILTERSET;45352;as-set-ipserverone;PEERING;P6_45352_02
+    description "IP ServerOne at LINX";
+    neighbor 2001:7f8:4::b128:1 as 45352;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(45352) then reject;
+        if in_as_set_ipserverone_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 200 action block;
+}
+
+protocol bgp P6_2484_02 from PEERING {
+    #FILTERSET;2484;AS-AFNIC;PEERING;P6_2484_02
+    description "Afnic at LINX";
+    neighbor 2001:7f8:4::9b4:1 as 2484;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(2484) then reject;
+        if in_AS_AFNIC_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1 action block;
+}
+
+protocol bgp R6_6695_01 from ROUTESERVER {
+    #FILTERSET;6695;AS-DECIX-V6;ROUTESERVER;R6_6695_01
+    description "FRA Routeserver at DE-CIX";
+    neighbor 2001:7f8::1a27:5051:c09d as 6695;
+    import filter {
+        if filter_routeserver() then reject;
+        if is_first_asn_rs(6695) then reject;
+        if in_AS_DECIX_V6_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 50000 action block;
+    preference 65;
+}
+
+protocol bgp R6_6695_02 from ROUTESERVER {
+    #FILTERSET;6695;AS-DECIX-V6;ROUTESERVER;R6_6695_02
+    description "FRA Routeserver 2 at DE-CIX";
+    neighbor 2001:7f8::1a27:5051:c19d as 6695;
+    import filter {
+        if filter_routeserver() then reject;
+        if is_first_asn_rs(6695) then reject;
+        if in_AS_DECIX_V6_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 50000 action block;
+    preference 65;
+}
+
+protocol bgp R6_6695_03 from ROUTESERVER {
+    #FILTERSET;6695;AS-DECIX-V6;ROUTESERVER;R6_6695_03
+    description "FRA Routeserver 3 at DE-CIX";
+    neighbor 2001:7f8::1a27:5051:c09e as 6695;
+    import filter {
+        if filter_routeserver() then reject;
+        if is_first_asn_rs(6695) then reject;
+        if in_AS_DECIX_V6_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 50000 action block;
+    preference 65;
+}
+
+protocol bgp P6_42_03 from PEERING {
+    #FILTERSET;42;AS-PCH;PEERING;P6_42_03
+    description "PCH at DE-CIX";
+    neighbor 2001:7f8::2a:0:1 as 42;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(42) then reject;
+        if in_AS_PCH_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 600 action block;
+}
+
+protocol bgp P6_3856_03 from PEERING {
+    #FILTERSET;3856;AS-PCH;PEERING;P6_3856_03
+    description "PCH at DE-CIX";
+    neighbor 2001:7f8::f10:0:1 as 3856;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(3856) then reject;
+        if in_AS_PCH_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 600 action block;
+}
+
+protocol bgp P6_714_07 from PEERING {
+    #FILTERSET;714;AS-APPLE;PEERING;P6_714_07
+    description "Apple at DE-CIX";
+    neighbor 2001:7f8::2ca:0:1 as 714;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(714) then reject;
+        if in_AS_APPLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1000 action block;
+    preference 70;
+}
+
+protocol bgp P6_714_08 from PEERING {
+    #FILTERSET;714;AS-APPLE;PEERING;P6_714_08
+    description "Apple 2 at DE-CIX";
+    neighbor 2001:7f8::2ca:0:2 as 714;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(714) then reject;
+        if in_AS_APPLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1000 action block;
+    preference 70;
+}
+
+protocol bgp P6_714_09 from PEERING {
+    #FILTERSET;714;AS-APPLE;PEERING;P6_714_09
+    description "Apple 3 at DE-CIX";
+    neighbor 2001:7f8::2ca:0:3 as 714;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(714) then reject;
+        if in_AS_APPLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1000 action block;
+    preference 70;
+}
+
+protocol bgp P6_714_10 from PEERING {
+    #FILTERSET;714;AS-APPLE;PEERING;P6_714_10
+    description "Apple 4 at DE-CIX";
+    neighbor 2001:7f8::2ca:0:4 as 714;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(714) then reject;
+        if in_AS_APPLE_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1000 action block;
+    preference 70;
+}
+
+protocol bgp P6_30844_02 from PEERING {
+    #FILTERSET;30844;AS-LIQUID;PEERING;P6_30844_02
+    description "Liquid Telecom at DE-CIX";
+    neighbor 2001:7f8::787c:0:1 as 30844;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(30844) then reject;
+        if in_AS_LIQUID_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 500 action block;
+    preference 70;
+}
+
+protocol bgp P6_8966_01 from PEERING {
+    #FILTERSET;8966;AS-EMIX;PEERING;P6_8966_01
+    description "EMIX at DE-CIX";
+    neighbor 2001:7f8::2306:0:1 as 8966;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(8966) then reject;
+        if in_AS_EMIX_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 250 action block;
+}
+
+protocol bgp P6_29838_01 from PEERING {
+    #FILTERSET;29838;AS-AMC;PEERING;P6_29838_01
+    description "Atlantic Metro at DE-CIX";
+    neighbor 2001:7f8::748e:0:1 as 29838;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(29838) then reject;
+        if in_AS_AMC_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 40 action block;
+}
+
+protocol bgp P6_45352_03 from PEERING {
+    #FILTERSET;45352;as-set-ipserverone;PEERING;P6_45352_03
+    description "IP ServerOne at DE-CIX";
+    neighbor 2001:7f8::b128:0:1 as 45352;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(45352) then reject;
+        if in_as_set_ipserverone_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 200 action block;
+}
+
+protocol bgp P6_2484_03 from PEERING {
+    #FILTERSET;2484;AS-AFNIC;PEERING;P6_2484_03
+    description "Afnic at DE-CIX";
+    neighbor 2001:7f8::9b4:0:1 as 2484;
+    import filter {
+        if filter_peering() then reject;
+        if is_first_asn(2484) then reject;
+        if in_AS_AFNIC_6() then { accept;
+        } else {
+            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+            reject;
+        } 
+    };
+    import limit 1 action block;
+}
+
