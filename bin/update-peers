@@ -66,9 +66,7 @@ sub output_peer {
         if ($filter eq "") {
 		$filterline="accept;";
 	} else {	
-		$filterline  ="if in_".$filter."_".$version."() then { accept;\n        } else {\n";
-		$filterline .="            bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));\n";
-		$filterline .="            reject;\n        }";
+		$filterline  ="if in_".$filter."_".$version."() then accept;";
 	}
 	my $rs;
 	if ($template eq "ROUTESERVER") { $rs ="_rs" } 
@@ -81,6 +79,7 @@ protocol bgp $id from $template {
         if $template_function then reject;
         if is_first_asn$rs($asn) then reject;
         $filterline 
+	reject;
     };
 EOF
 	if ($password ne "")    { print $out "    password \"$password\";\n"; }

@@ -5,17 +5,17 @@ function net_martian()
 {
 	if ( net ~ martians ) then {
 		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is a martian";
-		bgp_large_community.add((myasn,prefix_filtered,filtered_martian));
+		bgp_large_community.add(REASON_MARTIAN);
 		return true;
 	}
 	# Any prefixes larger than max_accepted_prefix
 	if net.len < max_accepted_prefix then {
-		bgp_large_community.add((myasn,prefix_filtered,filtered_too_short));
+		bgp_large_community.add(REASON_TOO_SHORT);
 		return true;
 	}
 	# Any prefixes smaller than min_accepted_prefix
 	if net.len > min_accepted_prefix then {
-		bgp_large_community.add((myasn,prefix_filtered,filtered_too_long));
+		bgp_large_community.add(REASON_TOO_LONG);
 		return true;
 	}
 	return false;
@@ -26,7 +26,7 @@ function net_ixp()
 	if (net.len >= max_ixp_prefix) then return false;
 	if ( net ~ ixp_prefixes ) then {
 		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix belongs to an IXP";
-		bgp_large_community.add((myasn,prefix_filtered,filtered_ixp_prefix));
+		bgp_large_community.add(REASON_IXP_PREFIX);
 		return true;
 	}
 	return false;
@@ -36,7 +36,7 @@ function asn_bogons()
 {
 	if bgp_path ~ bogon_asns then {
                 # print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Found bogon ASN in path", bgp_path;
-                bgp_large_community.add((myasn,prefix_filtered,filtered_bogon_asn));
+                bgp_large_community.add(REASON_BOGON);
                 return true;
         } else {
                 return false;
@@ -47,7 +47,7 @@ function asn_transit()
 {
 	if bgp_path ~ transit_asns then {
                 # print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Found well-known transit ASN in ", bgp_path;
-                bgp_large_community.add((myasn,prefix_filtered,filtered_transit_asn));
+                bgp_large_community.add(REASON_TRANSIT);
                 return true;
         } else {
                 return false;
@@ -57,7 +57,7 @@ function asn_transit()
 function is_first_asn(int asn) {
 	if bgp_path.first != asn then {
                 print "REJECTING: ",net.ip,"/",net.len," received from ",from,": First AS in path does not match with peer AS - ", bgp_path.first, " != ", asn;
-                bgp_large_community.add((myasn,prefix_filtered,filtered_first_asn));
+                bgp_large_community.add(REASON_FIRST_ASN);
                 return true;
         } else {
                 return false;
@@ -67,7 +67,7 @@ function is_first_asn(int asn) {
 function is_first_asn_rs(int asn) {
 	if bgp_path.first = asn then {
                 print "REJECTING: ",net.ip,"/",net.len," received from ",from,": First AS in path matches with routeserver AS - ", bgp_path.first, " != ", asn;
-                bgp_large_community.add((myasn,prefix_filtered,filtered_first_asn));
+                bgp_large_community.add(REASON_FIRST_ASN);
                 return true;
         } else {
                 return false;
@@ -77,7 +77,7 @@ function is_first_asn_rs(int asn) {
 function next_hop_check() {
 	if bgp_next_hop != from then {
                 print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Invalid next hop!";
-                bgp_large_community.add((myasn,prefix_filtered,filtered_next_hop));
+                bgp_large_community.add(REASON_NEXT_HOP);
                 return true;
         } else {
                 return false;
@@ -87,7 +87,7 @@ function next_hop_check() {
 function next_hop_check_rs() {
 	if bgp_next_hop = from then {
                 print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Routeserver as next hop!";
-                bgp_large_community.add((myasn,prefix_filtered,filtered_next_hop));
+                bgp_large_community.add(REASON_NEXT_HOP);
                 return true;
         } else {
                 return false;
@@ -97,7 +97,7 @@ function next_hop_check_rs() {
 function bgp_path_length() {
 	if bgp_path.len > 100 then {
                 print "REJECTING: ",net.ip,"/",net.len," received from ",from,": AS path too long: ",bgp_path.len;
-                bgp_large_community.add((myasn,prefix_filtered,filtered_path_length));
+                bgp_large_community.add(REASON_PATH_LENGTH);
                 return true;
         } else {
                 return false;
@@ -107,12 +107,28 @@ function bgp_path_length() {
 function net_myprefixes() {
 	if net ~ myprefixes then {
                 print "REJECTING: ",net.ip,"/",net.len," received from ",from,": One of our own prefixes!";
-                bgp_large_community.add((myasn,prefix_filtered,filtered_my_prefixes));
+                bgp_large_community.add(REASON_MY_PREFIX);
                 return true;
         } else {
                 return false;
         }
 }
+
+function origin_check() {
+	if roa_check(roa_main) = ROA_INVALID then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
+                bgp_large_community.add(REASON_ROA_INVALID);
+                return true;
+	} else {
+		if roa_check(roa_main) = ROA_VALID then {
+			bgp_large_community.add((myasn,prefix_roa,roa_valid));
+		} else {
+			bgp_large_community.add((myasn,prefix_roa,roa_unknown));
+		}
+		return false;
+	}
+}
+		
 
 # BGP communities processing
 
@@ -171,6 +187,7 @@ function filter_routeserver() {
 	bgp_large_community.add((myasn,prefix_type,rs_route));
 	tag_peeringdb_ixid();
 #	if process_blackhole_in() then return false;
+	if origin_check() then return true;
 	if next_hop_check_rs() then return true;
 	if bgp_path_length() then return true;
 	if asn_transit() then return true;
@@ -187,6 +204,7 @@ function filter_peering() {
 	bgp_community.add((myasn,peering_route));
 	bgp_large_community.add((myasn,prefix_type,peering_route));
 	tag_peeringdb_ixid();
+	if origin_check() then return true;
 	if next_hop_check() then return true;
 	if bgp_path_length() then return true;
 	if asn_transit() then return true;

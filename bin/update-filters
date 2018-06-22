@@ -17,6 +17,9 @@ if ( $bgpq eq "") {
 my $force=0;
 my $verbose=0;
 my $quiet=0;
+
+my %processed_sets;
+
 foreach my $val (@ARGV) {
         if ($val eq "-f" )      { $force=1; next }
         elsif($val eq "-v")     { $verbose+=1; next }
@@ -41,7 +44,8 @@ sub output_prefixes {
 		$age=time-((stat($file))[9]);
 		close $file;
 	}
-	if ( ($age > 3600 ) || ($force==1) ) {
+	if ( ($age > 3600 ) || ($force==1 && $processed_sets{"$query-$afi"} !=1) ) {
+		$processed_sets{"$query-$afi"}=1;
 		my $last_updated = scalar localtime;
 		my $prefixes=`$bgpq -A -b -$afi $query -l prefixes`;
 		open (my $file, ">","$output_dir/$filter.prefixes.tmp") or die "$!\n";
@@ -57,7 +61,7 @@ prefix set prefixes;
         return true;
     } else {
 #        print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is not in as-set!";
-        bgp_large_community.add((myasn,prefix_filtered,filtered_as_set));
+        bgp_large_community.add(REASON_AS_SET);
         return false;
     }
 }

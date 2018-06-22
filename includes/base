@@ -17,3 +17,5 @@ protocol kernel {
 protocol device {
 	scan time 10;		# Scan interfaces every 10 seconds
 }
+
+roa table roa_main;

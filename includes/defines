@@ -32,6 +32,7 @@ define prefix_region = 60001;
 define prefix_country = 60002;
 define prefix_location = 60003;
 define prefix_ix = 60004;
+define prefix_roa = 60005;
 define prefix_filtered = 61000;
 
 define internal_route = 100;
@@ -48,6 +49,9 @@ define region_middle_east = 204;
 define region_north_america = 205;
 define region_south_america = 206;
 
+define roa_valid = 300;
+define roa_unknown = 301;
+
 define filtered_martian = 400;
 define filtered_bogon_asn = 401;
 define filtered_transit_asn = 402;
@@ -59,6 +63,20 @@ define filtered_as_set = 407;
 define filtered_too_long = 408;
 define filtered_too_short = 409;
 define filtered_ixp_prefix = 410;
+define filtered_roa_invalid = 411;
+
+define REASON_MARTIAN = (myasn,prefix_filtered,filtered_martian);
+define REASON_BOGON = (myasn,prefix_filtered,filtered_bogon_asn);
+define REASON_TRANSIT = (myasn,prefix_filtered,filtered_transit_asn);
+define REASON_FIRST_ASN = (myasn,prefix_filtered,filtered_first_asn);
+define REASON_NEXT_HOP = (myasn,prefix_filtered,filtered_next_hop);
+define REASON_PATH_LENGTH = (myasn,prefix_filtered,filtered_path_length);
+define REASON_MY_PREFIX = (myasn,prefix_filtered,filtered_my_prefixes);
+define REASON_AS_SET = (myasn,prefix_filtered,filtered_as_set);
+define REASON_TOO_LONG = (myasn,prefix_filtered,filtered_too_long);
+define REASON_TOO_SHORT = (myasn,prefix_filtered,filtered_too_short);
+define REASON_IXP_PREFIX = (myasn,prefix_filtered,filtered_ixp_prefix);
+define REASON_ROA_INVALID = (myasn,prefix_filtered,filtered_roa_invalid);
 
 # read by update-peeringdb
 define ix_id_offset = 10000;
