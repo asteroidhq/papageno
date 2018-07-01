@@ -1,0 +1,34 @@
+roa4 table roa_main_4;
+roa6 table roa_main_6;
+
+function origin_check()
+{
+	case net.type {
+		NET_IP4:	
+			if roa_check(roa_main_4) = ROA_INVALID then {
+                		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
+                		bgp_large_community.add(REASON_ROA_INVALID);
+                		return true;
+			} else {
+				if roa_check(roa_main_4) = ROA_VALID then {
+					bgp_large_community.add((myasn,prefix_roa,roa_valid));
+				} else {
+					bgp_large_community.add((myasn,prefix_roa,roa_unknown));
+				}
+				return false;
+			}
+		NET_IP6:
+			if roa_check(roa_main_6) = ROA_INVALID then {
+                		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
+                		bgp_large_community.add(REASON_ROA_INVALID);
+                		return true;
+			} else {
+				if roa_check(roa_main_6) = ROA_VALID then {
+					bgp_large_community.add((myasn,prefix_roa,roa_valid));
+				} else {
+					bgp_large_community.add((myasn,prefix_roa,roa_unknown));
+				}
+				return false;
+			}
+	}
+}

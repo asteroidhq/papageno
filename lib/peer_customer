@@ -1,0 +1,3 @@
+	import filter ibgp_in;
+	export filter ibgp_out;
+	preference 200;

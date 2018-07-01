@@ -1,0 +1,16 @@
+# UPDATED AUTOMATICALLY DO NOT EDIT!
+# Last updated:  [% last_updated %]
+
+function [% function_name %]
+prefix set prefixes;
+{
+    [% prefixes %]
+
+    if ( net ~ prefixes ) then {
+        return true;
+    } else {
+#        print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is not in as-set!";
+        bgp_large_community.add(REASON_AS_SET);
+        return false;
+    }
+}

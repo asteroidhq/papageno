@@ -9,13 +9,19 @@ timeformat log          iso long;
 timeformat protocol     iso long;
 timeformat route        iso long;
 
-protocol kernel {
-	persist;		# Don't remove routes on bird shutdown
-	export all;		# Default is export none
-}
-
 protocol device {
 	scan time 10;		# Scan interfaces every 10 seconds
 }
 
-roa table roa_main;
+protocol kernel {
+	persist;		# Don't remove routes on bird shutdown
+	ipv4 { export all; };	# Default is export none
+}
+
+protocol kernel {
+	persist;		# Don't remove routes on bird shutdown
+	ipv6 { export all; };	# Default is export none
+}
+
+protocol bfd __papageno_bfd {
+}

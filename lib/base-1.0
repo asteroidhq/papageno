@@ -1,0 +1,22 @@
+# Set some system wide variables
+
+## Configure logging
+log syslog all;
+
+# Set timebaser for birdseye compatibility
+timeformat base         iso long;
+timeformat log          iso long;
+timeformat protocol     iso long;
+timeformat route        iso long;
+
+protocol kernel {
+	persist;		# Don't remove routes on bird shutdown
+	export all;		# Default is export none
+}
+
+protocol device {
+	scan time 10;		# Scan interfaces every 10 seconds
+}
+
+protocol bfd __papageno_bfd {
+}

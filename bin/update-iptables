@@ -1,6 +1,6 @@
-#! /bin/sh
+#! /bin/bash
 
-. `dirname "$0"`/../envvars
+. "$(dirname "$0")/../envvars"
 
 if [ "$BIRD_NETNS" ]; then
 	IPTABLES="sudo ip netns exec $BIRD_NETNS /sbin/iptables"
@@ -14,12 +14,14 @@ TABLE='INPUT_BGP_USER'
 
 #IPv4
 $IPTABLES -F $TABLE
-for ip in `awk '/neighbor/ { print $2 }' includes/peers-v4`; do
-	$IPTABLES -A $TABLE -s $ip -j ACCEPT
-done
+for ip in $(awk '/neighbor/ { print $2 }' data/bird/peers_v4-1.0);
+do
+	$IPTABLES -A $TABLE -s "$ip" -j ACCEPT
+done 
 
 #IPv6
 $IP6TABLES -F $TABLE
-for ip in `awk '/neighbor/ { print $2 }' includes/peers-v6`; do
-	$IP6TABLES -A $TABLE -s $ip -j ACCEPT
+for ip in $(awk '/neighbor/ { print $2 }' data/bird/peers_v6-1.0);
+do
+	$IP6TABLES -A $TABLE -s "$ip" -j ACCEPT
 done

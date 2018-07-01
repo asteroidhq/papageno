@@ -1,0 +1,12 @@
+protocol bgp [% id %] from [% peer_template %] {
+    #FILTERSET;[% asn %];[% asset %];[% peer_template %];[% id %]
+    description "[% desc %]";
+    neighbor [% ip %] as [% asn %];
+    import filter {
+        if [% template_function %] then reject;
+        if is_first_asn[% rs %]([% asn %]) then reject;
+        [% filterline %] 
+	reject;
+    };
+[% gtsm %][% bfd %][% password %][% prefixlimit %][% localpref %][% passive %]}
+

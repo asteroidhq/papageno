@@ -1,15 +1,15 @@
 #IPv6 specific defines
-define defaultroute = ::/0;
-define max_prefix_length = 128;
-define blackhole_ip = 2001:db8::1;
-define max_accepted_prefix = 19;
-define min_accepted_prefix = 64;
-define max_ixp_prefix = 48;
-define default_pfxlimit_customer = 100;
-define default_pfxlimit_peering = 1000;
-define default_pfxlimit_routeserver = 10000;
+define defaultroute_6 = ::/0;
+define max_prefix_length_6 = 128;
+define blackhole_ip_6 = 2001:db8::1;
+define max_accepted_prefix_6 = 19;
+define min_accepted_prefix_6 = 64;
+define max_ixp_prefix_6 = 48;
+define default_pfxlimit_customer_6 = 100;
+define default_pfxlimit_peering_6 = 1000;
+define default_pfxlimit_routeserver_6 = 10000;
 
-define martians = [
+define martians_6 = [
     0002::/15{15,128},      # loopback, unspecified, v4-mapped
     0064:ff9b::/96{96,128}, # IPv4-IPv6 Translat. [RFC6052]
     0100::/8{8,128},        # reserved for Discard-Only Address Block [RFC6666]
@@ -40,9 +40,3 @@ define martians = [
     ff00::/8{8,128}         # Multicast [RFC4291]
 ];
 
-include "defines";
-include "base";
-include "peeringdb-v6";
-include "filters-v6/*.prefixes";
-include "templates";
-include "peers-v6";

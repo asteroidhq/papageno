@@ -1,0 +1,52 @@
+# BGP templates
+
+template bgp INTERNAL {
+	local as myasn;
+	ipv4 {
+		include "peer_internal";
+	};
+	ipv6 {
+		include "peer_internal";
+	};
+}
+
+template bgp CUSTOMER {
+	local as myasn;
+	ipv4 {
+		include "peer_customer";
+	};
+	ipv6 {
+		include "peer_customer";
+	};
+}
+
+template bgp PEERING {
+	local as myasn;
+	ipv4 {
+		include "peer_peering";
+	};
+	ipv6 {
+		include "peer_peering";
+	};
+}
+
+template bgp ROUTESERVER {
+	local as myasn;
+	ipv4 {
+		include "peer_routeserver";
+	};
+	ipv6 {
+		include "peer_routeserver";
+	};
+}
+
+template bgp TRANSIT {
+	local as myasn;
+	ipv4 {
+		include "peer_transit";
+	};
+	ipv6 {
+		include "peer_transit";
+	};
+}
+

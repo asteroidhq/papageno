@@ -1,0 +1,16 @@
+roa table roa_main;
+
+function origin_check() {
+	if roa_check(roa_main) = ROA_INVALID then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
+                bgp_large_community.add(REASON_ROA_INVALID);
+                return true;
+	} else {
+		if roa_check(roa_main) = ROA_VALID then {
+			bgp_large_community.add((myasn,prefix_roa,roa_valid));
+		} else {
+			bgp_large_community.add((myasn,prefix_roa,roa_unknown));
+		}
+		return false;
+	}
+}

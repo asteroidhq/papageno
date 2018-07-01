@@ -1,0 +1,11 @@
+include "base-1.0";
+include "defines";
+include "defines_v6";
+include "../data/bird/peeringdb_v6";
+include "../data/bird/filters_v6/*.prefixes";
+include "functions_v6-1.0";
+include "roa-1.0";
+include "cli";
+include "templates";
+include "peers-templates-1.0";
+include "../data/bird/peers_v6-1.0";

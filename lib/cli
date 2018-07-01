@@ -1,0 +1,51 @@
+function first_as(int a)
+{
+        return bgp_path.first = a;
+}
+
+function origin_as(int a)
+{
+        return bgp_path.last_nonaggregated = a;
+}
+
+function is_tagged(lc c)
+{
+        return c ~ bgp_large_community;
+}
+
+function is_region(lc c)
+{
+	return is_tagged(c);
+}
+
+function is_ix(int n)
+{
+	return (myasn,prefix_ix,n) ~ bgp_large_community;
+}
+
+function is_location(int n)
+{
+	return (myasn,prefix_location,n) ~ bgp_large_community;
+}
+
+function is_country(int n)
+{
+	return (myasn,prefix_country,n) ~ bgp_large_community;
+}
+
+
+define PREFIX_INTERNAL 	= (myasn, prefix_type, internal_route);
+define PREFIX_RS 	= (myasn, prefix_type, rs_route);
+define PREFIX_PEERING	= (myasn, prefix_type, peering_route);
+define PREFIX_CUSTOMER	= (myasn, prefix_type, customer_route);
+define PREFIX_TRANSIT	= (myasn, prefix_type, transit_route);
+define PREFIX_VALID	= (myasn, prefix_roa, roa_valid);
+define PREFIX_UNKNOWN	= (myasn, prefix_roa, roa_unknown);
+
+define AFRICA		= (myasn, prefix_region, region_africa);
+define ASIAPAC		= (myasn, prefix_region, region_asiapac);
+define AUSTRALIA	= (myasn, prefix_region, region_australia);
+define EUROPE		= (myasn, prefix_region, region_europe);
+define MIDDLE_EAST	= (myasn, prefix_region, region_middle_east);
+define NORTH_AMERICA	= (myasn, prefix_region, region_north_america);
+define SOUTH_AMERICA	= (myasn, prefix_region, region_south_america);

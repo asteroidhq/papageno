@@ -1,0 +1,7 @@
+	import keep filtered;
+	import filter {
+		if filter_transit() then reject;
+		accept;
+	};
+	export filter ebgp_out;
+	preference default_preference_transit;

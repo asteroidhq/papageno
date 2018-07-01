@@ -3,18 +3,18 @@
 
 function net_martian()
 {
-	if ( net ~ martians ) then {
+	if ( net ~ martians() ) then {
 		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is a martian";
 		bgp_large_community.add(REASON_MARTIAN);
 		return true;
 	}
 	# Any prefixes larger than max_accepted_prefix
-	if net.len < max_accepted_prefix then {
+	if net.len < max_accepted_prefix() then {
 		bgp_large_community.add(REASON_TOO_SHORT);
 		return true;
 	}
 	# Any prefixes smaller than min_accepted_prefix
-	if net.len > min_accepted_prefix then {
+	if net.len > min_accepted_prefix() then {
 		bgp_large_community.add(REASON_TOO_LONG);
 		return true;
 	}
@@ -23,8 +23,8 @@ function net_martian()
 
 function net_ixp()
 {
-	if (net.len >= max_ixp_prefix) then return false;
-	if ( net ~ ixp_prefixes ) then {
+	if (net.len >= max_ixp_prefix()) then return false;
+	if ( net ~ ixp_prefixes() ) then {
 		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix belongs to an IXP";
 		bgp_large_community.add(REASON_IXP_PREFIX);
 		return true;
@@ -54,9 +54,9 @@ function asn_transit()
         }
 }
 
-function is_first_asn(int asn) {
-	if bgp_path.first != asn then {
-                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": First AS in path does not match with peer AS - ", bgp_path.first, " != ", asn;
+function is_first_asn(int a) {
+	if bgp_path.first != a then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": First AS in path does not match with peer AS - ", bgp_path.first, " != ", a;
                 bgp_large_community.add(REASON_FIRST_ASN);
                 return true;
         } else {
@@ -64,9 +64,9 @@ function is_first_asn(int asn) {
         }
 }
 
-function is_first_asn_rs(int asn) {
-	if bgp_path.first = asn then {
-                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": First AS in path matches with routeserver AS - ", bgp_path.first, " != ", asn;
+function is_first_asn_rs(int a) {
+	if bgp_path.first = a then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": First AS in path matches with routeserver AS - ", bgp_path.first, " != ", a;
                 bgp_large_community.add(REASON_FIRST_ASN);
                 return true;
         } else {
@@ -105,7 +105,7 @@ function bgp_path_length() {
 }
 
 function net_myprefixes() {
-	if net ~ myprefixes then {
+	if match_my_prefixes() then {
                 print "REJECTING: ",net.ip,"/",net.len," received from ",from,": One of our own prefixes!";
                 bgp_large_community.add(REASON_MY_PREFIX);
                 return true;
@@ -113,30 +113,14 @@ function net_myprefixes() {
                 return false;
         }
 }
-
-function origin_check() {
-	if roa_check(roa_main) = ROA_INVALID then {
-                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
-                bgp_large_community.add(REASON_ROA_INVALID);
-                return true;
-	} else {
-		if roa_check(roa_main) = ROA_VALID then {
-			bgp_large_community.add((myasn,prefix_roa,roa_valid));
-		} else {
-			bgp_large_community.add((myasn,prefix_roa,roa_unknown));
-		}
-		return false;
-	}
-}
 		
-
 # BGP communities processing
 
 function process_blackhole_in() {
-	if ( ( (65535,666) ~ bgp_community ) && ( net.len = max_prefix_length ) ) then {
+	if ( ( (65535,666) ~ bgp_community ) && ( net.len = max_prefix_length() ) ) then {
 		bgp_local_pref = 200;
-		gw = blackhole_ip;
-		bgp_next_hop = blackhole_ip;
+		gw = blackhole_ip();
+		bgp_next_hop = blackhole_ip();
 		return true;
 	} else {
 		return false;
@@ -259,22 +243,18 @@ filter ebgp_out
 	if net_martian() then reject;
 	bgp_path.delete(bogon_asns);
 	strip_my_communities();
-	if defined(myas_set) then {
-		if in_my_prefixes() then accept;
-	} else {
-		if net ~ myprefixes then accept;
-	}
+	if match_my_prefixes() then accept;
 	reject;
 }
 
 filter ebgp_customer {
 	if net_martian() then reject;
-	if ( source = RTS_BGP && net != defaultroute ) then accept; 
+	if ( source = RTS_BGP && net != defaultroute() ) then accept; 
 	reject;
 }
 
 filter ebgp_customer_default {
-	if ( net = defaultroute ) then accept; 
+	if ( net = defaultroute() ) then accept; 
 	reject;
 }
 
@@ -287,57 +267,3 @@ filter ibgp_in {
 filter ibgp_out {
 	accept;
 }
-
-# BGP templates
-
-template bgp INTERNAL {
-	local as myasn;
-	import filter ibgp_in;
-	export filter ibgp_out;
-	preference 200;
-}
-
-template bgp CUSTOMER {
-	local as myasn;
-	import keep filtered;
-	import limit default_pfxlimit_customer action block;
-	import filter bgp_in_customer;
-	export filter ebgp_customer;
-	preference default_preference_customer;
-}
-
-template bgp PEERING {
-	local as myasn;
-	import keep filtered;
-	import limit default_pfxlimit_peering action block;
-	import filter {
-	        if filter_peering() then reject;
-        	accept;
-	};
-	export filter ebgp_out;
-	preference default_preference_peering;
-}
-
-template bgp ROUTESERVER {
-	local as myasn;
-	import keep filtered;
-	import limit default_pfxlimit_routeserver action block;
-	import filter {
-		if filter_routeserver() then reject;
-		accept;
-	};	
-	export filter ebgp_out;
-	preference default_preference_routeserver;
-}
-
-template bgp TRANSIT {
-	local as myasn;
-	import keep filtered;
-	import filter {
-		if filter_transit() then reject;
-		accept;
-	};
-	export filter ebgp_out;
-	preference default_preference_transit;
-}
-

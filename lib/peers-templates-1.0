@@ -1,0 +1,28 @@
+# BGP templates
+
+template bgp INTERNAL {
+	local as myasn;
+	include "peer_internal";
+}
+
+template bgp CUSTOMER {
+	local as myasn;
+	include "peer_customer";
+	
+}
+
+template bgp PEERING {
+	local as myasn;
+	include "peer_peering";
+}
+
+template bgp ROUTESERVER {
+	local as myasn;
+	include "peer_routeserver";
+}
+
+template bgp TRANSIT {
+	local as myasn;
+	include "peer_transit";
+}
+

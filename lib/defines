@@ -5,6 +5,10 @@ define default_preference_peering=100;
 define default_preference_routeserver=80;
 define default_preference_transit=50;
 
+define default_pfxlimit_customer = 100;
+define default_pfxlimit_peering = 10000;
+define default_pfxlimit_routeserver = 50000;
+
 # action communities
 define bgp_blackhole = 666;
 define prepend_one = 1001;

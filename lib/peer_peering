@@ -1,0 +1,8 @@
+	import keep filtered;
+	import limit default_pfxlimit_peering action block;
+	import filter {
+	        if filter_peering() then reject;
+        	accept;
+	};
+	export filter ebgp_out;
+	preference default_preference_peering;
