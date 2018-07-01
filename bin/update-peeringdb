@@ -2,9 +2,11 @@
 #
 # use -f commandline option to renew data sources
 #
+use utf8;
 use LWP::Simple;                # From CPAN
 use JSON qw( decode_json );     # From CPAN
 use File::Copy;
+use Text::Unidecode;
 use strict;                     # Good practice
 
 my $cmdl = $ARGV[0] || "";
@@ -26,16 +28,25 @@ while (<$def>) {
 }
 close $def;
 
-open (my $out4, ">", "$basedir/data/bird/peeringdb_v4.tmp") or die "$!\n";
-open (my $out6, ">", "$basedir/data/bird/peeringdb_v6.tmp") or die "$!\n";
+sub outf {
+	my $file=shift;
+	open (my $fh, ">", "$file.tmp") or die "$file.tmp: $!\n";
+	print $fh "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n#\n";
+	return $fh;
+}
 
-open (my $filter4, ">", "$basedir/data/bird/filters_v4/ixp.prefixes.tmp") or die "$!\n";
-open (my $filter6, ">", "$basedir/data/bird/filters_v6/ixp.prefixes.tmp") or die "$!\n";
+sub closef {
+	my $fh=shift;
+	my $file=shift;
+	close $fh;
+	move ("$file.tmp","$file");
+}
 
-print $out4 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
-print $out6 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
-print $filter4 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
-print $filter6 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n\n";
+my $out4=outf("$basedir/data/bird/peeringdb_v4");
+my $out6=outf("$basedir/data/bird/peeringdb_v6");
+my $filter4=outf("$basedir/data/bird/filters_v4/ixp.prefixes");
+my $filter6=outf("$basedir/data/bird/filters_v6/ixp.prefixes");
+my $defines=outf("$basedir/data/bird/peeringdb_defines");
 
 print $filter4 "define ixp_prefixes_4 = [\n";
 print $filter6 "define ixp_prefixes_6 = [\n";
@@ -50,7 +61,10 @@ if ("$cmdl" eq "-f") {
 my %iso_code;
 
 my $decoded_iso = decode_json( readfile("$basedir/data/peeringdb/slim-2.json") );
-foreach my $iso (@{$decoded_iso}) { $iso_code{$iso->{'alpha-2'}} = $iso->{'country-code'}; }
+foreach my $iso (@{$decoded_iso}) { 
+	$iso_code{$iso->{'alpha-2'}} = $iso->{'country-code'}; 
+	printf $defines ("define CC_%s = (myasn,prefix_country,%s);\n", uc($iso->{'alpha-2'}),$iso->{'country-code'});
+}
 
 my %ix_continent;
 my %ix_country;
@@ -58,6 +72,14 @@ my $decoded_ix = decode_json( readfile("$basedir/data/peeringdb/ix.json") );
 foreach my $ix (@{$decoded_ix->{'data'}}) {
 	$ix_continent{$ix->{'id'}} = $ix->{'region_continent'};
 	$ix_country{$ix->{'id'}} = $ix->{'country'};
+	# uppercase, unidecoded short name from peeringdb
+	my $name=uc(unidecode($ix->{'name'}));
+	# replace all
+	$name =~ s/[-_\.\& ]/_/g;
+	$name =~ s/[\(\)\[\]]//g; 
+	$name =~ s#/##g;
+	$name =~ s/(_+)/_/g; $name =~ s/(_+)$//;
+	print $defines "define IXP_".$name." = (myasn,prefix_ix,".$ix->{'id'}.");\n";
 }
 
 my %ix_id;
@@ -135,15 +157,9 @@ print $out6 <<EOF;
 }
 EOF
 
-close $out4;
-close $out6;
-close $filter4;
-close $filter6;
-
-move ("$basedir/data/bird/peeringdb_v4.tmp","$basedir/data/bird/peeringdb_v4");
-move ("$basedir/data/bird/peeringdb_v6.tmp","$basedir/data/bird/peeringdb_v6");
-
-
-move ("$basedir/data/bird/filters_v4/ixp.prefixes.tmp", "$basedir/data/bird/filters_v4/ixp.prefixes");
-move ("$basedir/data/bird/filters_v6/ixp.prefixes.tmp", "$basedir/data/bird/filters_v6/ixp.prefixes");
+closef ($out4,"$basedir/data/bird/peeringdb_v4");
+closef ($out4,"$basedir/data/bird/peeringdb_v4");
+closef ($filter4,"$basedir/data/bird/filters_v4/ixp.prefixes");
+closef ($filter6,"$basedir/data/bird/filters_v4/ixp.prefixes");
+closef ($defines,"$basedir/data/bird/peeringdb_defines");
 

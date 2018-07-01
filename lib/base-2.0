@@ -15,11 +15,13 @@ protocol device {
 
 protocol kernel {
 	persist;		# Don't remove routes on bird shutdown
+	merge paths on limit 8;	# ECMP up to 8 next hops
 	ipv4 { export all; };	# Default is export none
 }
 
 protocol kernel {
 	persist;		# Don't remove routes on bird shutdown
+	merge paths on limit 8;	# ECMP up to 8 next hops
 	ipv6 { export all; };	# Default is export none
 }
 

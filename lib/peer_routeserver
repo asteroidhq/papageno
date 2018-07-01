@@ -1,3 +1,4 @@
+	graceful restart on;
 	import keep filtered;
 	import limit default_pfxlimit_routeserver action block;
 	import filter {

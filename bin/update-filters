@@ -5,11 +5,8 @@
 use strict;
 use File::Copy;
 use threads;
-use Template;
 
 my $basedir=".";
-my $outpath="$basedir/data/bird/filters_v";
-my $template="lib/prefix-template.tt";
 my $bgpq=`which bgpq3`;
 chomp $bgpq;
 
@@ -29,11 +26,6 @@ foreach my $val (@ARGV) {
         elsif($val eq "-q")     { $quiet=1; next }
 }
 
-# Set max age of data files in seconds - set to 0 if forced update
-my $max_file_age = ($force == 0) ? 43200 : 0;
-
-my $tt = Template->new();
-
 sub cli_out {
         if ($quiet==1) { return;}
         my ($str) = @_[0];
@@ -42,57 +34,93 @@ sub cli_out {
 }
 
 sub output_prefixes {
-	my ($query,$afi,$function_name) = @_;
+	my ($query,$afi,$function_name,$output_dir) = @_;
 	my $filter = $query;
 	$filter =~ tr/-/_/;
 	my @stat;
 	my $age = 86400;
-	if ( -s "$outpath$afi/$filter.prefixes") { 
-		open (my $file, "$outpath$afi/$filter.prefixes") or die "$outpath$afi/$filter.prefixes: $!\n";
+	if ( -s "$output_dir/$filter.prefixes") { 
+		open (my $file, "$output_dir/$filter.prefixes") or die "$!\n";
 		$age=time-((stat($file))[9]);
 		close $file;
 	}
-	if ( $age > $max_file_age  && $processed_sets{"$query-$afi"} !=1 ) {
+	if ( ($age > 3600 ) || ($force==1 && $processed_sets{"$query-$afi"} !=1) ) {
 		$processed_sets{"$query-$afi"}=1;
-		my $output->{'last_updated'} = scalar localtime;
-		my $output->{'prefixes'}=`$bgpq -A -b -$afi $query -l prefixes`;
-		my $output->{'function_name'} = $function_name;
-		open (my $file, ">","$outpath$afi/$filter.prefixes.tmp") or die "$outpath$afi/$filter.prefixes.tmp: $!\n";
-		$tt->process($template,$output,$file);
+		my $last_updated = scalar localtime;
+		my $prefixes=`$bgpq -A -b -$afi $query -l prefixes`;
+		open (my $file, ">","$output_dir/$filter.prefixes.tmp") or die "$!\n";
+		print $file <<EOF;
+# UPDATED AUTOMATICALLY DO NOT EDIT!
+# Last updated: $last_updated
+
+function $function_name
+prefix set prefixes;
+{
+    $prefixes
+    if ( net ~ prefixes ) then {
+        return true;
+    } else {
+#        print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is not in as-set!";
+        bgp_large_community.add(REASON_AS_SET);
+        return false;
+    }
+}
+EOF
 		if ($function_name =~ /my_prefixes/) {
 			print $file <<EOF;
 function match_my_prefixes_$afi()
 prefix set prefixes;
 {
-    $output->{'prefixes'}
+    $prefixes
     return net ~ prefixes;
 }
 EOF
 		}
 		close ($file);
-		move ("$outpath$afi/$filter.prefixes.tmp","$outpath$afi/$filter.prefixes");
+		move ("$output_dir/$filter.prefixes.tmp","$output_dir/$filter.prefixes");
 	}
 }
 
-sub process_input {
-	my ($afi,@input) = @_;
-	foreach my $line (@input) {
-		chomp $line;
-		my (undef, $asn, $filter, $template,$id) = split (";",$line);
-		my $function_name;
-		if ($filter ne "") { 
-			if ($template eq "__INTERNAL__") {
-				$function_name = "in_".$id."_$afi()";
-                	} else {
-                        	$function_name = "in_".$filter."_$afi()";
-				$function_name =~ tr/-/_/;
-                	}
-			cli_out "Updating IPv$afi filter for peer $id, AS-set $filter\n";
-			output_prefixes($filter,$afi,$function_name);
-		}
+my @input;
+
+@input=split(/\n/,`grep '#FILTERSET' $basedir/data/bird/peers_v4-1.0 | sort | uniq`);
+foreach my $line (@input) {
+	chomp $line;
+	my (undef, $asn, $filter, $template,$id) = split (";",$line);
+	my $function_name;
+	my $output_dir = "$basedir/data/bird/filters_v4";
+	if ($filter ne "") { 
+		if ($template eq "__INTERNAL__") {
+                        $function_name = "in_".$id."_4()";
+                } else {
+                        $function_name = "in_".$filter."_4()";
+			$function_name =~ tr/-/_/;
+                }
+		cli_out "Updating IPv4 filter for peer $id, AS-set $filter\n";
+		output_prefixes($filter,"4",$function_name,$output_dir);
 	}
 }
 
-process_input(4,split(/\n/,`grep '#FILTERSET' $basedir/data/bird/peers_v4-1.0`));
-process_input(6,split(/\n/,`grep '#FILTERSET' $basedir/data/bird/peers_v6-1.0`));
+@input=split(/\n/,`grep '#FILTERSET' $basedir/data/bird/peers_v6-1.0 | sort | uniq`);
+foreach my $line (@input) {
+	chomp $line;
+	my (undef, $asn, $filter, $template,$id) = split (";",$line);
+	my $function_name;
+	my $output_dir = "$basedir/data/bird/filters_v6";
+	if ($filter ne "") { 
+		if ($template eq "__INTERNAL__") {
+                        $function_name = "in_".$id."_6()";
+                } else {
+                        $function_name = "in_".$filter."_6()";
+			$function_name =~ tr/-/_/;
+                }
+		cli_out "Updating IPv6 filter for peer $id, AS-set $filter\n";
+		output_prefixes($filter,"6",$function_name,$output_dir);
+	}
+}
 
+while( threads->list ) {
+    for my $joinable ( threads->list( threads::joinable ) ) {
+            $joinable->join;
+    }
+}

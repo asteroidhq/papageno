@@ -1,3 +1,14 @@
+# Provide functions and constants to be used with the birdc cli, specifically the 'show route where' command. 
+# Any function and constant that exists within the bird config can be used there.
+#
+# Examples:
+# # Show routes originating from ASN 15169
+# bird> show route where origin_as(15169)
+# # Show filtered routes with an invalid ROA and have ASN 6939 as next hop
+# bird> show route where is_tagged(REASON_ROA_INVALID) && first_asn(6939) filtered
+# # Show routes learned at IXP AMS-IX (peeringdb ID 26) from direct peers
+# bird> show route where is_ix(26) && is_tagged(PREFIX_PEERING)
+
 function first_as(int a)
 {
         return bgp_path.first = a;
@@ -8,19 +19,19 @@ function origin_as(int a)
         return bgp_path.last_nonaggregated = a;
 }
 
-function is_tagged(lc c)
+function path_match(int a)
+{
+	return a ~ bgp_path;
+}
+
+function next_hop(ip i)
+{
+	return gw = i;
+}
+
+function is(lc c)
 {
         return c ~ bgp_large_community;
-}
-
-function is_region(lc c)
-{
-	return is_tagged(c);
-}
-
-function is_ix(int n)
-{
-	return (myasn,prefix_ix,n) ~ bgp_large_community;
 }
 
 function is_location(int n)
@@ -28,11 +39,22 @@ function is_location(int n)
 	return (myasn,prefix_location,n) ~ bgp_large_community;
 }
 
-function is_country(int n)
+function pref(int n)
 {
-	return (myasn,prefix_country,n) ~ bgp_large_community;
+	return preference = n;
 }
 
+function pref_ge(int n)
+{
+	return preference >= n;
+}
+
+function pref_le(int n)
+{
+	return preference <= n;
+}
+
+define CC_UK = CC_GB;
 
 define PREFIX_INTERNAL 	= (myasn, prefix_type, internal_route);
 define PREFIX_RS 	= (myasn, prefix_type, rs_route);

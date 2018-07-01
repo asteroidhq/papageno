@@ -1,6 +1,13 @@
 roa4 table roa_main_4;
 roa6 table roa_main_6;
 
+protocol rpki __papageno_rpki {
+	roa4 { table roa_main_4; };
+	roa6 { table roa_main_6; };
+	remote roa_tcp_server port roa_tcp_port;
+	transport tcp;
+}
+
 function origin_check()
 {
 	case net.type {

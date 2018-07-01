@@ -1,6 +1,6 @@
-﻿#Type;Peername;Peeringdb;ASN;Template;IPv4;IPv6;Filter-v4;Filter-v6;Localpref;prefix-v4;prefix-v6;Password;Passive
-IXP;MyIXP;1;;;;;;;;;
-;MyPeer;1;65001;PEERING;192.0.2.2:2001:db8::2;AS-EXAMPLE;AS-EXAMPLE;120;;1000;100;;
-;MyIX Routeserver;2;65001;;;;
+﻿type;desc;asn;peeringdb;template;localpref;filterv4;filterv6;ipv4;ipv6;prefixv4;prefixv6;password;bfd;passive
+IXP;MyIXP;;1;;;;;;;;
+;MyPeer;65001;1;PEERING;120;AS-EXAMPLE;AS-EXAMPLE;192.0.2.2:2001:db8::2;;1000;100;;
+;MyIX Routeserver;65001;2;;;
 PNI;;;;;;;;;;;;
-;MyTransit;45;65019;TRANSIT;198.51.100.1:2001:db8:100::1;;;;;;;
+;MyTransit;65019;45;TRANSIT;198.51.100.1:2001:db8:100::1;;;;;;;

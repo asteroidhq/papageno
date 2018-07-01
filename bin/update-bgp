@@ -5,20 +5,29 @@
 
 use strict;
 use File::Copy;
-use LWP::Simple;                # From CPAN
-use JSON qw( decode_json );     # From CPAN
+use LWP::Simple; 
+use JSON qw( decode_json );
 use Template;
 
+# Set some global defaults
 my $basedir=".";
 my $input="$ENV{PWD}/bgp-peers.csv";
 my $outpath = "$basedir/data/bird";
 my $template_1="lib/proto-template-1.0.tt";
 my $template_2="lib/proto-template-2.0.tt";
+
+# Track cmdline options
 my $force=0;
 my $verbose=0;
 my $quiet=0;
+
+# Provide a consistent counter per ASN for Protcocol IDs
 my %asn_counter;
+
+# Keep track of which files have already been updated while running this script
 my %updated_file;
+
+# Track per-IXP config details across iterations
 my $ix_id;
 my $ix_desc;
 my $ix_localpref;
@@ -31,21 +40,23 @@ foreach my $val (@ARGV) {
 	else			{ $input=$val; }
 }
 
+sub outf {
+	my $file=shift;
+	open (my $fh, ">", "$file") or die "$file: $!\n";
+	print $fh "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n#\n";
+	return $fh;
+}
+
 # open input file
-open (my $fh, "<:encoding(UTF-8)", $input) or die "$!\n";
+open (my $fh, "<:encoding(UTF-8)", $input) or die "$input: $!\n";
 
 # open output files
-open (my $out4, ">", "$outpath/peers_v4-1.0.tmp") or die "$!\n";
-open (my $out6, ">", "$outpath/peers_v6-1.0.tmp") or die "$!\n";
-open (my $out24, ">", "$outpath/peers_v4-2.0.tmp") or die "$!\n";
-open (my $out26, ">", "$outpath/peers_v6-2.0.tmp") or die "$!\n";
+my $out4=outf("$outpath/peers_v4-1.0.tmp");
+my $out6=outf("$outpath/peers_v6-1.0.tmp");
+my $out24=outf("$outpath/peers_v4-2.0.tmp");
+my $out26=outf("$outpath/peers_v6-2.0.tmp");
 
-# output headers
-print $out4 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n#\n";
-print $out6 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n#\n";
-print $out24 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n#\n";
-print $out26 "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n# Source: $input\n#\n";
-
+# Loads constants from a given bird config file
 sub load_defines {
 	my $file = shift;
 	my %rethash;
@@ -73,8 +84,8 @@ if ($bird6_defs->{"myasn"} && $bird6_defs->{"myas_set"}) {
 }
 my $bird2_defs = load_defines ("$basedir/bird-2.conf");
 if ($bird2_defs->{"myasn"} && $bird2_defs->{"myas_set"}) {
-       printf $out24 "#FILTERSET;%s;%s;__INTERNAL__;my_prefixes\n#\n",$bird6_defs->{"myasn"}, $bird6_defs->{"myas_set"};
-       printf $out26 "#FILTERSET;%s;%s;__INTERNAL__;my_prefixes\n#\n",$bird6_defs->{"myasn"}, $bird6_defs->{"myas_set"};
+       printf $out24 "#FILTERSET;%s;%s;__INTERNAL__;my_prefixes\n#\n",$bird2_defs->{"myasn"}, $bird2_defs->{"myas_set"};
+       printf $out26 "#FILTERSET;%s;%s;__INTERNAL__;my_prefixes\n#\n",$bird2_defs->{"myasn"}, $bird2_defs->{"myas_set"};
 }
 
 # Set max age of data files in seconds - set to 0 if forced update
@@ -82,7 +93,7 @@ my $max_file_age = ($force == 0) ? 43200 : 0;
 
 my $tt = Template->new();
 
-
+# prints to STDIN if important enough
 sub cli_out {
 	if ($quiet==1) { return }
 	my ($str,$relevance) = @_;
@@ -90,6 +101,7 @@ sub cli_out {
 	if ($relevance <= $verbose) { print $str }
 }
 
+# Returns the first non-empty argument
 sub choose { 
 	foreach my $item (@_) {
 		if ($item ne "") { return $item; }
@@ -97,10 +109,12 @@ sub choose {
 	return "";
 }
 
+# Returns a whole file into one string, if it exists
 sub readfile {
 	if ( -s "$_[0]" ) { return `cat $_[0]` } else { return "" }
 }
 
+# Take a line from a CSV file and match it up with a header array to return a hash
 sub csv_to_hash {
 	my ($input,@fields) = @_;
 	my @arr = split (";",$input);
@@ -109,6 +123,7 @@ sub csv_to_hash {
 	return \%rethash;
 }
 
+# Updates a local file from a given URL, if it's too old. 
 sub update_file {
 	my ($url,$file,$max_age) = @_;
 	return if ($updated_file{"$file"} >0);
@@ -116,13 +131,15 @@ sub update_file {
         	my @stat=stat("$file");
                 if (time()-$stat[9] < $max_age) { return }
 		else { cli_out("  Downloading new copy of $file. Age: ".(time()-$stat[9])."\n",1) }
-	}
+	} else { cli_out("  Downloading initial copy of $file from $url\n",1) }
 	getstore ($url,$file);
 	$updated_file{"$file"} =1;
 }
 
+# Outputs Bird 1 and Bird 2 peering configs to the predefined fds based on a hashref with all details required
 sub output_peer {
 	my $args = shift; 
+	return if ($args->{'asn'} eq "");
 	my $output->{'asn'}=$args->{'asn'}; 
 	$asn_counter{$output->{'asn'}}++;
 	# protocol independent output
@@ -134,8 +151,8 @@ sub output_peer {
 	if ($args->{'template'} eq "ROUTESERVER") { $output->{'rs'} ="_rs" } 
 	if ($args->{'password'})    { $output->{'password'} = "    password \"$args->{'password'}\";\n"; }
 	if ($args->{'localpref'}) 	{ $output->{'localpref'} = "    preference $args->{'localpref'};\n"; }
-	if ($args->{'gtsm'}) 	{ $args->{'gtsm'} = "    ttl security on;\n"; }
-	if ($args->{'bfd'}) 	{ $args->{'bfd'} = "    bfd on;\n"; }
+	if ($args->{'gtsm'}) 	{ $output->{'gtsm'} = "    ttl security on;\n"; }
+	if ($args->{'bfd'}) 	{ $output->{'bfd'} = "    bfd on;\n"; }
 	if ($args->{'passive'} !~ /\s*/ ) 	{ $args->{'passive'} = "    passive on;\n"; } else { $args->{'passive'} = ""; }
 	if ($args->{'ipv4'}) {
 		$output->{'version'} = 4;
@@ -170,16 +187,16 @@ sub output_peer {
 
 }
 
-
+# Process header, put into @fields array
 my $header=<$fh>;
 chomp $header;
 my @fields = split (";",$header);
-# type;desc;peeringdb;asn;template;ipv4;ipV6;filterv4;filterv6;localpref;prefixv4;prefixv6;password;bfd;passive
 while ( my $line = <$fh>) {
+	# Skip comment lines
 	next if ($line =~ /^\s*#/);
 	$line =~ s/\r//;
 	my $args = csv_to_hash($line,@fields);
-	my %output;
+	my %output = %{$args};
 	if ($args->{"type"} eq "IXP") {
 		cli_out "IXP $args->{'desc'}\n";
 		$ix_id = $args->{'peeringdb'};
@@ -198,9 +215,12 @@ while ( my $line = <$fh>) {
 		# Try to get ASN info from peeringdb
 		my $asnfile = "$basedir/data/asn/$args->{'asn'}";
 		update_file("https://www.peeringdb.com/api/net?asn=$args->{'asn'}",$asnfile,$max_file_age);
-		my $decoded_asn = decode_json( readfile($asnfile) );
-		# If no peeringdb entry in the CSV, use the info from the ASN
-		$output{'peeringdb'} = choose ($args->{'peeringdb'}, $decoded_asn->{'data'}->[0]->{'id'});
+		# Only try to load if it actually contains data
+		if ( -s $asnfile) {
+			my $decoded_asn = decode_json( readfile($asnfile) );
+			# If no peeringdb entry in the CSV, use the info from the ASN
+			$output{'peeringdb'} = choose ($args->{'peeringdb'}, $decoded_asn->{'data'}->[0]->{'id'});
+		}
 	}
 	# Try to get network info from peeringdb
 	my $decoded_net;
@@ -208,6 +228,7 @@ while ( my $line = <$fh>) {
 		my $netfile = "$basedir/data/net/$output{'peeringdb'}";
 		update_file("https://www.peeringdb.com/api/net/$output{'peeringdb'}",$netfile,$max_file_age);
 		$decoded_net = decode_json( readfile("$netfile") );
+		$output{'asn'}=choose($args->{'asn'},$decoded_net->{'data'}->[0]->{'asn'});
 		my $irr_as_set = $decoded_net->{'data'}->[0]->{'irr_as_set'} =~ s/\w+::(.+)/\1/r; 
 		$output{'filterv4'}=choose($args->{'filterv4'},$irr_as_set);
 		$output{'filterv6'}=choose($args->{'filterv6'},$irr_as_set);
@@ -221,7 +242,8 @@ while ( my $line = <$fh>) {
 			$output{'prefixv6'}=choose($args->{'prefixv6'},$decoded_net->{'data'}->[0]->{'info_prefixes6'}); 
 		}
 	}
-	# increase the ASN counter for the right protocol ID
+	# If there's no ASN right now it's hopeless, go to the next.
+	next if ($output{'asn'} eq "");
 	# If we don't have any IPs for a peer but we do have a peeringdb entry
 	if ($args->{'ipv4'} eq "" && $args->{'ipv6'} eq "" && $output{'peeringdb'} ne "") {
 		my $sess = 1;
@@ -230,6 +252,8 @@ while ( my $line = <$fh>) {
 			$output{'desc'} = ($sess > 1) ? "$args->{'desc'} $sess at $ix_desc" : "$args->{'desc'} at $ix_desc";
 			$output{'asn'} = choose ($args->{'asn'},$elem->{'asn'});
 			$output{'password'} = $args->{'password'};
+			$output{'gtsm'} = $args->{'gtsm'};
+			$output{'bfd'} = $args->{'bfd'};
 			$output{'template'}=$args->{'template'};
 			$output{'ipv4'}= $elem->{'ipaddr4'};
 			$output{'ipv6'}= $elem->{'ipaddr6'};
@@ -238,11 +262,6 @@ while ( my $line = <$fh>) {
 			$sess++;
 		}
 	} else {
-		%output = %{$args};
-		if ($args->{'template'} eq "PEERING" || $args->{'template'} eq "ROUTESERVER") { 
-			$output{'prefixv4'}=choose($args->{'prefixv4'},$decoded_net->{'data'}->[0]->{'info_prefixes4'}); 
-			$output{'prefixv6'}=choose($args->{'prefixv6'},$decoded_net->{'data'}->[0]->{'info_prefixes6'}); 
-		}
 		cli_out "  $output{'desc'} AS $output{'asn'} template $output{'template'} $output{'ipv4'} $output{'ipv6'}\n";
 		output_peer(\%output);
 	}	

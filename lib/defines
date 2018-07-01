@@ -1,10 +1,12 @@
-# Set system wide statics
+# Set system wide statics for all protocols
 
+# Default preferences per peer type
 define default_preference_customer=120;
 define default_preference_peering=100;
 define default_preference_routeserver=80;
 define default_preference_transit=50;
 
+# Default prefix limits per peer type
 define default_pfxlimit_customer = 100;
 define default_pfxlimit_peering = 10000;
 define default_pfxlimit_routeserver = 50000;
@@ -30,7 +32,6 @@ define pref_peer_backup = 4003;
 define pref_customer_fallback = 4004;
 
 # informational communities
-
 define prefix_type = 60000;
 define prefix_region = 60001;
 define prefix_country = 60002;
@@ -82,11 +83,12 @@ define REASON_TOO_SHORT = (myasn,prefix_filtered,filtered_too_short);
 define REASON_IXP_PREFIX = (myasn,prefix_filtered,filtered_ixp_prefix);
 define REASON_ROA_INVALID = (myasn,prefix_filtered,filtered_roa_invalid);
 
-# read by update-peeringdb
+# read by update-peeringdb to use with regular 32-bit communities
 define ix_id_offset = 10000;
 define country_iso_offset = 20000;
 define location = location_id + 30000;
 
+# Transit ASNs - ASNs that should not show up in the BGP path of any customer or peer
 define transit_asns = [
     174,		# Cogent
     209,		# Centurylink
@@ -108,6 +110,7 @@ define transit_asns = [
     7018		# AT&T US
 ];
 
+# Bogon ASNs - ASNs that do not belong in the DFZ
 define bogon_asns = [
     0,                      # RFC 7607
     23456,                  # RFC 4893 AS_TRANS

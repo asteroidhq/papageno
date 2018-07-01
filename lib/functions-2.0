@@ -1,3 +1,4 @@
+# Provide translation layer between protocol specific defines and functions and general template functions
 function match_my_prefixes() { 
 	case net.type {
 		NET_IP4: 

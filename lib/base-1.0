@@ -12,6 +12,7 @@ timeformat route        iso long;
 protocol kernel {
 	persist;		# Don't remove routes on bird shutdown
 	export all;		# Default is export none
+	merge paths on limit 8;	# Do up to 8-way ECMP
 }
 
 protocol device {

@@ -1,3 +1,4 @@
+# Provide translation layer between protocol specific defines and functions and general template functions
 function match_my_prefixes() { 
 	if defined(myas_set) then {
 		return match_my_prefixes_4();

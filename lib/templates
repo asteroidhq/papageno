@@ -203,6 +203,7 @@ function filter_peering() {
 function filter_customer() {
 	bgp_community.add((myasn,customer_route));
 	bgp_large_community.add((myasn,prefix_type,customer_route));
+	if origin_check() then return true;
 	if next_hop_check() then return true;
 	if bgp_path_length() then return true;
 	if asn_transit() then return true;
@@ -218,6 +219,7 @@ function filter_transit() {
 	strip_my_communities();
 	bgp_community.add((myasn,transit_route));
 	bgp_large_community.add((myasn,prefix_type,transit_route));
+	if origin_check() then return true;
 	if next_hop_check() then return true;
 	if bgp_path_length() then return true;
 	if asn_bogons() then return true;

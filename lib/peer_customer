@@ -1,3 +1,6 @@
-	import filter ibgp_in;
-	export filter ibgp_out;
-	preference 200;
+	graceful restart on;
+	import keep filtered;
+	import limit default_pfxlimit_customer action block;
+	import filter bgp_in_customer;
+	export filter ebgp_customer;
+	preference default_preference_customer;
