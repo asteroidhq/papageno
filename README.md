@@ -9,6 +9,7 @@ Papageno is a small set of scripts and templates that allows you to use a single
 
 Standard import filters include:
  - Checks on IRR prefix lists
+ - Checks on live RPKI data
  - IPv4 and IPv6 'martian' prefixes - networks that aren't supposed to be on the Internet
  - ASN bogons - AS numbers that are either private or reserved
  - transit ASNs - AS numbers of well known transit providers 
@@ -37,27 +38,31 @@ Predefined filter sets for sessions with:
  - Internal BGP sessions
  
 It also configures Bird to be compatible with birdseye, a bird-based looking glass tool. 
-There are separate commands for updating peering sessions, updating IRR filters and syncing with peeringdb so updates can be done independently (and automated!).
+There are separate commands for updating peering sessions, updating IRR filters and syncing with peeringdb so updates can be done independently (and automated!). In addition, there are a few powerful extra functions to be used with the 'birdc' CLI, see 'lib/cli'.
 
 # Requirements
- - Bird 1.6
- - Perl 5 or later
+ - Bird 1.6 or Bird 2.0
+ - Perl 5.8 or later
     The following non-standard modules:
     - LWP::Simple (libwww-perl)
     - JSON (libjson-perl)
+    - Text::Unidecode (libtext-unidecode-perl)
  - bgpq3
+ - Optional: bird-rtrlib-cli https://github.com/rtrlib/bird-rtrlib-cli for RPKI running Bird 1.6
 
 # Usage
  - edit envvars to the correct settings 
- - edit bird.conf and bird6.conf to reflect your asn and prefixes
+ - edit bird.conf and bird6.conf or bird-2.conf samples to reflect your settings
  - edit bgp-peers.csv to configure your BGP peers
- - After every edit, do ./run_papageno peers'
- - Periodically (a few times a day) do './run_papageno filters' to update AS-SET filters
- - Run './run_papageno peeringdb' every time you connect to a new IX
+ - run './papageno setup'
+ - Check your config and start Bird!
+ - After every edit, do ./papageno peers'
+ - Periodically (a few times a day) do './papageno filters' to update AS-SET filters
+ - Run './papageno peeringdb' every time you connect to a new IX
  - Optional but highly recommended:
     - edit papageno-cron.d.sample for your configuration and copy to /etc/cron.d to automate periodic updates
     - edit sudoers.sample and add to /etc/sudoers
-    - add iptables.conf.sample and ip6tables.conf.sample to your iptables configuration and enable update-iptables in envvars 
+    - add iptables.conf.sample and ip6tables.conf.sample to your iptables configuration and enable update-iptables in ./papageno 
 
 Happy peering!
 
