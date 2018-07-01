@@ -1,0 +1,133 @@
+#! /bin/bash
+
+DIR=/etc/bird
+
+BIRDC4='/usr/sbin/birdc -s /var/run/bird/as25595-v4.ctl'
+BIRDC6='/usr/sbin/birdc -s /var/run/bird/as25595-v6.ctl'
+
+UPDATE_IPTABLES=1
+
+LOCKFILE='.papageno.lock'
+
+if [ "X$1X" = "XX" ]; then
+	echo "Usage: $0 <peers|filters|all|force|hourly|daily|cronfilters>"
+	exit 1
+fi
+
+(
+cd $DIR || exit 1
+
+if [ "$1" = "unlock" ]; then
+	echo "Automatic config updates are now possible."
+	rm -f "$LOCKFILE"
+	exit 0
+fi
+
+if [ "$1" = "setup" ]; then
+	echo -n "Setting up directory structure..."
+	mkdir -p data/{bird/{filter_v4,filter_v6},peeringdb,asn,net}
+	echo "done."
+	echo "Now creating the initial config..."
+	./bin/update-bgp -f
+	./bin/update-filters -f
+	./bin/update-peeringdb -f
+	[ "$UPDATE_IPTABLES" = "1" ] && echo "Make sure iptables and ip6tavbles are configured correctly."  
+	exit 0
+fi
+
+if [ -f "$LOCKFILE" ]; then
+	echo "Lockfile found, bailing out"
+	exit 1
+fi
+
+touch "$LOCKFILE"
+
+if [ "$1" = "lock" ]; then
+	echo "Automatic config updates are now locked. Don't forget to unlock when you're done."
+	exit 0
+fi
+
+if [ "$1" = "hourly" ]; then 
+	# Only do something if the CSV is less than an hour old
+	if [ ! "$(find bgp-peers.csv -mmin +60)" ]; then
+		./bin/update-bgp -q
+		./bin/update-filters -q
+		[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+		$BIRDC4 configure soft > /dev/null
+		$BIRDC6 configure soft > /dev/null
+	fi
+	rm "$LOCKFILE"
+	exit 0
+fi
+
+if [ "$1" = "daily" ]; then 
+	./bin/update-bgp -q
+	./bin/update-filters -q
+	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	$BIRDC4 configure soft > /dev/null
+	$BIRDC6 configure soft > /dev/null
+fi
+
+if [ "$1" = "cronfilters" ]; then
+	./bin/update-filters -q
+	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	$BIRDC4 configure soft > /dev/null
+	$BIRDC6 configure soft > /dev/null
+fi
+
+if [ "$1" = "check" ]; then
+	$BIRDC4 configure check
+	$BIRDC6 configure check
+	exit 0
+fi
+
+if [ "$1" = "peers" ]; then
+	./bin/update-bgp
+	./bin/update-filters
+	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	$BIRDC4 configure soft
+	$BIRDC6 configure soft
+fi
+
+if [ "$1" = "filters" ]; then
+	./bin/update-filters 
+	$BIRDC4 configure soft
+	$BIRDC6 configure soft
+fi
+
+if [ "$1" = "peeringdb" ]; then
+	./bin/update-peeringdb -f
+	$BIRDC4 configure soft > /dev/null
+	$BIRDC6 configure soft > /dev/null
+fi
+
+if [ "$1" = "all" ]; then
+	echo -n "running update-bgp..."
+	./bin/update-bgp -q
+	echo done.
+	echo -n "running update-filters..."
+	./bin/update-filters -q
+	echo done.
+	echo -n "running update-peeringdb..."
+	./bin/update-peeringdb
+	echo done.
+	echo -n "running update-iptables..."
+	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	echo done.
+	echo Now reconfiguring bird...
+	$BIRDC4 configure soft
+	$BIRDC6 configure soft
+fi
+
+if [ "$1" = "force" ]; then
+	./bin/update-bgp -f
+	./bin/update-filters -f
+	./bin/update-peeringdb -f 
+	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	$BIRDC4 configure soft
+	$BIRDC6 configure soft
+fi
+	
+rm "$LOCKFILE"
+)
+
