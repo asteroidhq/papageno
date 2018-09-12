@@ -15,4 +15,3 @@ define martians_4 = [
     240.0.0.0/4+, 	# IPv4 Reserved, RFC1700
     0.0.0.0/32- 	# IPv4 reserved, RFC1700
 ];
-

@@ -1,0 +1,43 @@
+# Bird 2.0 basic config
+
+define bird_version = 2;
+define bird_proto = "46";
+
+define myasn = 65520;
+
+# defining myas_set will effectively override anything defined in my_prefixes_*a - make sure it exists!
+define myas_set = "AS-EXAMPLE";
+define my_prefixes_4 = [ 203.0.113.0/24 ];
+define my_prefixes_6 = [ 2001:db8::/32 ];
+
+# Define the server and port for the ROA server - if you want to use ssh instead of tcp, edit lib/roa-2.0
+define roa_tcp_server = 127.0.0.1;
+define roa_tcp_port = 323;
+
+# Optional - set PeeringDB location ID for BGP community tagging
+define location_id = 18;
+
+router id 192.0.2.253;
+
+protocol static static_bgp_4 {
+	ipv4;
+	route 203.0.113.0/24 reject;
+}
+protocol static static_bgp_6 {
+	ipv6;
+	route 2001:db8::/32 reject;
+}
+
+# Blackhole
+
+protocol static static_blackhole_4 {
+	ipv4;
+	route 192.0.2.1/32 blackhole;
+}
+
+protocol static static_blackhole_6 {
+	ipv6;
+	route 2001:db8::1/128 blackhole;
+}
+
+include "includes/includes-2.0";

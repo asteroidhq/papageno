@@ -69,6 +69,7 @@ define filtered_too_long = 408;
 define filtered_too_short = 409;
 define filtered_ixp_prefix = 410;
 define filtered_roa_invalid = 411;
+define filtered_spamhaus_drop = 412;
 
 define REASON_MARTIAN = (myasn,prefix_filtered,filtered_martian);
 define REASON_BOGON = (myasn,prefix_filtered,filtered_bogon_asn);
@@ -82,6 +83,7 @@ define REASON_TOO_LONG = (myasn,prefix_filtered,filtered_too_long);
 define REASON_TOO_SHORT = (myasn,prefix_filtered,filtered_too_short);
 define REASON_IXP_PREFIX = (myasn,prefix_filtered,filtered_ixp_prefix);
 define REASON_ROA_INVALID = (myasn,prefix_filtered,filtered_roa_invalid);
+define REASON_SPAMHAUS = (myasn,prefix_filtered,filtered_spamhaus_drop);
 
 # read by update-peeringdb to use with regular 32-bit communities
 define ix_id_offset = 10000;

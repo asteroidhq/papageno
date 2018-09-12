@@ -1,0 +1,105 @@
+#!/usr/bin/perl
+#
+# use -f commandline option to renew data sources
+#
+use utf8;
+use LWP::Simple;                # From CPAN
+use JSON qw( decode_json );     # From CPAN
+use File::Copy;
+use Text::Unidecode;
+use strict;                     # Good practice
+
+my $cmdl = $ARGV[0] || "";
+
+my $basedir=".";
+
+sub readfile {
+	return `cat $_[0]`;
+}
+
+sub outf {
+	my $file=shift;
+	open (my $fh, ">", "$file.tmp") or die "$file.tmp: $!\n";
+	print $fh "# UPDATED AUTOMATICALLY DO NOT EDIT!\n# Last updated: ".localtime."\n#\n";
+	return $fh;
+}
+
+sub closef {
+	my $fh=shift;
+	my $file=shift;
+	close $fh;
+	move ("$file.tmp","$file");
+}
+
+if ("$cmdl" eq "-f") {
+	getstore ("https://www.spamhaus.org/drop/drop.txt", "$basedir/data/spamhaus/drop.txt");
+	getstore ("https://www.spamhaus.org/drop/edrop.txt", "$basedir/data/spamhaus/edrop.txt");
+	getstore ("https://www.spamhaus.org/drop/dropv6.txt", "$basedir/data/spamhaus/dropv6.txt");
+}
+
+my $drop=outf("$basedir/data/bird/drop_v4");
+my $dropv6=outf("$basedir/data/bird/drop_v6");
+
+
+print $drop "define spamhaus_drop_4 = [\n";
+print $dropv6 "define spamhaus_drop_6 = [\n";
+
+my $counter=0;
+open (my $in, "<", "$basedir/data/spamhaus/drop.txt");
+while (<$in>) {
+	my $line = <$in>;
+	next if ($line =~ /^;/);
+	chomp $line;
+	if ($line =~ /^(.+)? ; /) {
+		my $prefix = $1;
+		(my $net, my $len) = split("/",$prefix);
+		if ($len > 12) { 
+			if ($counter>0) { print $drop ",\n" }
+			$counter++;
+			print $drop "    $1+"; 
+		}
+	}
+}
+close ($in);
+open (my $in, "<", "$basedir/data/spamhaus/edrop.txt");
+while (<$in>) {
+	my $line = <$in>;
+	next if ($line =~ /^;/);
+	$counter++;
+	chomp $line;
+	if ($line =~ /^(.+)? ; /) {
+		my $prefix = $1;
+		(my $net, my $len) = split("/",$prefix);
+		if ($len > 12) { 
+			if ($counter>0) { print $drop ",\n" }
+			$counter++;
+			print $drop "    $1+"; 
+		}
+	}
+}
+close ($in);
+print $drop "\n];\n";
+
+$counter=0;
+open (my $in, "<", "$basedir/data/spamhaus/dropv6.txt");
+while (<$in>) {
+	my $line = <$in>;
+	next if ($line =~ /^;/);
+	chomp $line;
+	if ($line =~ /^(.+)? ; /) {
+		my $prefix = $1;
+		(my $net, my $len) = split("/",$prefix);
+		if ($len > 28) { 
+			if ($counter>0) { print $dropv6 ",\n" }
+			$counter++;
+			print $dropv6 "    $1+"; 
+		}
+	}
+}
+close ($in);
+print $dropv6 "\n];\n";
+
+
+closef ($drop,"$basedir/data/bird/drop_v4");
+closef ($dropv6,"$basedir/data/bird/drop_v6");
+

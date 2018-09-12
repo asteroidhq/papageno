@@ -10,9 +10,12 @@ timeformat protocol     iso long;
 timeformat route        iso long;
 
 protocol kernel {
+	learn;			# Learn other routes from kernel
 	persist;		# Don't remove routes on bird shutdown
+	import all;
 	export all;		# Default is export none
 	merge paths on limit 8;	# Do up to 8-way ECMP
+	scan time 10;		# Scan interfaces every 10 seconds
 }
 
 protocol device {

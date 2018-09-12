@@ -54,8 +54,6 @@ function pref_le(int n)
 	return preference <= n;
 }
 
-define CC_UK = CC_GB;
-
 define PREFIX_INTERNAL 	= (myasn, prefix_type, internal_route);
 define PREFIX_RS 	= (myasn, prefix_type, rs_route);
 define PREFIX_PEERING	= (myasn, prefix_type, peering_route);
@@ -71,3 +69,10 @@ define EUROPE		= (myasn, prefix_region, region_europe);
 define MIDDLE_EAST	= (myasn, prefix_region, region_middle_east);
 define NORTH_AMERICA	= (myasn, prefix_region, region_north_america);
 define SOUTH_AMERICA	= (myasn, prefix_region, region_south_america);
+
+# Some extra defines to make life easier <> the automatically defined ones in ./data/bird/peeringdb_defines
+define CC_UK = CC_GB;
+define IXP_AMSIX = IXP_AMS_IX;
+define IXP_DECIX = IXP_DE_CIX_FRANKFURT;
+define IXP_LINX = IXP_LINX_LON1;
+

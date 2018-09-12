@@ -55,6 +55,8 @@ function asn_transit()
 }
 
 function is_first_asn(int a) {
+	# don't check for ibgp
+	if myasn = a then return false;
 	if bgp_path.first != a then {
                 print "REJECTING: ",net.ip,"/",net.len," received from ",from,": First AS in path does not match with peer AS - ", bgp_path.first, " != ", a;
                 bgp_large_community.add(REASON_FIRST_ASN);
@@ -195,6 +197,7 @@ function filter_peering() {
 	if asn_bogons() then return true;
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
+	if net_spamhaus() then return true;
 	if net_ixp() then return true;
 	honor_graceful_shutdown();
 	return false;
@@ -225,7 +228,15 @@ function filter_transit() {
 	if asn_bogons() then return true;
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
+	if net_spamhaus() then return true;
 	if net_ixp() then return true;
+	honor_graceful_shutdown();
+	return false;
+}
+
+function filter_internal() {
+	bgp_community.add((myasn,internal_route));
+	bgp_large_community.add((myasn,prefix_type,internal_route));
 	honor_graceful_shutdown();
 	return false;
 }
@@ -243,6 +254,7 @@ filter bgp_in_customer {
 filter ebgp_out 
 {
 	if net_martian() then reject;
+	if ( proto = "static_default" ) then reject; 
 	bgp_path.delete(bogon_asns);
 	strip_my_communities();
 	if match_my_prefixes() then accept;
@@ -251,12 +263,13 @@ filter ebgp_out
 
 filter ebgp_customer {
 	if net_martian() then reject;
-	if ( source = RTS_BGP && net != defaultroute() ) then accept; 
+	if ( proto = "static_default" ) then reject; 
+	if ( source = RTS_BGP ) then accept; 
 	reject;
 }
 
 filter ebgp_customer_default {
-	if ( net = defaultroute() ) then accept; 
+	if ( proto = "static_default" ) then accept; 
 	reject;
 }
 
@@ -268,4 +281,9 @@ filter ibgp_in {
 
 filter ibgp_out {
 	accept;
+}
+
+filter ibgp_out_internal {
+	if ( source ~ [ RTS_STATIC, RTS_DEVICE, RTS_STATIC_DEVICE, RTS_RIP, RTS_OSPF, RTS_OSPF_EXT1, RTS_OSPF_EXT2, RTS_OSPF_IA ] ) then accept;
+	reject;
 }

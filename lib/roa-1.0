@@ -2,7 +2,7 @@ roa table roa_main;
 
 function origin_check() {
 	if roa_check(roa_main) = ROA_INVALID then {
-                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
+#                print "REJECTING: ",net.ip,"/",net.len," received from ",proto,": ROA INVALID!";
                 bgp_large_community.add(REASON_ROA_INVALID);
                 return true;
 	} else {

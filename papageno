@@ -1,17 +1,95 @@
 #! /bin/bash
 
-DIR=/etc/bird
+DIR=/home/remco/as25595/bird
 
-BIRDC4='/usr/sbin/birdc -s /var/run/bird/as25595-v4.ctl'
-BIRDC6='/usr/sbin/birdc -s /var/run/bird/as25595-v6.ctl'
+BIRDC4='/usr/sbin/birdc -l -s /var/run/bird/as25595-v4.ctl'
+BIRDC6='/usr/sbin/birdc -l -s /var/run/bird/as25595-v6.ctl'
 
 UPDATE_IPTABLES=1
 
 LOCKFILE='.papageno.lock'
 
 if [ "X$1X" = "XX" ]; then
-	echo "Usage: $0 <peers|filters|all|force|hourly|daily|cronfilters>"
+	echo "Usage: $0 <show|peers|filters|all|force|hourly|daily|cronfilters>"
 	exit 1
+fi
+
+if [ "$1" = "show" ]; then
+	if [ ${3:0:3} = "sum" ]; then
+		if [[ "$2" = "ip" || "$2" = "ipv4" ]]; then
+	BIRDC=$BIRDC4
+	PROTO=`$BIRDC -v show protocols | awk '$2 == "BGP" { print }'`
+	NUM_PEERS=`wc -l <<<"$PROTO"`
+	echo -n "IPv4: $NUM_PEERS peers, "`awk '$4 == "up" { count++ } END { printf "%s up,", count }' <<<"$PROTO"`" "
+	echo `$BIRDC -v show route count | awk '$1 == "0014" { printf " %s routes for %s networks",$2,$7 }'`
+	echo -n `$BIRDC -v 'show route where is(REASON_AS_SET) filtered count' | awk '$1 == "0014" { printf " filtered %s routes for %s networks, %s for invalid AS-SET",$4,$7,$2 }'`" "
+	echo `$BIRDC -v 'show route where is(REASON_ROA_INVALID) filtered count'| awk '$1 == "0014" { printf "and %s routes for invalid ROA\n",$2 }'`
+		fi
+		if [[ "$2" = "ip" || "$2" = "ipv6" ]]; then
+	BIRDC=$BIRDC6
+	PROTO=`$BIRDC -v show protocols | awk '$2 == "BGP" { print }'`
+	NUM_PEERS=`wc -l <<<"$PROTO"`
+	echo -n "IPv6: $NUM_PEERS peers, "`awk '$4 == "up" { count++ } END { printf "%s up,", count }' <<<"$PROTO"`" "
+	echo `$BIRDC -v show route count | awk '$1 == "0014" { printf " %s routes for %s networks",$2,$7 }'`
+	echo -n `$BIRDC -v 'show route where is(REASON_AS_SET) filtered count' | awk '$1 == "0014" { printf " filtered %s routes for %s networks, %s for invalid AS-SET",$4,$7,$2 }'`" "
+	echo `$BIRDC -v 'show route where is(REASON_ROA_INVALID) filtered count'| awk '$1 == "0014" { printf "and %s routes for invalid ROA\n",$2 }'`
+		fi
+
+		if [[ "$2" = "bgp" || "$2" = "bgp4" ]]; then
+	NOW=`date +%s`
+	V4_PEERS=`$BIRDC4 show protocols | awk '$2 == "BGP" { printf "%s ", $1 }'`
+	V4_OUT=`$BIRDC4 show protocols all`
+	echo "Neighbor                        AS    MsgRcvd    MsgSent      Up/Down Received Filtered Preferred Description"
+	for i in $V4_PEERS;
+	do
+		OUT=`sed -n /^$i/,/^$/p <<<"$V4_OUT"`
+	        read STATE DAY TIME ADDR ASN IMPORT EXPORT REC FILT PREF SESS DESC <<< `awk '
+			$2 == "BGP" { state=$4; day=$5; time=$6; sess=$7 };
+			/Neighbor address:/ { addr=$3 };
+			/Neighbor AS:/ { asn=$3 };
+			/Import updates:/ { import=$3 }; 
+			/Export updates:/ { export=$7 };
+			/Description:/ { $1=""; desc=substr($0,1) };
+			/Routes:/ { rec=$2; filt=$4; pref=$8 };
+			END { print state" "day" "time" "addr" "asn" "import" "export" "rec" "filt" "pref" "sess" "desc }' <<<"$OUT"`
+		if [ ! "$STATE" == "up" ]; then
+			REC="$SESS"; FILT=""; PREF=""
+		fi
+	        SINCE=`date +%s --date="$DAY $TIME"`
+	        SECS=$(($NOW-$SINCE))
+	        printf  "%-27s %6d %10d %10d %3dd%02d:%02d:%02d %8s %8s  %8s %s\n" \
+			$ADDR $ASN $IMPORT $EXPORT $(($SECS/86400)) $(($SECS%86400/3600)) $(($SECS%3600/60)) $(($SECS%60)) "$REC" "$FILT" "$PREF" "$DESC"
+	done
+		fi
+		if [[ "$2" = "bgp" || "$2" = "bgp6" ]]; then
+	NOW=`date +%s`
+	V6_PEERS=`$BIRDC6 show protocols | awk '$2 == "BGP" { printf "%s ", $1 }'`
+	V6_OUT=`$BIRDC6 show protocols all`
+	echo "IPv6:"
+	echo "Neighbor                        AS    MsgRcvd    MsgSent      Up/Down Received Filtered Preferred Description"
+	for i in $V6_PEERS;
+	do
+		OUT=`sed -n /^$i/,/^$/p <<<"$V6_OUT"`
+	        read STATE DAY TIME ADDR ASN IMPORT EXPORT REC FILT PREF SESS DESC <<< `awk '
+			$2 == "BGP" { state=$4; day=$5; time=$6; sess=$7 };
+			/Neighbor address:/ { addr=$3 };
+			/Neighbor AS:/ { asn=$3 };
+			/Import updates:/ { import=$3 }; 
+			/Export updates:/ { export=$7 };
+			/Description:/ { $1=""; desc=substr($0,1) };
+			/Routes:/ { rec=$2; filt=$4; pref=$8 };
+			END { print state" "day" "time" "addr" "asn" "import" "export" "rec" "filt" "pref" "sess" "desc }' <<<"$OUT"`
+		if [ ! "$STATE" == "up" ]; then
+			REC="$SESS"; FILT=""; PREF=""
+		fi
+	        SINCE=`date +%s --date="$DAY $TIME"`
+	        SECS=$(($NOW-$SINCE))
+	        printf  "%-27s %6d %10d %10d %3dd%02d:%02d:%02d %8s %8s  %8s %s\n" \
+			$ADDR $ASN $IMPORT $EXPORT $(($SECS/86400)) $(($SECS%86400/3600)) $(($SECS%3600/60)) $(($SECS%60)) "$REC" "$FILT" "$PREF" "$DESC"
+	done
+		fi
+	fi
+	exit 0
 fi
 
 (
@@ -20,18 +98,6 @@ cd $DIR || exit 1
 if [ "$1" = "unlock" ]; then
 	echo "Automatic config updates are now possible."
 	rm -f "$LOCKFILE"
-	exit 0
-fi
-
-if [ "$1" = "setup" ]; then
-	echo -n "Setting up directory structure..."
-	mkdir -p data/{bird/{filter_v4,filter_v6},peeringdb,asn,net}
-	echo "done."
-	echo "Now creating the initial config..."
-	./bin/update-bgp -f
-	./bin/update-filters -f
-	./bin/update-peeringdb -f
-	[ "$UPDATE_IPTABLES" = "1" ] && echo "Make sure iptables and ip6tavbles are configured correctly."  
 	exit 0
 fi
 
@@ -70,7 +136,7 @@ fi
 
 if [ "$1" = "cronfilters" ]; then
 	./bin/update-filters -q
-	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
+	./bin/update-spamhaus -f
 	$BIRDC4 configure soft > /dev/null
 	$BIRDC6 configure soft > /dev/null
 fi
@@ -83,13 +149,14 @@ fi
 
 if [ "$1" = "peers" ]; then
 	./bin/update-bgp
-	./bin/update-filters
+	./bin/update-filters -e
 	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
 	$BIRDC4 configure soft
 	$BIRDC6 configure soft
 fi
 
 if [ "$1" = "filters" ]; then
+	./bin/update-spamhaus -f
 	./bin/update-filters 
 	$BIRDC4 configure soft
 	$BIRDC6 configure soft

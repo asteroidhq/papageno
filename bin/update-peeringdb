@@ -158,7 +158,7 @@ print $out6 <<EOF;
 EOF
 
 closef ($out4,"$basedir/data/bird/peeringdb_v4");
-closef ($out4,"$basedir/data/bird/peeringdb_v4");
+closef ($out6,"$basedir/data/bird/peeringdb_v6");
 closef ($filter4,"$basedir/data/bird/filters_v4/ixp.prefixes");
 closef ($filter6,"$basedir/data/bird/filters_v4/ixp.prefixes");
 closef ($defines,"$basedir/data/bird/peeringdb_defines");

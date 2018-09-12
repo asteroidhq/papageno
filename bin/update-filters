@@ -17,6 +17,7 @@ if ( $bgpq eq "") {
 my $force=0;
 my $verbose=0;
 my $quiet=0;
+my $exists=0;
 
 my %processed_sets;
 
@@ -24,6 +25,7 @@ foreach my $val (@ARGV) {
         if ($val eq "-f" )      { $force=1; next }
         elsif($val eq "-v")     { $verbose+=1; next }
         elsif($val eq "-q")     { $quiet=1; next }
+	elsif($val eq "-e")	{ $exists=1; next }
 }
 
 sub cli_out {
@@ -40,6 +42,7 @@ sub output_prefixes {
 	my @stat;
 	my $age = 86400;
 	if ( -s "$output_dir/$filter.prefixes") { 
+		if ($exists ==1) { return } # skip any non-empty files for quick peer updates
 		open (my $file, "$output_dir/$filter.prefixes") or die "$!\n";
 		$age=time-((stat($file))[9]);
 		close $file;
@@ -47,9 +50,10 @@ sub output_prefixes {
 	if ( ($age > 3600 ) || ($force==1 && $processed_sets{"$query-$afi"} !=1) ) {
 		$processed_sets{"$query-$afi"}=1;
 		my $last_updated = scalar localtime;
-		my $prefixes=`$bgpq -A -b -$afi $query -l prefixes`;
+                my $prefixes=`$bgpq -A -b -$afi $query -l prefixes`;
 		open (my $file, ">","$output_dir/$filter.prefixes.tmp") or die "$!\n";
-		print $file <<EOF;
+		if ($prefixes ne "") { 
+			print $file <<EOF;
 # UPDATED AUTOMATICALLY DO NOT EDIT!
 # Last updated: $last_updated
 
@@ -66,6 +70,20 @@ prefix set prefixes;
     }
 }
 EOF
+		} else {
+			print $file <<EOF;
+# UPDATED AUTOMATICALLY DO NOT EDIT!
+# Last updated: $last_updated
+
+function $function_name
+{
+#        print "REJECTING: ",net.ip,"/",net.len," received from ",from,": as-set is empty!";
+        bgp_large_community.add(REASON_AS_SET);
+        return false;
+}
+EOF
+		}
+
 		if ($function_name =~ /my_prefixes/) {
 			print $file <<EOF;
 function match_my_prefixes_$afi()
@@ -91,9 +109,9 @@ foreach my $line (@input) {
 	my $output_dir = "$basedir/data/bird/filters_v4";
 	if ($filter ne "") { 
 		if ($template eq "__INTERNAL__") {
-                        $function_name = "in_".$id."_4()";
+                        $function_name = "\'in_".$id."_4\'()";
                 } else {
-                        $function_name = "in_".$filter."_4()";
+                        $function_name = "\'in_".$filter."_4\'()";
 			$function_name =~ tr/-/_/;
                 }
 		cli_out "Updating IPv4 filter for peer $id, AS-set $filter\n";
@@ -109,9 +127,9 @@ foreach my $line (@input) {
 	my $output_dir = "$basedir/data/bird/filters_v6";
 	if ($filter ne "") { 
 		if ($template eq "__INTERNAL__") {
-                        $function_name = "in_".$id."_6()";
+                        $function_name = "\'in_".$id."_6\'()";
                 } else {
-                        $function_name = "in_".$filter."_6()";
+                        $function_name = "\'in_".$filter."_6\'()";
 			$function_name =~ tr/-/_/;
                 }
 		cli_out "Updating IPv6 filter for peer $id, AS-set $filter\n";

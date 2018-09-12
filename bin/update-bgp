@@ -163,7 +163,7 @@ sub output_peer {
 		if ($output->{'filterv4'} eq "") {
 			$output->{'filterline'} = "accept;";
 		} else {	
-			$output->{'filterline'} = "if in_".$output->{'filterv4'}."_".$output->{'version'}."() then accept;";
+			$output->{'filterline'} = "if \'in_".$output->{'filterv4'}."_".$output->{'version'}."\'() then accept;";
 		}
 		if ($args->{'prefixv4'} ne "") { $output->{'prefixlimit'} = "    import limit $args->{'prefixv4'} action block;\n"; }
 		$tt->process($template_1,$output,$out4);
@@ -178,7 +178,7 @@ sub output_peer {
 		if ($output->{'filterv6'} eq "") {
 			$output->{'filterline'} = "accept;";
 		} else {	
-			$output->{'filterline'} = "if in_".$output->{'filterv6'}."_".$output->{'version'}."() then accept;";
+			$output->{'filterline'} = "if \'in_".$output->{'filterv6'}."_".$output->{'version'}."\'() then accept;";
 		}
 		if ($args->{'prefixv6'} ne "") { $output->{'prefixlimit'} = "    import limit $args->{'prefixv6'} action block;\n"; }
 		$tt->process($template_1,$output,$out6);

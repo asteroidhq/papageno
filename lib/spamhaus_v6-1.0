@@ -1,0 +1,13 @@
+# Setup spamhaus drop list prefix filtering
+
+include "../data/bird/drop_v6";
+
+function net_spamhaus()
+{
+        if ( net ~ spamhaus_drop_6 ) then {
+                print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is in spamhaus drop list";
+                bgp_large_community.add(REASON_SPAMHAUS);
+                return true;
+        }
+        return false;
+}
