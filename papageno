@@ -10,7 +10,9 @@ UPDATE_IPTABLES=1
 LOCKFILE='.papageno.lock'
 
 if [ "X$1X" = "XX" ]; then
-	echo "Usage: $0 <show|peers|filters|all|force|hourly|daily|cronfilters>"
+	echo "Usage: $0 <show <ip|ipv4|ipv6> <summary|prefixes|adjacency>"
+	echo "Usage: $0 <show <bgp|bgp4|bgp6> <summary>"
+	echo "Usage: $0 <peers|filters|all|force|hourly|daily|cronfilters>"
 	exit 1
 fi
 
@@ -87,6 +89,22 @@ if [ "$1" = "show" ]; then
 	        printf  "%-27s %6d %10d %10d %3dd%02d:%02d:%02d %8s %8s  %8s %s\n" \
 			$ADDR $ASN $IMPORT $EXPORT $(($SECS/86400)) $(($SECS%86400/3600)) $(($SECS%3600/60)) $(($SECS%60)) "$REC" "$FILT" "$PREF" "$DESC"
 	done
+		fi
+	fi
+	if [ ${3:0:4} = "pref" ]; then
+		if [[ "$2" = "ip" || "$2" = "ipv4" ]]; then
+	$BIRDC4 show route primary | awk '$2 == "via" { print $1 }'
+		fi
+		if [[ "$2" = "ip" || "$2" = "ipv6" ]]; then
+	$BIRDC6 show route primary | awk '$2 == "via" { print $1 }'
+		fi
+	fi
+	if [ ${3:0:3} = "adj" ]; then
+		if [[ "$2" = "ip" || "$2" = "ipv4" ]]; then
+	$BIRDC4 show route primary | awk '$2 == "via" { print $3 }' | sort | uniq -c | sort -n
+		fi
+		if [[ "$2" = "ip" || "$2" = "ipv6" ]]; then
+	$BIRDC6 show route primary | awk '$2 == "via" { print $3 }' | sort | uniq -c | sort -n
 		fi
 	fi
 	exit 0
