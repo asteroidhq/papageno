@@ -47,7 +47,7 @@ There are separate commands for updating peering sessions, updating IRR filters 
     - LWP::Simple (libwww-perl)
     - JSON (libjson-perl)
     - Text::Unidecode (libtext-unidecode-perl)
- - bgpq3
+ - bgpq3 version 0.1.35 - get it from https://github.com/snar/bgpq3
  - Optional: bird-rtrlib-cli https://github.com/rtrlib/bird-rtrlib-cli for RPKI running Bird 1.6
 
 # Usage
