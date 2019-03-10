@@ -8,6 +8,7 @@ Enter Papageno.
 Papageno is a small set of scripts and templates that allows you to use a single CSV to configure all of your IPv4 and IPv6 peers and to make those peers as safe as possible.
 
 Standard import filters include:
+ - Checks on whether the origin ASN is inside the AS set
  - Checks on IRR prefix lists
  - Checks on live RPKI data
  - IPv4 and IPv6 'martian' prefixes - networks that aren't supposed to be on the Internet
@@ -34,6 +35,7 @@ Predefined filter sets for sessions with:
  - Transit providers
  - Peers on an IXP or private interconnect
  - Route servers on an IXP
+ - Route collectors on an IXP
  - Customer connections
  - Internal BGP sessions
  
