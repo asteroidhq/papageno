@@ -20,6 +20,7 @@ my $quiet=0;
 my $exists=0;
 
 my %processed_sets;
+my %processed_as_sets;
 
 foreach my $val (@ARGV) {
         if ($val eq "-f" )      { $force=1; next }
@@ -41,13 +42,16 @@ sub output_prefixes {
 	$filter =~ tr/-/_/;
 	my @stat;
 	my $age = 86400;
+	if ($processed_sets{"$query-$afi"} == 1) {
+		return;
+	}
 	if ( -s "$output_dir/$filter.prefixes") { 
 		if ($exists ==1) { return } # skip any non-empty files for quick peer updates
 		open (my $file, "$output_dir/$filter.prefixes") or die "$!\n";
 		$age=time-((stat($file))[9]);
 		close $file;
 	}
-	if ( ($age > 3600 ) || ($force==1 && $processed_sets{"$query-$afi"} !=1) ) {
+	if ( ($age > 3600 ) || ( $force==1 ) ) {
 		$processed_sets{"$query-$afi"}=1;
 		my $last_updated = scalar localtime;
                 my $prefixes=`$bgpq -A -b -$afi $query -l prefixes`;
@@ -99,23 +103,64 @@ EOF
 	}
 }
 
+sub output_as_set {
+	my ($query,$function_name,$output_dir) = @_;
+	my $filter = $query;
+	$filter =~ tr/-/_/;
+	my @stat;
+	my $age = 86400;
+	if ($processed_as_sets{"$query"} == 1) {
+		return;
+	}
+	if ( -s "$output_dir/$filter.as-set") { 
+		if ($exists ==1) { return } # skip any non-empty files for quick peer updates
+		open (my $file, "$output_dir/$filter.as-set") or die "$!\n";
+		$age=time-((stat($file))[9]);
+		close $file;
+	}
+	if ( ($age > 3600 ) || ( $force==1 ) ) {
+		$processed_as_sets{"$query"}=1;
+		my $last_updated = scalar localtime;
+                my $as_set=`$bgpq -3 -b -t $query -l as_set`;
+		open (my $file, ">","$output_dir/$filter.as_set.tmp") or die "$!\n";
+		print $file <<EOF;
+# UPDATED AUTOMATICALLY DO NOT EDIT!
+# Last updated: $last_updated
+
+function $function_name
+int set as_set;
+{
+    $as_set
+    if ( bgp_path.last_nonaggregated !~ as_set ) then {
+        print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Origin ASN ",bgp_path.last_nonaggregated," is not in as-set!";
+        bgp_large_community.add(REASON_ORIGIN);
+        return true;
+    } else {
+        return false;
+    }
+}
+EOF
+		close ($file);
+		move ("$output_dir/$filter.as_set.tmp","$output_dir/$filter.as_set");
+	}
+}
+
 my @input;
 
 @input=split(/\n/,`grep '#FILTERSET' $basedir/data/bird/peers_v4-1.0 | sort | uniq`);
 foreach my $line (@input) {
 	chomp $line;
 	my (undef, $asn, $filter, $template,$id) = split (";",$line);
-	my $function_name;
-	my $output_dir = "$basedir/data/bird/filters_v4";
 	if ($filter ne "") { 
+		my $function_name=$filter;
+		$function_name =~ tr/-/_/;
+		cli_out "Updating IPv4 and origin AS filter for peer $id, AS-set $filter\n";
 		if ($template eq "__INTERNAL__") {
-                        $function_name = "\'in_".$id."_4\'()";
+			output_prefixes($filter,"4","\'in_".$id."_4\'()","$basedir/data/bird/filters_v4");
                 } else {
-                        $function_name = "\'in_".$filter."_4\'()";
-			$function_name =~ tr/-/_/;
+			output_prefixes($filter,"4","\'in_".$function_name."_4\'()","$basedir/data/bird/filters_v4");
+			output_as_set($filter,"\'asn_".$function_name."\'()","$basedir/data/bird/as_sets");
                 }
-		cli_out "Updating IPv4 filter for peer $id, AS-set $filter\n";
-		output_prefixes($filter,"4",$function_name,$output_dir);
 	}
 }
 
@@ -123,22 +168,21 @@ foreach my $line (@input) {
 foreach my $line (@input) {
 	chomp $line;
 	my (undef, $asn, $filter, $template,$id) = split (";",$line);
-	my $function_name;
-	my $output_dir = "$basedir/data/bird/filters_v6";
 	if ($filter ne "") { 
+		my $function_name=$filter;
+		$function_name =~ tr/-/_/;
+		cli_out "Updating IPv6 and origin AS filter for peer $id, AS-set $filter\n";
 		if ($template eq "__INTERNAL__") {
-                        $function_name = "\'in_".$id."_6\'()";
+			output_prefixes($filter,"6","\'in_".$id."_6\'()","$basedir/data/bird/filters_v6");
                 } else {
-                        $function_name = "\'in_".$filter."_6\'()";
-			$function_name =~ tr/-/_/;
+			output_prefixes($filter,"6","\'in_".$function_name."_6\'()","$basedir/data/bird/filters_v6");
+			output_as_set($filter,"\'asn_".$function_name."\'()","$basedir/data/bird/as_sets");
                 }
-		cli_out "Updating IPv6 filter for peer $id, AS-set $filter\n";
-		output_prefixes($filter,"6",$function_name,$output_dir);
 	}
 }
 
-while( threads->list ) {
-    for my $joinable ( threads->list( threads::joinable ) ) {
-            $joinable->join;
-    }
-}
+#while( threads->list ) {
+#    for my $joinable ( threads->list( threads::joinable ) ) {
+#            $joinable->join;
+#    }
+#}

@@ -4,6 +4,7 @@ include "defines_v4";
 include "../data/bird/peeringdb_v4";
 include "../data/bird/peeringdb_defines";
 include "../data/bird/filters_v4/*.prefixes";
+include "../data/bird/as_sets/*.as_set";
 include "functions_v4-1.0";
 include "spamhaus_v4-1.0";
 include "roa-1.0";

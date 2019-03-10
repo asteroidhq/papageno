@@ -1,51 +1,172 @@
 #! /bin/bash
 
-DIR=$PWD
-
-BIRDC4='/usr/sbin/birdc -l -s /var/run/bird/as25595-v4.ctl'
-BIRDC6='/usr/sbin/birdc -l -s /var/run/bird/as25595-v6.ctl'
-
-UPDATE_IPTABLES=1
-
-LOCKFILE='.papageno.lock'
-
+# How to use this script:
 if [ "X$1X" = "XX" ]; then
-	echo "Usage: $0 <show <ip|ipv4|ipv6> <summary|prefixes|adjacency>"
-	echo "Usage: $0 <show <bgp|bgp4|bgp6> <summary>"
+	echo "Usage: $0 show <ip|ipv4|ipv6> <summary|prefixes|adjacency>"
+	echo "Usage: $0 show <bgp|bgp4|bgp6> [summary]"
 	echo "Usage: $0 <peers|filters|all|force|hourly|daily|cronfilters>"
 	echo "Usage: $0 <setup|lock|unlock>"
+	echo "Usage: $0 <start|stop|restart"
+	echo "Usage: $0 reload [in|out] [protocol]"
 	exit 1
 fi
 
-if [ "$1" = "show" ]; then
-	if [ ${3:0:3} = "sum" ]; then
-		if [[ "$2" = "ip" || "$2" = "ipv4" ]]; then
-	BIRDC=$BIRDC4
-	PROTO=`$BIRDC -v show protocols | awk '$2 == "BGP" { print }'`
-	NUM_PEERS=`wc -l <<<"$PROTO"`
-	echo -n "IPv4: $NUM_PEERS peers, "`awk '$4 == "up" { count++ } END { printf "%s up,", count }' <<<"$PROTO"`" "
-	echo `$BIRDC -v show route count | awk '$1 == "0014" { printf " %s routes for %s networks",$2,$7 }'`
-	echo -n `$BIRDC -v 'show route where is(REASON_AS_SET) filtered count' | awk '$1 == "0014" { printf " filtered %s routes for %s networks, %s for invalid AS-SET",$4,$7,$2 }'`" "
-	echo `$BIRDC -v 'show route where is(REASON_ROA_INVALID) filtered count'| awk '$1 == "0014" { printf "and %s routes for invalid ROA\n",$2 }'`
-		fi
-		if [[ "$2" = "ip" || "$2" = "ipv6" ]]; then
-	BIRDC=$BIRDC6
-	PROTO=`$BIRDC -v show protocols | awk '$2 == "BGP" { print }'`
-	NUM_PEERS=`wc -l <<<"$PROTO"`
-	echo -n "IPv6: $NUM_PEERS peers, "`awk '$4 == "up" { count++ } END { printf "%s up,", count }' <<<"$PROTO"`" "
-	echo `$BIRDC -v show route count | awk '$1 == "0014" { printf " %s routes for %s networks",$2,$7 }'`
-	echo -n `$BIRDC -v 'show route where is(REASON_AS_SET) filtered count' | awk '$1 == "0014" { printf " filtered %s routes for %s networks, %s for invalid AS-SET",$4,$7,$2 }'`" "
-	echo `$BIRDC -v 'show route where is(REASON_ROA_INVALID) filtered count'| awk '$1 == "0014" { printf "and %s routes for invalid ROA\n",$2 }'`
-		fi
+# Figure out the directory this file is in, as it serves as the root of the data structure
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-		if [[ "$2" = "bgp" || "$2" = "bgp4" ]]; then
+# Load the environment variables
+. ${DIR}/envvars
+
+if [ "X${BIRDD}x" = "XX" ]; then
+       BIRDD='/usr/sbin/bird'
+fi
+if [ "X${BIRD_CL}X" = "XX" ]; then
+       BIRD_CL='/usr/sbin/birdc'
+fi
+
+LOCKFILE="${DIR}/.papageno.lock"
+
+# Determine Bird major version - 1 or 2. Bird 1 needs a separate process for IPv6
+BIRD_VERSION=`${BIRDD} --version 2>&1 |  awk '{printf substr($3,1,1)}'`
+if [ ${BIRD_VERSION} = "1" ]; then
+	BIRDC4="${BIRD_CL} -s ${BIRD_SOCKET}"
+	BIRDC6="${BIRD_CL} -s ${BIRD6_SOCKET}"
+	TABLE4="master"
+	TABLE6="master"
+else
+	BIRDC4="${BIRD_CL} -s ${BIRD_SOCKET}"
+	BIRDC6=${BIRDC4}
+	TABLE4="master4"
+	TABLE6="master6"
+fi
+
+do_start () {
+	if [ -f ${BIRD_SOCKET} ]; then
+		echo "Socket already exists - not starting bird again"
+		exit 1
+	fi
+	if [ ${BIRD_VERSION} = "1" ]; then
+		${BIRDD} -s ${BIRD_SOCKET} -c ${DIR}/bird.conf -u ${BIRD_RUN_USER} -g ${BIRD_RUN_GROUP} -P /tmp/${BIRD_NETNS}/bird.pid
+		${BIRDD}6 -s ${BIRD_SOCKET} -c ${DIR}/bird6.conf -u ${BIRD_RUN_USER} -g ${BIRD_RUN_GROUP} -P /tmp/${BIRD_NETNS}/bird6.pid
+	else
+		${BIRDD} -s ${BIRD_SOCKET} -c ${DIR}/bird-2.conf -u ${BIRD_RUN_USER} -g ${BIRD_RUN_GROUP} -P /tmp/${BIRD_NETNS}/bird.pid
+	fi
+}
+
+do_stop () {
+	if [ ${BIRD_VERSION} = "1" ]; then
+		${BIRDC4} down
+		${BIRDC6} down
+	else
+		$BIRDC4 down
+	fi
+}
+
+do_restart () {
+	do_stop
+	do_start
+}
+
+do_reload () {
+	if [ "X$2X" = "XX" ]; then 
+		local PROTO="all"
+	else
+		local PROTO=$2
+	fi
+	if [ ${BIRD_VERSION} = "1" ]; then
+		${BIRDC4} reload $1 $PROTO
+		${BIRDC6} reload $1 $PROTO
+	else
+		$BIRDC4 reload $1 $PROTO
+	fi
+}
+
+configure_cron () {
+	$BIRDC4 configure soft > /dev/null
+	if [ ${BIRD_VERSION} = "1" ]; then
+		$BIRDC6 configure soft > /dev/null
+	fi
+}
+
+configure_soft () {
+	$BIRDC4 configure soft
+	if [ ${BIRD_VERSION} = "1" ]; then
+		$BIRDC6 configure soft
+	fi
+}
+
+configure_check () {
+	$BIRDC4 configure check
+	if [ ${BIRD_VERSION} = "1" ]; then
+		$BIRDC6 configure check
+	fi
+}
+
+ipsum () { 
+	if [ "$1" = "IPv4" ]; then
+		local TABLE=$TABLE4
+		local BIRDC=$BIRDC4
+		local VER='"?4*"'
+	elif [ "$1" = "IPv6" ]; then
+		local TABLE=$TABLE6
+		local BIRDC=$BIRDC6
+		local VER='"?6*"'
+	else
+		return -1
+	fi
+	PROTO=`$BIRDC -v 'show protocols '$VER | awk '$2 == "BGP" { print }'`
+	NUM_PEERS=`wc -l <<<"$PROTO"`
+	echo -n "$1: $NUM_PEERS peers, "`awk '$4 == "up" { count++ } END { printf "%s up,", count }' <<<"$PROTO"`" "
+	echo `$BIRDC -v show route table $TABLE count | awk '$1 == "0014" { printf " %s routes for %s networks",$2,$7 }'`
+	echo -n `$BIRDC -v "show route table $TABLE where is(REASON_AS_SET) filtered count" | awk '$1 == "0014" { printf " filtered %s routes for %s networks, %s for invalid AS-SET",$4,$7,$2 }'`" "
+	echo `$BIRDC -v "show route table $TABLE where is(REASON_ROA_INVALID) filtered count"| awk '$1 == "0014" { printf "and %s routes for invalid ROA\n",$2 }'`
+}
+
+ipadj () {
+	if [ "$1" = "IPv4" ]; then
+		local TABLE=$TABLE4
+		local BIRDC=$BIRDC4
+	elif [ $1 = "IPv6" ]; then
+		local TABLE=$TABLE6
+		local BIRDC=$BIRDC6
+	else
+		return -1
+	fi
+	$BIRDC show route primary table $TABLE | awk '$2 == "via" { print $3 }' | sort | uniq -c | sort -n
+}
+
+ippref () {
+	if [ "$1" = "IPv4" ]; then
+		local TABLE=$TABLE4
+		local BIRDC=$BIRDC4
+	elif [ $1 = "IPv6" ]; then
+		local TABLE=$TABLE6
+		local BIRDC=$BIRDC6
+	else
+		return -1
+	fi
+	$BIRDC show route primary table $TABLE | awk '$2 == "via" { print $1 }'
+}
+
+bgpsum () {
+	if [ "$1" = "IPv4" ]; then
+		local TABLE=$TABLE4
+		local BIRDC=$BIRDC4
+		local VER='"?4*"'
+	elif [ $1 = "IPv6" ]; then
+		local TABLE=$TABLE6
+		local BIRDC=$BIRDC6
+		local VER='"?6*"'
+	else
+		return -1
+	fi
 	NOW=`date +%s`
-	V4_PEERS=`$BIRDC4 show protocols | awk '$2 == "BGP" { printf "%s ", $1 }'`
-	V4_OUT=`$BIRDC4 show protocols all`
+	local PEERS=`$BIRDC 'show protocols '$VER | awk '$2 == "BGP" { printf "%s ", $1 }'`
+	local BIRD_OUT=`$BIRDC 'show protocols all '$VER`
 	echo "Neighbor                        AS    MsgRcvd    MsgSent      Up/Down Received Filtered Preferred Description"
-	for i in $V4_PEERS;
+	for i in $PEERS;
 	do
-		OUT=`sed -n /^$i/,/^$/p <<<"$V4_OUT"`
+		OUT=`sed -n /^$i/,/^$/p <<<"$BIRD_OUT"`
 	        read STATE DAY TIME ADDR ASN IMPORT EXPORT REC FILT PREF SESS DESC <<< `awk '
 			$2 == "BGP" { state=$4; day=$5; time=$6; sess=$7 };
 			/Neighbor address:/ { addr=$3 };
@@ -63,169 +184,180 @@ if [ "$1" = "show" ]; then
 	        printf  "%-27s %6d %10d %10d %3dd%02d:%02d:%02d %8s %8s  %8s %s\n" \
 			$ADDR $ASN $IMPORT $EXPORT $(($SECS/86400)) $(($SECS%86400/3600)) $(($SECS%3600/60)) $(($SECS%60)) "$REC" "$FILT" "$PREF" "$DESC"
 	done
-		fi
-		if [[ "$2" = "bgp" || "$2" = "bgp6" ]]; then
-	NOW=`date +%s`
-	V6_PEERS=`$BIRDC6 show protocols | awk '$2 == "BGP" { printf "%s ", $1 }'`
-	V6_OUT=`$BIRDC6 show protocols all`
-	echo "IPv6:"
-	echo "Neighbor                        AS    MsgRcvd    MsgSent      Up/Down Received Filtered Preferred Description"
-	for i in $V6_PEERS;
-	do
-		OUT=`sed -n /^$i/,/^$/p <<<"$V6_OUT"`
-	        read STATE DAY TIME ADDR ASN IMPORT EXPORT REC FILT PREF SESS DESC <<< `awk '
-			$2 == "BGP" { state=$4; day=$5; time=$6; sess=$7 };
-			/Neighbor address:/ { addr=$3 };
-			/Neighbor AS:/ { asn=$3 };
-			/Import updates:/ { import=$3 }; 
-			/Export updates:/ { export=$7 };
-			/Description:/ { $1=""; desc=substr($0,1) };
-			/Routes:/ { rec=$2; filt=$4; pref=$8 };
-			END { print state" "day" "time" "addr" "asn" "import" "export" "rec" "filt" "pref" "sess" "desc }' <<<"$OUT"`
-		if [ ! "$STATE" == "up" ]; then
-			REC="$SESS"; FILT=""; PREF=""
-		fi
-	        SINCE=`date +%s --date="$DAY $TIME"`
-	        SECS=$(($NOW-$SINCE))
-	        printf  "%-27s %6d %10d %10d %3dd%02d:%02d:%02d %8s %8s  %8s %s\n" \
-			$ADDR $ASN $IMPORT $EXPORT $(($SECS/86400)) $(($SECS%86400/3600)) $(($SECS%3600/60)) $(($SECS%60)) "$REC" "$FILT" "$PREF" "$DESC"
-	done
-		fi
-	fi
-	if [ ${3:0:4} = "pref" ]; then
-		if [[ "$2" = "ip" || "$2" = "ipv4" ]]; then
-	$BIRDC4 show route primary | awk '$2 == "via" { print $1 }'
-		fi
-		if [[ "$2" = "ip" || "$2" = "ipv6" ]]; then
-	$BIRDC6 show route primary | awk '$2 == "via" { print $1 }'
-		fi
-	fi
-	if [ ${3:0:3} = "adj" ]; then
-		if [[ "$2" = "ip" || "$2" = "ipv4" ]]; then
-	$BIRDC4 show route primary | awk '$2 == "via" { print $3 }' | sort | uniq -c | sort -n
-		fi
-		if [[ "$2" = "ip" || "$2" = "ipv6" ]]; then
-	$BIRDC6 show route primary | awk '$2 == "via" { print $3 }' | sort | uniq -c | sort -n
-		fi
-	fi
+}
+
+if [ "$1" = "show" ]; then
+	case "$2" in 
+		ip)
+			if [ ${3:0:3} = "sum" ]; then
+				ipsum "IPv4"
+				ipsum "IPv6"
+			elif [ ${3:0:4} = "pref" ]; then
+				ippref "IPv4"
+				ippref "IPv6"
+			elif [ ${3:0:3} = "adj" ]; then
+				ipadj "IPv4"
+				ipadj "IPv6"
+			fi
+			;;
+		ipv4)
+			if [ ${3:0:3} = "sum" ]; then
+				ipsum "IPv4"
+			elif [ ${3:0:4} = "pref" ]; then
+				ippref "IPv4"
+			elif [ ${3:0:3} = "adj" ]; then
+				ipadj "IPv4"
+			fi
+			;;
+		ipv6)
+			if [ ${3:0:3} = "sum" ]; then
+				ipsum "IPv6"
+			elif [ ${3:0:4} = "pref" ]; then
+				ippref "IPv6"
+			elif [ ${3:0:3} = "adj" ]; then
+				ipadj "IPv6"
+			fi
+			;;
+		bgp)
+			bgpsum "IPv4"
+			bgpsum "IPv6"
+			;;
+		bgp4)
+			bgpsum "IPv4"
+			;;
+		bgp6)
+			bgpsum "IPv6"
+			;;
+	esac
 	exit 0
 fi
 
 (
 cd $DIR || exit 1
 
-if [ "$1" = "unlock" ]; then
-	echo "Automatic config updates are now possible."
-	rm -f "$LOCKFILE"
-	exit 0
-fi
+# Functions that don't need to lock at the config lock
+case "$1" in
+	unlock)
+		echo "Automatic config updates are now possible."
+		rm -f "$LOCKFILE"
+		exit 0
+		;;
+	check)
+		configure_check
+		exit 0
+		;;
+	start)
+		do_start
+		exit 0
+		;;
+	stop)
+		do_stop
+		exit 0
+		;;
+	restart)
+		do_restart
+		exit 0
+		;;
+	reload)
+		echo executing birdc reload $2 $3
+		do_reload $2 $3
+		exit 0
+		;;
+esac
 
-if [ "$1" = "setup" ]; then
-	echo -n "Setting up directory structure..."
-	mkdir -p data/{bird/{filter_v4,filter_v6},peeringdb,asn,net}
-	echo "done."
-	echo "Now creating the initial config..."
-	./bin/update-bgp -f
-	./bin/update-filters -f
-	./bin/update-peeringdb -f
-	[ "$UPDATE_IPTABLES" = "1" ] && echo "Make sure iptables and ip6tavbles are configured correctly."  
-	exit 0
-fi
-
+# Check for config lock - if found, bail out, if not, create one
 if [ -f "$LOCKFILE" ]; then
 	echo "Lockfile found, bailing out"
 	exit 1
+else
+	touch "$LOCKFILE"
 fi
 
-touch "$LOCKFILE"
-
-if [ "$1" = "lock" ]; then
-	echo "Automatic config updates are now blocked. Don't forget to unlock when you're done."
-	exit 0
-fi
-
-if [ "$1" = "hourly" ]; then 
-	# Only do something if the CSV is less than an hour old
-	if [ ! "$(find bgp-peers.csv -mmin +60)" ]; then
+case "$1" in
+	lock)
+		echo "Automatic config updates are now blocked. Don't forget to unlock when you're done."
+		exit 0
+		;;
+	hourly)
+		# Only do something if the CSV is less than an hour old
+		if [ ! "$(find bgp-peers.csv -mmin +60)" ]; then
+			./bin/update-bgp -q
+			./bin/update-filters -q
+			./bin/update-iptables
+		fi
+		CRON=1
+		;;
+	daily)
 		./bin/update-bgp -q
 		./bin/update-filters -q
-		[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
-		$BIRDC4 configure soft > /dev/null
-		$BIRDC6 configure soft > /dev/null
-	fi
-	rm "$LOCKFILE"
-	exit 0
+		./bin/update-iptables
+		CRON=1
+		;;
+	cronfilters)
+		./bin/update-filters -q
+		./bin/update-spamhaus -f
+		CRON=1
+		;;
+	peers)
+		./bin/update-bgp
+		./bin/update-filters -e
+		./bin/update-iptables
+		;;
+	filters)
+		./bin/update-spamhaus -f
+		./bin/update-filters 
+		;;
+	peeringdb)
+		./bin/update-peeringdb -f
+		CRON=1
+		;;
+	all)
+		echo -n "running update-bgp..."
+		./bin/update-bgp -q
+		echo done.
+		echo -n "running update-filters..."
+		./bin/update-filters -q
+		echo done.
+		echo -n "running update-peeringdb..."
+		./bin/update-peeringdb
+		echo done.
+		echo -n "running update-spamhaus..."
+		./bin/update-spamhaus
+		echo done.
+		echo -n "running update-iptables..."
+		./bin/update-iptables
+		echo done.
+		echo Now reconfiguring bird...
+		;;
+	force)
+		./bin/update-bgp -f
+		./bin/update-filters -f
+		./bin/update-peeringdb -f 
+		./bin/update-spamhaus -f 
+		./bin/update-iptables
+		;;
+	setup)
+		echo -n "Setting up directory structure..."
+		mkdir -p data/{bird/{filter_v4,filter_v6,as_sets},peeringdb,asn,net}
+		echo "done."
+		echo "Now creating the initial config..."
+		./bin/update-bgp -f
+		./bin/update-filters -f
+		./bin/update-peeringdb -f
+		[ "$UPDATE_IPTABLES" = "1" ] && echo "Make sure iptables and ip6tables are configured correctly."  
+		rm "$LOCKFILE"
+		exit 0
+		;;
+esac
+
+# reconfigure the bird daemons
+if [ "$CRON" = "1" ]; then 
+	configure_cron
+else
+	configure_soft
 fi
 
-if [ "$1" = "daily" ]; then 
-	./bin/update-bgp -q
-	./bin/update-filters -q
-	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
-	$BIRDC4 configure soft > /dev/null
-	$BIRDC6 configure soft > /dev/null
-fi
-
-if [ "$1" = "cronfilters" ]; then
-	./bin/update-filters -q
-	./bin/update-spamhaus -f
-	$BIRDC4 configure soft > /dev/null
-	$BIRDC6 configure soft > /dev/null
-fi
-
-if [ "$1" = "check" ]; then
-	$BIRDC4 configure check
-	$BIRDC6 configure check
-	exit 0
-fi
-
-if [ "$1" = "peers" ]; then
-	./bin/update-bgp
-	./bin/update-filters -e
-	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
-	$BIRDC4 configure soft
-	$BIRDC6 configure soft
-fi
-
-if [ "$1" = "filters" ]; then
-	./bin/update-spamhaus -f
-	./bin/update-filters 
-	$BIRDC4 configure soft
-	$BIRDC6 configure soft
-fi
-
-if [ "$1" = "peeringdb" ]; then
-	./bin/update-peeringdb -f
-	$BIRDC4 configure soft > /dev/null
-	$BIRDC6 configure soft > /dev/null
-fi
-
-if [ "$1" = "all" ]; then
-	echo -n "running update-bgp..."
-	./bin/update-bgp -q
-	echo done.
-	echo -n "running update-filters..."
-	./bin/update-filters -q
-	echo done.
-	echo -n "running update-peeringdb..."
-	./bin/update-peeringdb
-	echo done.
-	echo -n "running update-iptables..."
-	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
-	echo done.
-	echo Now reconfiguring bird...
-	$BIRDC4 configure soft
-	$BIRDC6 configure soft
-fi
-
-if [ "$1" = "force" ]; then
-	./bin/update-bgp -f
-	./bin/update-filters -f
-	./bin/update-peeringdb -f 
-	[ "$UPDATE_IPTABLES" = "1" ] && ./bin/update-iptables
-	$BIRDC4 configure soft
-	$BIRDC6 configure soft
-fi
-	
+# all done, remove config lock
 rm "$LOCKFILE"
 )
 

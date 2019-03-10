@@ -5,8 +5,10 @@ define default_preference_customer=120;
 define default_preference_peering=100;
 define default_preference_routeserver=80;
 define default_preference_transit=50;
+define default_preference_collector=1;
 
 # Default prefix limits per peer type
+define default_pfxlimit_collector = 0;
 define default_pfxlimit_customer = 100;
 define default_pfxlimit_peering = 10000;
 define default_pfxlimit_routeserver = 50000;
@@ -45,6 +47,7 @@ define rs_route = 101;
 define peering_route = 102;
 define customer_route = 103;
 define transit_route = 104;
+define collector_route = 105;
 
 define region_africa = 200;
 define region_asiapac = 201;
@@ -70,6 +73,7 @@ define filtered_too_short = 409;
 define filtered_ixp_prefix = 410;
 define filtered_roa_invalid = 411;
 define filtered_spamhaus_drop = 412;
+define filtered_invalid_origin = 413;
 
 define REASON_MARTIAN = (myasn,prefix_filtered,filtered_martian);
 define REASON_BOGON = (myasn,prefix_filtered,filtered_bogon_asn);
@@ -84,6 +88,7 @@ define REASON_TOO_SHORT = (myasn,prefix_filtered,filtered_too_short);
 define REASON_IXP_PREFIX = (myasn,prefix_filtered,filtered_ixp_prefix);
 define REASON_ROA_INVALID = (myasn,prefix_filtered,filtered_roa_invalid);
 define REASON_SPAMHAUS = (myasn,prefix_filtered,filtered_spamhaus_drop);
+define REASON_ORIGIN = (myasn,prefix_filtered,filtered_invalid_origin);
 
 # read by update-peeringdb to use with regular 32-bit communities
 define ix_id_offset = 10000;

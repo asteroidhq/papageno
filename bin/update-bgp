@@ -148,6 +148,11 @@ sub output_peer {
 	$output->{'desc'} = $args ->{'desc'};
 	$output->{'filterv4'} = ($args->{'filterv4'} eq "NONE") ? "" : $args->{'filterv4'}; 
 	$output->{'filterv6'} = ($args->{'filterv6'} eq "NONE") ? "" : $args->{'filterv6'}; 
+	if ($args->{'template'} eq "COLLECTOR")  { 
+		$output->{'sesstype'} = "X" 
+	} else {
+		$output->{'sesstype'} = substr($args->{'template'},0,1)
+	}
 	if ($args->{'template'} eq "ROUTESERVER") { $output->{'rs'} ="_rs" } 
 	if ($args->{'password'})    { $output->{'password'} = "    password \"$args->{'password'}\";\n"; }
 	if ($args->{'localpref'}) 	{ $output->{'localpref'} = "    preference $args->{'localpref'};\n"; }
@@ -157,13 +162,14 @@ sub output_peer {
 	if ($args->{'ipv4'}) {
 		$output->{'version'} = 4;
 		$output->{'ip'} = $args->{'ipv4'};
-		$output->{'id'} = substr($args->{'template'},0,1).$output->{'version'}."_".$output->{'asn'}.sprintf("_%02d",$asn_counter{$output->{'asn'}});
+		$output->{'id'} = $output->{'sesstype'}.$output->{'version'}."_".$output->{'asn'}.sprintf("_%02d",$asn_counter{$output->{'asn'}});
 		$output->{'asset'} = $output->{'filterv4'};
 		$output->{'filterv4'} =~ tr/-/_/;
 		if ($output->{'filterv4'} eq "") {
 			$output->{'filterline'} = "accept;";
 		} else {	
-			$output->{'filterline'} = "if \'in_".$output->{'filterv4'}."_".$output->{'version'}."\'() then accept;";
+			$output->{'filterline'} = "if \'asn_".$output->{'filterv4'}."\'() then reject;\n\t";
+			$output->{'filterline'} .= "if \'in_".$output->{'filterv4'}."_".$output->{'version'}."\'() then accept;";
 		}
 		if ($args->{'prefixv4'} ne "") { $output->{'prefixlimit'} = "    import limit $args->{'prefixv4'} action block;\n"; }
 		$tt->process($template_1,$output,$out4);
@@ -172,13 +178,14 @@ sub output_peer {
 	if ($args->{'ipv6'}) {
 		$output->{'version'} = 6;
 		$output->{'ip'} = $args->{'ipv6'};
-		$output->{'id'} = substr($args->{'template'},0,1).$output->{'version'}."_".$output->{'asn'}.sprintf("_%02d",$asn_counter{$output->{'asn'}});
+		$output->{'id'} = $output->{'sesstype'}.$output->{'version'}."_".$output->{'asn'}.sprintf("_%02d",$asn_counter{$output->{'asn'}});
 		$output->{'asset'} = $output->{'filterv6'};
 		$output->{'filterv6'} =~ tr/-/_/;
 		if ($output->{'filterv6'} eq "") {
 			$output->{'filterline'} = "accept;";
 		} else {	
-			$output->{'filterline'} = "if \'in_".$output->{'filterv6'}."_".$output->{'version'}."\'() then accept;";
+			$output->{'filterline'} = "if \'asn_".$output->{'filterv6'}."\'() then reject;\n\t";
+			$output->{'filterline'} .= "if \'in_".$output->{'filterv6'}."_".$output->{'version'}."\'() then accept;";
 		}
 		if ($args->{'prefixv6'} ne "") { $output->{'prefixlimit'} = "    import limit $args->{'prefixv6'} action block;\n"; }
 		$tt->process($template_1,$output,$out6);
