@@ -1,4 +1,6 @@
-BIRD_RUN_USER=bird
+BIRDD=/usr/sbin/bird
+BIRD_CL=/usr/sbin/birdc
+RTR=BIRD_RUN_USER=bird
 BIRD_RUN_GROUP=bird
 #BIRD_ARGS=
 #BIRD4_ARGS=
