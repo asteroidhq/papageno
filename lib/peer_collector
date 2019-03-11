@@ -1,0 +1,8 @@
+	graceful restart on;
+	import keep filtered;
+	import limit 0 action block;
+	import filter {
+        	reject;
+	};
+	export filter ebgp_out;
+	preference default_preference_peering;
