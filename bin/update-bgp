@@ -182,6 +182,7 @@ sub output_peer {
 		$output->{'asset'} = $output->{'filterv6'};
 		$output->{'filterv6'} =~ tr/-/_/;
 		if ($output->{'filterv6'} eq "") {
+			$output->{'filterline'} = "";
 		} else {	
 			$output->{'filterline'} = "if \'asn_".$output->{'filterv6'}."\'() then reject;\n\t";
 			$output->{'filterline'} .= "if \'in_".$output->{'filterv6'}."_".$output->{'version'}."\'() then reject;";
