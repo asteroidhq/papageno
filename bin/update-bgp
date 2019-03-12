@@ -182,10 +182,9 @@ sub output_peer {
 		$output->{'asset'} = $output->{'filterv6'};
 		$output->{'filterv6'} =~ tr/-/_/;
 		if ($output->{'filterv6'} eq "") {
-			$output->{'filterline'} = "accept;";
 		} else {	
 			$output->{'filterline'} = "if \'asn_".$output->{'filterv6'}."\'() then reject;\n\t";
-			$output->{'filterline'} .= "if \'in_".$output->{'filterv6'}."_".$output->{'version'}."\'() then accept;";
+			$output->{'filterline'} .= "if \'in_".$output->{'filterv6'}."_".$output->{'version'}."\'() then reject;";
 		}
 		if ($args->{'prefixv6'} ne "") { $output->{'prefixlimit'} = "    import limit $args->{'prefixv6'} action block;\n"; }
 		$tt->process($template_1,$output,$out6);
