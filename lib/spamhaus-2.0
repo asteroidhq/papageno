@@ -3,7 +3,7 @@
 include "../data/bird/drop_v4";
 include "../data/bird/drop_v6";
 
-function spamhaus_drop() { 
+function net_spamhaus() { 
         case net.type {
                 NET_IP4: 
         		if ( net ~ spamhaus_drop_4 ) then {
@@ -18,4 +18,5 @@ function spamhaus_drop() {
                 		return true;
         		}	
         }
+	return false;
 }

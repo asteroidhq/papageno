@@ -65,11 +65,11 @@ function $function_name
 prefix set prefixes;
 {
     $prefixes
-    if ( net ~ prefixes ) then {
-        return true;
-    } else {
+    if ( net !~ prefixes ) then {
 #        print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is not in as-set!";
         bgp_large_community.add(REASON_AS_SET);
+        return true;
+    } else {
         return false;
     }
 }
@@ -83,7 +83,7 @@ function $function_name
 {
 #        print "REJECTING: ",net.ip,"/",net.len," received from ",from,": as-set is empty!";
         bgp_large_community.add(REASON_AS_SET);
-        return false;
+        return true;
 }
 EOF
 		}

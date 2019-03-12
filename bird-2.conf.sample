@@ -12,7 +12,7 @@ define my_prefixes_6 = [ 2001:db8::/32 ];
 
 # Define the server and port for the ROA server - if you want to use ssh instead of tcp, edit lib/roa-2.0
 define roa_tcp_server = 127.0.0.1;
-define roa_tcp_port = 323;
+define roa_tcp_port = 3323;
 
 # Optional - set PeeringDB location ID for BGP community tagging
 define location_id = 18;

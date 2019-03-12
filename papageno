@@ -49,7 +49,7 @@ do_start () {
 		${BIRDD} -s ${BIRD_SOCKET} -c ${DIR}/bird.conf -u ${BIRD_RUN_USER} -g ${BIRD_RUN_GROUP} -P /tmp/${BIRD_NETNS}/bird.pid
 		${BIRDD}6 -s ${BIRD_SOCKET} -c ${DIR}/bird6.conf -u ${BIRD_RUN_USER} -g ${BIRD_RUN_GROUP} -P /tmp/${BIRD_NETNS}/bird6.pid
 	else
-		${BIRDD} -s ${BIRD_SOCKET} -c ${DIR}/bird-2.conf -u ${BIRD_RUN_USER} -g ${BIRD_RUN_GROUP} -P /tmp/${BIRD_NETNS}/bird.pid
+		${BIRDD} -s ${BIRD_SOCKET} -R -c ${DIR}/bird-2.conf -u ${BIRD_RUN_USER} -g ${BIRD_RUN_GROUP} -P /tmp/${BIRD_NETNS}/bird.pid
 	fi
 }
 
@@ -117,9 +117,15 @@ ipsum () {
 	PROTO=`$BIRDC -v 'show protocols '$VER | awk '$2 == "BGP" { print }'`
 	NUM_PEERS=`wc -l <<<"$PROTO"`
 	echo -n "$1: $NUM_PEERS peers, "`awk '$4 == "up" { count++ } END { printf "%s up,", count }' <<<"$PROTO"`" "
-	echo `$BIRDC -v show route table $TABLE count | awk '$1 == "0014" { printf " %s routes for %s networks",$2,$7 }'`
-	echo -n `$BIRDC -v "show route table $TABLE where is(REASON_AS_SET) filtered count" | awk '$1 == "0014" { printf " filtered %s routes for %s networks, %s for invalid AS-SET",$4,$7,$2 }'`" "
-	echo `$BIRDC -v "show route table $TABLE where is(REASON_ROA_INVALID) filtered count"| awk '$1 == "0014" { printf "and %s routes for invalid ROA\n",$2 }'`
+	if [ ${BIRD_VERSION} = "1" ]; then
+		echo `$BIRDC -v show route table $TABLE count | awk '$1 == "0014" { printf " %s routes for %s networks",$2,$7 }'`
+		echo -n `$BIRDC -v "show route table $TABLE where is(REASON_AS_SET) filtered count" | awk '$1 == "0014" { printf " filtered %s routes for %s networks, %s for invalid AS-SET",$4,$7,$2 }'`" "
+		echo `$BIRDC -v "show route table $TABLE where is(REASON_ROA_INVALID) filtered count"| awk '$1 == "0014" { printf "and %s routes for invalid ROA\n",$2 }'`
+	else 
+		echo `$BIRDC show route table $TABLE count | awk '$2 == "of" { printf " %s routes for %s networks",$3,$6 }'`
+		echo -n `$BIRDC "show route table $TABLE where is(REASON_AS_SET) filtered count" | awk '$2 == "of" { printf " filtered %s routes for %s networks, %s for invalid AS-SET",$3,$6,$1 }'`" "
+		echo `$BIRDC "show route table $TABLE where is(REASON_ROA_INVALID) filtered count"| awk '$2 == "of" { printf "and %s routes for invalid ROA\n",$1 }'`
+	fi
 }
 
 ipadj () {
@@ -132,7 +138,12 @@ ipadj () {
 	else
 		return -1
 	fi
-	$BIRDC show route primary table $TABLE | awk '$2 == "via" { print $3 }' | sort | uniq -c | sort -n
+
+	if [ ${BIRD_VERSION} = "1" ]; then
+		$BIRDC show route primary table $TABLE | awk '$2 == "via" { print $3 }' | sort | uniq -c | sort -n
+	else
+		$BIRDC show route primary table $TABLE | awk '$1 == "via" { print $2 }' | sort | uniq -c | sort -n
+	fi
 }
 
 ippref () {
@@ -145,7 +156,11 @@ ippref () {
 	else
 		return -1
 	fi
-	$BIRDC show route primary table $TABLE | awk '$2 == "via" { print $1 }'
+	if [ ${BIRD_VERSION} = "1" ]; then
+		$BIRDC show route primary table $TABLE | awk '$2 == "via" { print $1 }'
+	else 
+		$BIRDC show route primary table $TABLE | awk '$2 == "unicast" { print $1 }'
+	fi
 }
 
 bgpsum () {
@@ -175,7 +190,11 @@ bgpsum () {
 			/Export updates:/ { export=$7 };
 			/Description:/ { $1=""; desc=substr($0,1) };
 			/Routes:/ { rec=$2; filt=$4; pref=$8 };
-			END { print state" "day" "time" "addr" "asn" "import" "export" "rec" "filt" "pref" "sess" "desc }' <<<"$OUT"`
+			END { 
+				if (state != "up") {
+					import=0; export=0; rec=0; filt=0; pref=0;
+				}
+				print state" "day" "time" "addr" "asn" "import" "export" "rec" "filt" "pref" "sess" "desc }' <<<"$OUT"`
 		if [ ! "$STATE" == "up" ]; then
 			REC="$SESS"; FILT=""; PREF=""
 		fi

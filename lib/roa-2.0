@@ -22,7 +22,6 @@ function origin_check()
 				} else {
 					bgp_large_community.add((myasn,prefix_roa,roa_unknown));
 				}
-				return false;
 			}
 		NET_IP6:
 			if roa_check(roa_main_6) = ROA_INVALID then {
@@ -35,7 +34,7 @@ function origin_check()
 				} else {
 					bgp_large_community.add((myasn,prefix_roa,roa_unknown));
 				}
-				return false;
 			}
 	}
+	return false;
 }

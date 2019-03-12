@@ -7,7 +7,7 @@ protocol bgp [% id %] from [% peer_template %] {
             if [% template_function %] then reject;
             if is_first_asn[% rs %]([% asn %]) then reject;
             [% filterline %] 
-            reject;
+            accept;
         };
     [% prefixlimit %][% localpref %]};
 [% gtsm %][% bfd %][% password %][% passive %]}

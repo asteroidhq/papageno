@@ -180,11 +180,16 @@ function filter_routeserver() {
 	if asn_bogons() then return true;
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
+	if net_spamhaus() then return true;
 	if net_ixp() then return true;
 	honor_graceful_shutdown();
 	return false;
 }
 
+function filter_collector() {
+	honor_graceful_shutdown();
+	return true;
+}
 function filter_peering() {
 	strip_my_communities();
 	bgp_community.add((myasn,peering_route));
@@ -213,6 +218,7 @@ function filter_customer() {
 	if asn_bogons() then return true;
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
+	if net_spamhaus() then return true;
 	if net_ixp() then return true;
 	honor_graceful_shutdown();
 	return false;

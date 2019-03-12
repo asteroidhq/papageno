@@ -2,6 +2,10 @@
 
 . "$(dirname "$0")/../envvars"
 
+if [ "${UPDATE_IPTABLES}" = "0" ]; then
+	exit 0
+fi
+
 if [ "$BIRD_NETNS" ]; then
 	IPTABLES="sudo ip netns exec $BIRD_NETNS /sbin/iptables"
 	IP6TABLES="sudo ip netns exec $BIRD_NETNS /sbin/ip6tables"

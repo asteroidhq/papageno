@@ -9,6 +9,7 @@ include "../data/bird/filters_v4/*.prefixes";
 include "../data/bird/filters_v6/*.prefixes";
 include "../data/bird/as_sets/*.as_set";
 include "functions-2.0";
+include "spamhaus-2.0";
 include "roa-2.0";
 include "cli";
 include "templates";

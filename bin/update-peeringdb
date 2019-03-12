@@ -75,9 +75,10 @@ foreach my $ix (@{$decoded_ix->{'data'}}) {
 	# uppercase, unidecoded short name from peeringdb
 	my $name=uc(unidecode($ix->{'name'}));
 	# replace all
-	$name =~ s/[-_\.\& ]/_/g;
+	$name =~ s/[-_\.\&\, ]/_/g;
 	$name =~ s/[\(\)\[\]]//g; 
 	$name =~ s#/##g;
+	$name =~ s#::#_#g;
 	$name =~ s/(_+)/_/g; $name =~ s/(_+)$//;
 	print $defines "define IXP_".$name." = (myasn,prefix_ix,".$ix->{'id'}.");\n";
 }

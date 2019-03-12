@@ -50,3 +50,13 @@ template bgp TRANSIT {
 	};
 }
 
+template bgp COLLECTOR {
+	local as myasn;
+	ipv4 {
+		include "peer_collector";
+	};
+	ipv6 {
+		include "peer_collector";
+	};
+}
+

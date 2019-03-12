@@ -26,3 +26,8 @@ template bgp TRANSIT {
 	include "peer_transit";
 }
 
+
+template bgp COLLECTOR {
+	local as myasn;
+	include "peer_collector";
+}

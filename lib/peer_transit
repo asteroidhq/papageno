@@ -1,6 +1,7 @@
 	graceful restart on;
 	import keep filtered;
 	import filter {
+		accept;
 		if filter_transit() then reject;
 		accept;
 	};
