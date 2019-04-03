@@ -1,0 +1,4 @@
+define CC_GB=0;
+define IXP_AMS_IX=0;
+define IXP_DE_CIX_FRANKFURT=0;
+define IXP_LINX_LON1=0;

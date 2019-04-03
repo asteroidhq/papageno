@@ -1,0 +1,14 @@
+function match_my_prefixes_6()
+prefix set prefixes;
+{
+    prefixes = [ 2001::/64 ];
+
+    return net ~ prefixes;
+}
+
+function tag_peeringdb_ixid_6() {
+	return true;
+}
+
+define ixp_prefixes_6 = [ 2001:7f8::/64 ];
+define spamhaus_drop_6 = [ 2001:ffff::/64 ];

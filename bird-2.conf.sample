@@ -28,4 +28,4 @@ protocol static static_bgp_6 {
 	route 2001:db8::/32 reject;
 }
 
-include "includes/includes-2.0";
+include "lib/includes-2.0";

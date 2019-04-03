@@ -1,9 +1,13 @@
 # Bird 1.6 basic config for IPv6
 
 define myasn = 65520;
-define my_prefixes = [ 2001:db8::/32+ ];
+define my_prefixes_6 = [ 2001:db8::/32+ ];
 #defining myas_set will effectively override anything defined in my_prefixes_* - make sure it exists!
 define myas_set = "AS-EXAMPLE";
+
+# define the list of ASNs we accept RTBH info from
+define rtbh_asn = [ 65535 ];
+
 
 router id 192.0.2.253;
 
@@ -15,4 +19,4 @@ protocol static static_bgp {
 # Optional - set PeeringDB location ID for BGP community tagging
 define location_id = 18;
 
-include "includes/includes-v6";
+include "lib/includes_v6-1.0";
