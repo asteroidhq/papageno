@@ -1,11 +1,11 @@
 # Bird 2.0 basic config
 
 define myasn = 65520;
+define my_prefixes_4 = [ 203.0.113.0/24 ];
+define my_prefixes_6 = [ 2001:db8::/32 ];
 
 # defining myas_set will effectively override anything defined in my_prefixes_*a - make sure it exists!
 define myas_set = "AS-EXAMPLE";
-define my_prefixes_4 = [ 203.0.113.0/24 ];
-define my_prefixes_6 = [ 2001:db8::/32 ];
 
 # Define the server and port for the ROA server - if you want to use ssh instead of tcp, edit lib/roa-2.0
 define roa_tcp_server = 127.0.0.1;
