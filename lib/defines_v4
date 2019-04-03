@@ -4,6 +4,13 @@ define max_accepted_prefix_4 = 8;
 define min_accepted_prefix_4 = 24;
 
 define martians_4 = [ 
+    100.64.0.0/10+,	# IPv4 shared space, CGNAT, RFC6598
+    127.0.0.0/8+,	# IPv4 loopback, RFC6890
+    192.0.0.0/24,	# IETF protocol assignments, RFC6890
+    192.0.2.0/24,	# Documentation, RFC5737
+    198.51.100.0/24,	# Documentation, RFC5737
+    203.0.113.0/24,	# Documentation, RFC5737
+    198.18.0.0/16,	# Benchmarking, RFC2544
     169.254.0.0/16+,	# IPv4 Link-Local, RFC3927 
     172.16.0.0/12+,	# IPv4 Private, RFC1918 
     192.168.0.0/16+,	# IPv4 Private, RFC1918 
