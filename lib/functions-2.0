@@ -39,12 +39,6 @@ function max_prefix_length() {
 		NET_IP6: return max_prefix_length_6;
 	}
 }
-function blackhole_ip() { 
-	case net.type {
-		NET_IP4: return blackhole_ip_4;
-		NET_IP6: return blackhole_ip_6;
-	}
-}
 function max_accepted_prefix() { 
 	case net.type {
 		NET_IP4: return max_accepted_prefix_4;

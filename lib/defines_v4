@@ -1,7 +1,6 @@
 # IPv4 specific defines
 define defaultroute_4 = 0.0.0.0/0;
 define max_prefix_length_4 = 32;
-define blackhole_ip_4 = 192.0.2.1;
 define max_accepted_prefix_4 = 8;
 define min_accepted_prefix_4 = 24;
 define max_ixp_prefix_4 = 20;

@@ -1,7 +1,9 @@
 # Bird 1.6 basic config for IPv4
 
 define myasn = 65520;
-define myprefixes = [ 203.0.113.0/24+ ];
+define my_prefixes = [ 203.0.113.0/24 ];
+#defining myas_set will effectively override anything defined in my_prefixes_* - make sure it exists!
+define myas_set = "AS-EXAMPLE";
 
 router id 192.0.2.253;
 

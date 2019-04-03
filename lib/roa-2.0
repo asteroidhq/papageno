@@ -12,28 +12,28 @@ function origin_check()
 {
 	case net.type {
 		NET_IP4:	
-			if roa_check(roa_main_4) = ROA_INVALID then {
-                		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
-                		bgp_large_community.add(REASON_ROA_INVALID);
-                		return true;
-			} else {
-				if roa_check(roa_main_4) = ROA_VALID then {
-					bgp_large_community.add((myasn,prefix_roa,roa_valid));
-				} else {
-					bgp_large_community.add((myasn,prefix_roa,roa_unknown));
-				}
+			case roa_check(roa_main_4,net,bgp_path.last_nonaggregated) {
+				ROA_INVALID:
+#         		 		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
+               				bgp_large_community.add(REASON_ROA_INVALID);
+               				return true;
+				ROA_VALID:
+       		        		bgp_large_community.add(TAG_ROA_VALID);
+					accept;
+				ROA_UNKNOWN:
+               				bgp_large_community.add(TAG_ROA_UNKNOWN);
 			}
 		NET_IP6:
-			if roa_check(roa_main_6) = ROA_INVALID then {
-                		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
-                		bgp_large_community.add(REASON_ROA_INVALID);
-                		return true;
-			} else {
-				if roa_check(roa_main_6) = ROA_VALID then {
-					bgp_large_community.add((myasn,prefix_roa,roa_valid));
-				} else {
-					bgp_large_community.add((myasn,prefix_roa,roa_unknown));
-				}
+			case roa_check(roa_main_6,net,bgp_path.last_nonaggregated) {
+				ROA_INVALID:
+#         		 		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
+               				bgp_large_community.add(REASON_ROA_INVALID);
+               				return true;
+				ROA_VALID:
+       		        		bgp_large_community.add(TAG_ROA_VALID);
+					accept;
+				ROA_UNKNOWN:
+               				bgp_large_community.add(TAG_ROA_UNKNOWN);
 			}
 	}
 	return false;

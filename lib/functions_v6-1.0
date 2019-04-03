@@ -10,7 +10,6 @@ function tag_peeringdb_ixid() { return tag_peeringdb_ixid_6(); }
 function ixp_prefixes() { return ixp_prefixes_6; }
 function defaultroute() { return defaultroute_6; }
 function max_prefix_length() { return max_prefix_length_6; }
-function blackhole_ip() { return blackhole_ip_6; }
 function max_accepted_prefix() { return max_accepted_prefix_6; }
 function min_accepted_prefix() { return min_accepted_prefix_6; }
 function max_ixp_prefix() { return max_ixp_prefix_6; }

@@ -90,6 +90,11 @@ define REASON_ROA_INVALID = (myasn,prefix_filtered,filtered_roa_invalid);
 define REASON_SPAMHAUS = (myasn,prefix_filtered,filtered_spamhaus_drop);
 define REASON_ORIGIN = (myasn,prefix_filtered,filtered_invalid_origin);
 
+define TAG_ROA_VALID = (myasn, prefix_roa, roa_valid);
+define TAG_ROA_UNKNOWN = (myasn, prefix_roa, roa_unknown);
+
+define RTBH = (myasn,bgp_blackhole,0);
+
 # read by update-peeringdb to use with regular 32-bit communities
 define ix_id_offset = 10000;
 define country_iso_offset = 20000;

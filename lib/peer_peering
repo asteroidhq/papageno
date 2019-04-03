@@ -2,7 +2,7 @@
 	import keep filtered;
 	import limit default_pfxlimit_peering action block;
 	import filter {
-	        if filter_peering() then reject;
+	        if filter_peering(0) then reject;
         	accept;
 	};
 	export filter ebgp_out;

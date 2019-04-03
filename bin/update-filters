@@ -132,7 +132,7 @@ int set as_set;
 {
     $as_set
     if ( bgp_path.last_nonaggregated !~ as_set ) then {
-        print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Origin ASN ",bgp_path.last_nonaggregated," is not in as-set!";
+#        print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Origin ASN ",bgp_path.last_nonaggregated," is not in as-set!";
         bgp_large_community.add(REASON_ORIGIN);
         return true;
     } else {

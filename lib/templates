@@ -4,7 +4,7 @@
 function net_martian()
 {
 	if ( net ~ martians() ) then {
-		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix is a martian";
+		print "REJECTING: ",net.ip,"/",net.len," received from ",from," AS ",bgp_path.first,": Prefix is a martian";
 		bgp_large_community.add(REASON_MARTIAN);
 		return true;
 	}
@@ -115,18 +115,23 @@ function net_myprefixes() {
                 return false;
         }
 }
-		
+
 # BGP communities processing
 
-function process_blackhole_in() {
-	if ( ( (65535,666) ~ bgp_community ) && ( net.len = max_prefix_length() ) ) then {
-		bgp_local_pref = 200;
-		gw = blackhole_ip();
-		bgp_next_hop = blackhole_ip();
-		return true;
-	} else {
-		return false;
-	}
+function process_blackhole_in(int peeras) {
+	if ( peeras ~ rtbh_asn ) || ( proto ~ "C*" ) then {
+		if ( ( ((65535,666)) ~ bgp_community ) || 
+		     ( ((peeras,666)) ~ bgp_community ) || 
+		     ( ((0,666)) ~ bgp_community ) 
+            ) then {
+			if ( net.len >= min_accepted_prefix() )  then {
+				bgp_local_pref = 200;
+				dest = RTD_BLACKHOLE;
+				bgp_large_community.add(RTBH);
+				accept;
+			}
+		}
+	}	
 }
 
 function process_communities_in() {
@@ -167,80 +172,82 @@ function honor_graceful_shutdown() {
 
 # Sanity checking functions per peer template, also used by peers with AS-SETs defined
 
-function filter_routeserver() {
+function filter_routeserver(int peeras) {
 	strip_my_communities();
 	bgp_community.add((myasn,rs_route));
 	bgp_large_community.add((myasn,prefix_type,rs_route));
 	tag_peeringdb_ixid();
-#	if process_blackhole_in() then return false;
-	if origin_check() then return true;
+	process_blackhole_in(peeras);
+	honor_graceful_shutdown();
 	if next_hop_check_rs() then return true;
 	if bgp_path_length() then return true;
+	if net_spamhaus() then return true;
+	if origin_check() then return true;
 	if asn_transit() then return true;
 	if asn_bogons() then return true;
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
-	if net_spamhaus() then return true;
 	if net_ixp() then return true;
-	honor_graceful_shutdown();
 	return false;
 }
 
-function filter_collector() {
+function filter_collector(int peeras) {
 	honor_graceful_shutdown();
 	return true;
 }
-function filter_peering() {
+function filter_peering(int peeras) {
 	strip_my_communities();
 	bgp_community.add((myasn,peering_route));
 	bgp_large_community.add((myasn,prefix_type,peering_route));
 	tag_peeringdb_ixid();
-	if origin_check() then return true;
+	process_blackhole_in(peeras);
+	honor_graceful_shutdown();
 	if next_hop_check() then return true;
 	if bgp_path_length() then return true;
+	if net_spamhaus() then return true;
+	if origin_check() then return true;
 	if asn_transit() then return true;
 	if asn_bogons() then return true;
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
-	if net_spamhaus() then return true;
 	if net_ixp() then return true;
-	honor_graceful_shutdown();
 	return false;
 }
 
-function filter_customer() {
+function filter_customer(int peeras) {
 	bgp_community.add((myasn,customer_route));
 	bgp_large_community.add((myasn,prefix_type,customer_route));
-	if origin_check() then return true;
+	process_blackhole_in(peeras);
+	honor_graceful_shutdown();
 	if next_hop_check() then return true;
 	if bgp_path_length() then return true;
+	if net_spamhaus() then return true;
+	if origin_check() then return true;
 	if asn_transit() then return true;
 	if asn_bogons() then return true;
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
-	if net_spamhaus() then return true;
 	if net_ixp() then return true;
-	honor_graceful_shutdown();
 	return false;
 }
 
-function filter_transit() {
+function filter_transit(int peeras) {
 	strip_my_communities();
 	bgp_community.add((myasn,transit_route));
 	bgp_large_community.add((myasn,prefix_type,transit_route));
-	if origin_check() then return true;
+	honor_graceful_shutdown();
 	if next_hop_check() then return true;
 	if bgp_path_length() then return true;
+	if net_spamhaus() then return true;
+	if origin_check() then return true;
 	if asn_bogons() then return true;
 	if net_myprefixes() then return true;
 	if net_martian() then return true;
-	if net_spamhaus() then return true;
 	if net_ixp() then return true;
-	honor_graceful_shutdown();
 	return false;
 }
 
-function filter_internal() {
+function filter_internal(int peeras) {
 	bgp_community.add((myasn,internal_route));
 	bgp_large_community.add((myasn,prefix_type,internal_route));
 	honor_graceful_shutdown();
@@ -251,8 +258,8 @@ function filter_internal() {
 
 filter bgp_in_customer {
 	reject;
-#	if filter_customer() then reject;
-#	accept;
+	if filter_customer(bgp_path.first) then reject;
+	accept;
 }
 
 # Outbound filters

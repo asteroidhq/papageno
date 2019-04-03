@@ -1,16 +1,18 @@
 roa table roa_main;
 
-function origin_check() {
-	if roa_check(roa_main) = ROA_INVALID then {
-#                print "REJECTING: ",net.ip,"/",net.len," received from ",proto,": ROA INVALID!";
-                bgp_large_community.add(REASON_ROA_INVALID);
-                return true;
-	} else {
-		if roa_check(roa_main) = ROA_VALID then {
-			bgp_large_community.add((myasn,prefix_roa,roa_valid));
-		} else {
-			bgp_large_community.add((myasn,prefix_roa,roa_unknown));
-		}
-		return false;
+function origin_check()
+enum roa_reply;
+{
+	case roa_check(roa_main,net,bgp_path.last_nonaggregated) {
+		ROA_INVALID:
+       	 		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": ROA INVALID!";
+       			bgp_large_community.add(REASON_ROA_INVALID);
+       			return true;
+		ROA_VALID:
+               		bgp_large_community.add(TAG_ROA_VALID);
+			accept;
+		ROA_UNKNOWN:
+       			bgp_large_community.add(TAG_ROA_UNKNOWN);
 	}
+	return false;
 }

@@ -143,7 +143,7 @@ sub output_peer {
 	my $output->{'asn'}=$args->{'asn'}; 
 	$asn_counter{$output->{'asn'}}++;
 	# protocol independent output
-	$output->{'template_function'}="filter_".lc($args->{'template'})."()"; 
+	$output->{'template_function'}="filter_".lc($args->{'template'})."($args->{'asn'})"; 
 	$output->{'peer_template'} = $args->{'template'};
 	$output->{'desc'} = $args ->{'desc'};
 	$output->{'filterv4'} = ($args->{'filterv4'} eq "NONE") ? "" : $args->{'filterv4'}; 

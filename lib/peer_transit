@@ -2,7 +2,7 @@
 	import keep filtered;
 	import filter {
 		accept;
-		if filter_transit() then reject;
+		if filter_transit(0) then reject;
 		accept;
 	};
 	export filter ebgp_out;

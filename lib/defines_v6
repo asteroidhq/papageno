@@ -1,7 +1,6 @@
 #IPv6 specific defines
 define defaultroute_6 = ::/0;
 define max_prefix_length_6 = 128;
-define blackhole_ip_6 = 2001:db8::1;
 define max_accepted_prefix_6 = 19;
 define min_accepted_prefix_6 = 64;
 define max_ixp_prefix_6 = 48;

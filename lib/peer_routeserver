@@ -2,7 +2,7 @@
 	import keep filtered;
 	import limit default_pfxlimit_routeserver action block;
 	import filter {
-		if filter_routeserver() then reject;
+		if filter_routeserver(0) then reject;
 		accept;
 	};	
 	export filter ebgp_out;

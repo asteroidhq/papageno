@@ -27,3 +27,4 @@ protocol kernel {
 
 protocol bfd __papageno_bfd {
 }
+
