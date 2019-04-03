@@ -1,9 +1,7 @@
 #IPv6 specific defines
 define defaultroute_6 = ::/0;
-define max_prefix_length_6 = 128;
 define max_accepted_prefix_6 = 19;
 define min_accepted_prefix_6 = 64;
-define max_ixp_prefix_6 = 48;
 define default_pfxlimit_customer_6 = 100;
 define default_pfxlimit_peering_6 = 1000;
 define default_pfxlimit_routeserver_6 = 10000;

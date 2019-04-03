@@ -23,7 +23,6 @@ function net_martian()
 
 function net_ixp()
 {
-	if (net.len >= max_ixp_prefix()) then return false;
 	if ( net ~ ixp_prefixes() ) then {
 		print "REJECTING: ",net.ip,"/",net.len," received from ",from,": Prefix belongs to an IXP";
 		bgp_large_community.add(REASON_IXP_PREFIX);
